@@ -5,7 +5,7 @@ import torch
 from torch.distributions import Categorical
 
 from advsber.attackers.sampling_fool import SamplingFool
-from advsber.attackers.attacker import AttackerOutput
+from advsber.attackers.attacker import AttackerOutput, Attacker
 from advsber.utils.data import sequence_to_tensors, decode_indexes, MASK_TOKEN
 from advsber.utils.distance import calculate_wer
 
@@ -15,6 +15,7 @@ class Position(str, Enum):
     END = "end"
 
 
+@Attacker.register("concat_sampling_fool")
 class ConcatSamplingFool(SamplingFool):
     def __init__(
             self,
