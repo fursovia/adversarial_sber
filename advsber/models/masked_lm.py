@@ -15,21 +15,18 @@ from advsber.utils.masker import TokensMasker
 
 @Model.register("masked_lm")
 class MaskedLanguageModel(Model):
-
     def __init__(
         self,
         vocab: Vocabulary,
         text_field_embedder: TextFieldEmbedder,
         seq2seq_encoder: Seq2SeqEncoder,
-        tokens_masker: Optional[TokensMasker] = None
+        tokens_masker: Optional[TokensMasker] = None,
     ) -> None:
         super().__init__(vocab)
         self._text_field_embedder = text_field_embedder
         self._seq2seq_encoder = seq2seq_encoder
         self._head = LinearLanguageModelHead(
-            vocab=vocab,
-            input_dim=self._seq2seq_encoder.get_output_dim(),
-            vocab_namespace="tokens"
+            vocab=vocab, input_dim=self._seq2seq_encoder.get_output_dim(), vocab_namespace="tokens"
         )
         self._tokens_masker = tokens_masker
 
@@ -37,11 +34,7 @@ class MaskedLanguageModel(Model):
         self._loss = torch.nn.CrossEntropyLoss(ignore_index=ignore_index)
         self._perplexity = Perplexity()
 
-    def forward(
-        self,
-        tokens: TextFieldTensors,
-        **kwargs
-    ) -> Dict[str, torch.Tensor]:
+    def forward(self, tokens: TextFieldTensors, **kwargs) -> Dict[str, torch.Tensor]:
         mask = get_text_field_mask(tokens)
 
         if self._tokens_masker is not None:
@@ -55,16 +48,12 @@ class MaskedLanguageModel(Model):
         # take PAD tokens into account when decoding
         logits = self._head(contextual_embeddings)
 
-        output_dict = dict(
-            contextual_embeddings=contextual_embeddings,
-            logits=logits,
-            mask=mask
-        )
+        output_dict = dict(contextual_embeddings=contextual_embeddings, logits=logits, mask=mask)
 
         output_dict["loss"] = self._loss(
             logits.transpose(1, 2),
             # TODO: it is not always tokens-tokens
-            targets["tokens"]["tokens"]
+            targets["tokens"]["tokens"],
         )
         self._perplexity(output_dict["loss"])
         return output_dict

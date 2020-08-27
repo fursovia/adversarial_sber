@@ -15,14 +15,9 @@ MASK_TOKEN = "@@MASK@@"
 
 
 def sequence_to_tensors(
-        sequence: str,
-        reader: DatasetReader,
-        vocab: Vocabulary,
-        device: Union[torch.device, int],
+    sequence: str, reader: DatasetReader, vocab: Vocabulary, device: Union[torch.device, int],
 ) -> TextFieldTensors:
-    instances = Batch([
-        reader.text_to_instance(sequence)
-    ])
+    instances = Batch([reader.text_to_instance(sequence)])
 
     instances.index_instances(vocab)
     inputs = instances.as_tensor_dict()["tokens"]

@@ -17,7 +17,7 @@ class SimpleLanguageModelingDatasetReaderFixed(SimpleLanguageModelingDatasetRead
         tokenizer: Tokenizer = None,
         token_indexers: Dict[str, TokenIndexer] = None,
         max_sequence_length: int = None,
-        lazy: bool = False
+        lazy: bool = False,
     ) -> None:
         super().__init__(
             tokenizer=tokenizer,
@@ -25,13 +25,13 @@ class SimpleLanguageModelingDatasetReaderFixed(SimpleLanguageModelingDatasetRead
             max_sequence_length=max_sequence_length,
             start_tokens=["<START>"],
             end_tokens=["<END>"],
-            lazy=lazy
+            lazy=lazy,
         )
 
     def text_to_instance(
         self,  # type: ignore
         sentence: str = None,
-        sequence: str = None
+        sequence: str = None,
     ) -> Instance:
 
         inp = sentence or sequence

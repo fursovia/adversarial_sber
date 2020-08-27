@@ -18,12 +18,12 @@ class SamplingFool(Attacker):
     """
 
     def __init__(
-            self,
-            masked_lm_dir: str,
-            classifier_dir: str,
-            num_samples: int = 100,
-            temperature: float = 1.0,
-            device: int = -1
+        self,
+        masked_lm_dir: str,
+        classifier_dir: str,
+        num_samples: int = 100,
+        temperature: float = 1.0,
+        device: int = -1,
     ) -> None:
 
         archive = load_archive(Path(masked_lm_dir) / "model.tar.gz")
@@ -51,18 +51,12 @@ class SamplingFool(Attacker):
         return probs
 
     @torch.no_grad()
-    def attack(
-            self,
-            sequence_to_attack: str,
-            label_to_attack: int,
-    ) -> AttackerOutput:
+    def attack(self, sequence_to_attack: str, label_to_attack: int,) -> AttackerOutput:
         orig_prob = self.calculate_probs(sequence_to_attack)[label_to_attack].item()
 
         inputs = sequence_to_tensors(sequence_to_attack, self.reader, self.lm_model.vocab, self.device)
         logits = self.lm_model(inputs)["logits"]
-        indexes = Categorical(
-            logits=logits[0] / self.temperature
-        ).sample((self.num_samples,))
+        indexes = Categorical(logits=logits[0] / self.temperature).sample((self.num_samples,))
 
         adversarial_sequences = [decode_indexes(idx, self.lm_model.vocab) for idx in indexes]
 
@@ -78,7 +72,7 @@ class SamplingFool(Attacker):
                 attacked_label=label_to_attack,
                 adversarial_label=adv_probs.argmax().item(),
                 wer=calculate_wer(sequence_to_attack, adv_sequence),
-                prob_diff=(orig_prob - adv_prob)
+                prob_diff=(orig_prob - adv_prob),
             )
             outputs.append(output)
 

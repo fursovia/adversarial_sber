@@ -12,4 +12,4 @@ def calculate_wer(sequence_a: str, sequence_b: str) -> int:
     w1 = [chr(word2char[w]) for w in sequence_a.split()]
     w2 = [chr(word2char[w]) for w in sequence_b.split()]
 
-    return lvs_distance(''.join(w1), ''.join(w2))
+    return lvs_distance("".join(w1), "".join(w2))

@@ -10,16 +10,12 @@ OneHot = torch.Tensor
 
 @Model.register(name="basic_classifier_one_hot_support")
 class BasicClassifierOneHotSupport(BasicClassifier):
-
-    def forward_on_embeddings(self, embedded_text: torch.Tensor,
-                              mask: torch.Tensor = None,
-                              label: torch.IntTensor = None) -> Dict[str, torch.Tensor]:
+    def forward_on_embeddings(
+        self, embedded_text: torch.Tensor, mask: torch.Tensor = None, label: torch.IntTensor = None
+    ) -> Dict[str, torch.Tensor]:
         if mask is None:
             mask = torch.ones(
-                embedded_text.size(0),
-                embedded_text.size(1),
-                dtype=torch.bool,
-                device=embedded_text.device
+                embedded_text.size(0), embedded_text.size(1), dtype=torch.bool, device=embedded_text.device
             )
 
         output_dict = dict()

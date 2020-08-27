@@ -18,31 +18,27 @@ class Position(str, Enum):
 @Attacker.register("concat_sampling_fool")
 class ConcatSamplingFool(SamplingFool):
     def __init__(
-            self,
-            masked_lm_dir: str,
-            classifier_dir: str,
-            position: Position = Position.END,
-            num_tokens_to_add: int = 2,
-            num_samples: int = 100,
-            temperature: float = 1.0,
-            device: int = -1
+        self,
+        masked_lm_dir: str,
+        classifier_dir: str,
+        position: Position = Position.END,
+        num_tokens_to_add: int = 2,
+        num_samples: int = 100,
+        temperature: float = 1.0,
+        device: int = -1,
     ) -> None:
         super().__init__(
             masked_lm_dir=masked_lm_dir,
             classifier_dir=classifier_dir,
             num_samples=num_samples,
             temperature=temperature,
-            device=device
+            device=device,
         )
         self.position = position
         self.num_tokens_to_add = num_tokens_to_add
 
     @torch.no_grad()
-    def attack(
-            self,
-            sequence_to_attack: str,
-            label_to_attack: int,
-    ) -> AttackerOutput:
+    def attack(self, sequence_to_attack: str, label_to_attack: int,) -> AttackerOutput:
         original_sequence = sequence_to_attack
 
         if self.position == Position.END:
@@ -58,25 +54,21 @@ class ConcatSamplingFool(SamplingFool):
         logits = self.lm_model(inputs)["logits"]
 
         if self.position == Position.END:
-            logits_to_sample = logits[:, -self.num_tokens_to_add:][0]
+            logits_to_sample = logits[:, -self.num_tokens_to_add :][0]
         elif self.position == Position.START:
-            logits_to_sample = logits[:, :self.num_tokens_to_add][0]
+            logits_to_sample = logits[:, : self.num_tokens_to_add][0]
         else:
             raise NotImplementedError
 
-        indexes = Categorical(
-            logits=logits_to_sample / self.temperature
-        ).sample((self.num_samples, ))
+        indexes = Categorical(logits=logits_to_sample / self.temperature).sample((self.num_samples,))
 
         if self.position == Position.END:
             adversarial_sequences = [
-                original_sequence + " " + decode_indexes(idx, self.lm_model.vocab)
-                for idx in indexes
+                original_sequence + " " + decode_indexes(idx, self.lm_model.vocab) for idx in indexes
             ]
         elif self.position == Position.START:
             adversarial_sequences = [
-                decode_indexes(idx, self.lm_model.vocab) + " " + original_sequence
-                for idx in indexes
+                decode_indexes(idx, self.lm_model.vocab) + " " + original_sequence for idx in indexes
             ]
         else:
             raise NotImplementedError
@@ -93,7 +85,7 @@ class ConcatSamplingFool(SamplingFool):
                 attacked_label=label_to_attack,
                 adversarial_label=adv_probs.argmax().item(),
                 wer=calculate_wer(original_sequence, adv_sequence),
-                prob_diff=(orig_prob - adv_prob)
+                prob_diff=(orig_prob - adv_prob),
             )
             outputs.append(output)
 

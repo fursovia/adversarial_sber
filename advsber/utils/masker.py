@@ -13,10 +13,11 @@ from advsber.utils.data import MASK_TOKEN
 class TokensMasker(Registrable):
     # https://github.com/huggingface/transformers/blob/master/src/transformers/data/data_collator.py#L111
     def __init__(
-            self, vocab: Vocabulary,
-            mask_probability: float = 0.3,
-            replace_probability: float = 0.1,
-            namespace: str = "tokens"
+        self,
+        vocab: Vocabulary,
+        mask_probability: float = 0.3,
+        replace_probability: float = 0.1,
+        namespace: str = "tokens",
     ) -> None:
         self.vocab = vocab
         self.mask_probability = mask_probability
@@ -41,15 +42,14 @@ class TokensMasker(Registrable):
                 ).bool()
                 tokens[indices_masked] = self.mask_idx
 
-                indices_random = torch.bernoulli(
-                    torch.full(labels.shape, self.replace_probability, device=tokens.device)
-                ).bool() & ~indices_masked
+                indices_random = (
+                    torch.bernoulli(
+                        torch.full(labels.shape, self.replace_probability, device=tokens.device)
+                    ).bool()
+                    & ~indices_masked
+                )
                 random_tokens = torch.randint(
-                    low=1,
-                    high=self.vocab_size,
-                    size=labels.shape,
-                    dtype=torch.long,
-                    device=tokens.device
+                    low=1, high=self.vocab_size, size=labels.shape, dtype=torch.long, device=tokens.device
                 )
                 tokens[indices_random] = random_tokens[indices_random]
 

@@ -15,10 +15,7 @@ def attack(config_path: str):
 
     with jsonlines.open(params["output_path"], "w") as writer:
         for el in tqdm(data):
-            adversarial_output = attacker.attack(
-                sequence_to_attack=el["text"],
-                label_to_attack=el["label"],
-            )
+            adversarial_output = attacker.attack(sequence_to_attack=el["text"], label_to_attack=el["label"],)
 
             writer.write(adversarial_output.__dict__)
 
