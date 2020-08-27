@@ -86,13 +86,13 @@ class ConcatSamplingFool(SamplingFool):
             adv_probs = self.calculate_probs(adv_sequence)
             adv_prob = adv_probs[label_to_attack].item()
             output = AttackerOutput(
-                sequence=sequence_to_attack,
+                sequence=original_sequence,
                 adversarial_sequence=adv_sequence,
                 probability=orig_prob,
                 adversarial_probability=adv_prob,
                 attacked_label=label_to_attack,
                 adversarial_label=adv_probs.argmax().item(),
-                wer=calculate_wer(sequence_to_attack, adv_sequence),
+                wer=calculate_wer(original_sequence, adv_sequence),
                 prob_diff=(orig_prob - adv_prob)
             )
             outputs.append(output)
