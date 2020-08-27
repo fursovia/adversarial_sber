@@ -11,6 +11,7 @@ from advsber.utils.data import sequence_to_tensors, decode_indexes
 from advsber.utils.distance import calculate_wer
 
 
+@Attacker.register("sampling_fool")
 class SamplingFool(Attacker):
     """
     SamplingFool samples sequences using Masked LM

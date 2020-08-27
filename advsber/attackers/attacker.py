@@ -2,6 +2,7 @@ from typing import List, Optional, Dict, Any
 from abc import ABC, abstractmethod
 
 from dataclasses import dataclass
+from allennlp.common.registrable import Registrable
 
 
 @dataclass
@@ -17,9 +18,9 @@ class AttackerOutput:
     history: Optional[List[Dict[str, Any]]] = None
 
 
-class Attacker(ABC):
+class Attacker(ABC, Registrable):
     @abstractmethod
-    def attack(self, **kwargs) -> AttackerOutput:
+    def attack(self, sequence_to_attack: str, label_to_attack: int) -> AttackerOutput:
         pass
 
     @staticmethod

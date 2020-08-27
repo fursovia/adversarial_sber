@@ -1,8 +1,9 @@
-from typing import Union
+from typing import Union, List, Dict, Any
 
 import torch
 from allennlp.data import TextFieldTensors, Batch
 from allennlp.nn.util import move_to_device
+import jsonlines
 
 from allennlp.data.dataset_readers import DatasetReader
 from allennlp.data.vocabulary import Vocabulary
@@ -32,3 +33,11 @@ def decode_indexes(indexes: torch.Tensor, vocab: Vocabulary) -> str:
     out = [vocab.get_token_from_index(idx.item()) for idx in indexes]
     out = [o for o in out if o not in [START_TOKEN, END_TOKEN]]
     return " ".join(out)
+
+
+def load_jsonlines(path: str) -> List[Dict[str, Any]]:
+    data = []
+    with jsonlines.open(path, "r") as reader:
+        for items in reader:
+            data.append(items)
+    return data
