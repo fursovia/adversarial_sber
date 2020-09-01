@@ -19,20 +19,20 @@ class SamplingFool(Attacker):
 
     def __init__(
         self,
-        masked_lm_dir: str,
-        classifier_dir: str,
+        masked_lm_archive_path: str,
+        classifier_archive_path: str,
         num_samples: int = 100,
         temperature: float = 1.0,
         device: int = -1,
     ) -> None:
 
-        archive = load_archive(Path(masked_lm_dir) / "model.tar.gz")
+        archive = load_archive(masked_lm_archive_path)
         self.lm_model = archive.model
         # disable masker by hands
         self.lm_model._tokens_masker = None
         self.lm_model.eval()
 
-        self.classifier = Model.from_archive(Path(classifier_dir) / "model.tar.gz")
+        self.classifier = Model.from_archive(classifier_archive_path)
         self.classifier.eval()
 
         self.reader = DatasetReader.from_params(archive.config["dataset_reader"])

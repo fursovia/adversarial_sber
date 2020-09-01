@@ -19,8 +19,8 @@ class Position(str, Enum):
 class ConcatSamplingFool(SamplingFool):
     def __init__(
         self,
-        masked_lm_dir: str,
-        classifier_dir: str,
+        masked_lm_archive_path: str,
+        classifier_archive_path: str,
         position: Position = Position.END,
         num_tokens_to_add: int = 2,
         num_samples: int = 100,
@@ -28,8 +28,8 @@ class ConcatSamplingFool(SamplingFool):
         device: int = -1,
     ) -> None:
         super().__init__(
-            masked_lm_dir=masked_lm_dir,
-            classifier_dir=classifier_dir,
+            masked_lm_archive_path=masked_lm_archive_path,
+            classifier_archive_path=classifier_archive_path,
             num_samples=num_samples,
             temperature=temperature,
             device=device,
