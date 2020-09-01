@@ -53,10 +53,13 @@ class ConcatSamplingFool(SamplingFool):
         inputs = sequence_to_tensors(sequence_to_attack, self.reader, self.lm_model.vocab, self.device)
         logits = self.lm_model(inputs)["logits"]
 
+        # drop start and end tokens
+        logits = logits[:, 1:-1]
+
         if self.position == Position.END:
-            logits_to_sample = logits[:, -self.num_tokens_to_add :][0]
+            logits_to_sample = logits[:, -self.num_tokens_to_add:][0]
         elif self.position == Position.START:
-            logits_to_sample = logits[:, : self.num_tokens_to_add][0]
+            logits_to_sample = logits[:, :self.num_tokens_to_add][0]
         else:
             raise NotImplementedError
 
