@@ -57,9 +57,9 @@ class ConcatSamplingFool(SamplingFool):
         logits = logits[:, 1:-1]
 
         if self.position == Position.END:
-            logits_to_sample = logits[:, -self.num_tokens_to_add:][0]
+            logits_to_sample = logits[:, -self.num_tokens_to_add :][0]
         elif self.position == Position.START:
-            logits_to_sample = logits[:, :self.num_tokens_to_add][0]
+            logits_to_sample = logits[:, : self.num_tokens_to_add][0]
         else:
             raise NotImplementedError
 

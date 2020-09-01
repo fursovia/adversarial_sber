@@ -12,16 +12,11 @@ def main(output_path: str, save_to: str = typer.Option(None), visualize: bool = 
     output = pd.DataFrame(output).drop(columns="history")
 
     nad = normalized_accuracy_drop(
-        wers=output["wer"],
-        y_true=output["attacked_label"],
-        y_adv=output["adversarial_label"],
+        wers=output["wer"], y_true=output["attacked_label"], y_adv=output["adversarial_label"],
     )
     typer.echo(f"NAD = {nad:.2f}")
 
-    misclf_error = misclassification_error(
-        y_true=output["attacked_label"],
-        y_adv=output["adversarial_label"],
-    )
+    misclf_error = misclassification_error(y_true=output["attacked_label"], y_adv=output["adversarial_label"],)
     typer.echo(f"Misclassification Error = {misclf_error:.2f}")
 
     prob_drop = probability_drop(true_prob=output["probability"], adv_prob=output["adversarial_probability"])
