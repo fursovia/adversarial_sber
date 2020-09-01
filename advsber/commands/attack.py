@@ -7,7 +7,7 @@ from advsber.attackers import Attacker
 from advsber.utils.data import load_jsonlines
 
 
-def attack(config_path: str, samples: int = typer.Option(None, help="Number of samples")):
+def main(config_path: str, samples: int = typer.Option(None, help="Number of samples")):
     params = Params.from_file(config_path)
     attacker = Attacker.from_params(params["attacker"])
 
@@ -21,4 +21,4 @@ def attack(config_path: str, samples: int = typer.Option(None, help="Number of s
 
 
 if __name__ == "__main__":
-    typer.run(attack)
+    typer.run(main)

@@ -8,7 +8,7 @@ from allennlp.data import DatasetReader
 
 from advsber.attackers.attacker import Attacker, AttackerOutput
 from advsber.utils.data import sequence_to_tensors, decode_indexes
-from advsber.utils.distance import calculate_wer
+from advsber.utils.metrics import word_error_rate
 
 
 @Attacker.register("sampling_fool")
@@ -71,7 +71,7 @@ class SamplingFool(Attacker):
                 adversarial_probability=adv_prob,
                 attacked_label=label_to_attack,
                 adversarial_label=adv_probs.argmax().item(),
-                wer=calculate_wer(sequence_to_attack, adv_sequence),
+                wer=word_error_rate(sequence_to_attack, adv_sequence),
                 prob_diff=(orig_prob - adv_prob),
             )
             outputs.append(output)

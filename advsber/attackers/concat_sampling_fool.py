@@ -7,7 +7,7 @@ from torch.distributions import Categorical
 from advsber.attackers.sampling_fool import SamplingFool
 from advsber.attackers.attacker import AttackerOutput, Attacker
 from advsber.utils.data import sequence_to_tensors, decode_indexes, MASK_TOKEN
-from advsber.utils.distance import calculate_wer
+from advsber.utils.metrics import word_error_rate
 
 
 class Position(str, Enum):
@@ -87,7 +87,7 @@ class ConcatSamplingFool(SamplingFool):
                 adversarial_probability=adv_prob,
                 attacked_label=label_to_attack,
                 adversarial_label=adv_probs.argmax().item(),
-                wer=calculate_wer(original_sequence, adv_sequence),
+                wer=word_error_rate(original_sequence, adv_sequence),
                 prob_diff=(orig_prob - adv_prob),
             )
             outputs.append(output)
