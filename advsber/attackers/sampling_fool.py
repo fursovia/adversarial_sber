@@ -1,6 +1,3 @@
-from pathlib import Path
-from copy import deepcopy
-
 import torch
 from torch.distributions import Categorical
 from allennlp.models import Model, load_archive
@@ -77,5 +74,6 @@ class SamplingFool(Attacker):
             outputs.append(output)
 
         best_output = self.find_best_attack(outputs)
-        best_output.history = [deepcopy(o.__dict__) for o in outputs]
+        # we don't need history here actually
+        # best_output.history = [deepcopy(o.__dict__) for o in outputs]
         return best_output
