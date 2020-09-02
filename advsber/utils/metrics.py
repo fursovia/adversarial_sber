@@ -41,4 +41,4 @@ def probability_drop(true_prob: List[float], adv_prob: List[float],) -> float:
     for tp, ap in zip(true_prob, adv_prob):
         prob_diffs.append(tp - ap)
 
-    return sum(true_prob) / len(adv_prob)
+    return sum(prob_diffs) / len(prob_diffs)
