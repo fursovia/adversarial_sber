@@ -6,10 +6,12 @@ authors = ["fursovia <fursov.ia@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.6.1"
-allennlp = "v1.1.0rc4"
-allennlp_models = "v1.1.0rc4"
+allennlp = "v1.1.0rc3"
+allennlp_models = "v1.1.0rc3"
 python-Levenshtein = "^0.12.0"
 jsonlines = "^1.2"
+typer = "^0.3.2"
+pandas = "^1.1.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "5.3.1"
