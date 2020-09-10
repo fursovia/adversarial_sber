@@ -14,20 +14,9 @@ from advsber.utils.masker import TokensMasker
 
 
 from allennlp.training.metrics.average import Average
-from allennlp.training.metrics.metric import Metric
 
 
-@Metric.register("perplexity")
 class Perplexity(Average):
-    """
-    Perplexity is a common metric used for evaluating how well a language model
-    predicts a sample.
-
-    Notes
-    -----
-    Assumes negative log likelihood loss of each batch (base e). Provides the
-    average perplexity of the batches.
-    """
 
     def get_metric(self, reset: bool = False):
         """
