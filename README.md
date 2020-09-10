@@ -12,13 +12,14 @@ poetry shell
 
 ### Training 
 
-```bash
+Language model
 
+```bash
 DISCRETIZER_PATH=./presets/age/discretizer_100_quantile \
-    LM_TRAIN_DATA_PATH=/notebook/morozov/data/age/train.jsonl \
-    LM_VALID_DATA_PATH=/notebook/morozov/data/age/valid.jsonl \
+    LM_TRAIN_DATA_PATH=/notebook/morozov/data/age/lm/train.jsonl \
+    LM_VALID_DATA_PATH=/notebook/morozov/data/age/lm/valid.jsonl \
     allennlp train configs/language_models/bert.jsonnet \
-    --serialization-dir ./logs/my_exp \
+    --serialization-dir ./logs/age/lm \
     --include-package advsber
 ```
 
