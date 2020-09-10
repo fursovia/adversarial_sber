@@ -14,7 +14,7 @@ from allennlp.common.file_utils import cached_path
 
 
 @DatasetReader.register("classification-csv")
-class ClassificationTsvReader(DatasetReader):
+class ClassificationReader(DatasetReader):
     def __init__(self,
                  tokenizer: Tokenizer = None,
                  token_indexers: Dict[str, TokenIndexer] = None,
