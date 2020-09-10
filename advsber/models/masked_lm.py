@@ -6,13 +6,45 @@ from allennlp.data import TextFieldTensors, Vocabulary
 from allennlp.data.vocabulary import DEFAULT_PADDING_TOKEN
 from allennlp.models.model import Model
 from allennlp.modules import Seq2SeqEncoder, TextFieldEmbedder
-from allennlp.training.metrics import Perplexity
+# from allennlp.training.metrics import Perplexity
 from allennlp.nn.util import get_text_field_mask
 from allennlp_models.lm.modules import LinearLanguageModelHead
 
 from advsber.utils.masker import TokensMasker
 
-from allennlp.data import Vocabulary
+
+from allennlp.training.metrics.average import Average
+from allennlp.training.metrics.metric import Metric
+
+
+@Metric.register("perplexity")
+class Perplexity(Average):
+    """
+    Perplexity is a common metric used for evaluating how well a language model
+    predicts a sample.
+
+    Notes
+    -----
+    Assumes negative log likelihood loss of each batch (base e). Provides the
+    average perplexity of the batches.
+    """
+
+    def get_metric(self, reset: bool = False):
+        """
+        # Returns
+
+        The accumulated perplexity.
+        """
+        average_loss = super().get_metric(reset)
+        if average_loss == 0:
+            perplexity = 0.0
+
+        # Exponentiate the loss to compute perplexity
+        perplexity = float(torch.exp(torch.tensor(average_loss)))
+
+        return perplexity
+
+
 
 @Model.register("masked_lm")
 class MaskedLanguageModel(Model):
