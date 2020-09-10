@@ -26,7 +26,8 @@
         "tokens": {
           "type": "embedding",
           "embedding_dim": 64,
-          "trainable": true
+          "trainable": true,
+          "vocab_namespace": "transactions"
         }
       }
     },
@@ -56,6 +57,6 @@
   "trainer": {
     "num_epochs": 50,
     "patience": 2,
-    "cuda_device": 1
+    "cuda_device": -1
   }
 }
