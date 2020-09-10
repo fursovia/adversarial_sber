@@ -1,4 +1,4 @@
-from typing import Union, List, Dict, Any
+from typing import Union, List, Dict, Any, Sequence
 
 import torch
 from allennlp.data import TextFieldTensors, Batch
@@ -36,3 +36,9 @@ def load_jsonlines(path: str) -> List[Dict[str, Any]]:
         for items in reader:
             data.append(items)
     return data
+
+
+def write_jsonlines(data: Sequence[Dict[str, Any]], path: str) -> None:
+    with jsonlines.open(path, "w") as writer:
+        for ex in data:
+            writer.write(ex)
