@@ -44,19 +44,19 @@
       "replace_probability": 0.1
     }
   },
-//  "distributed": {
-//    "master_port": 29501,
-//    "cuda_devices": [
-//      2,
-//      3
-//    ]
-//  },
+  "distributed": {
+    "master_port": 29501,
+    "cuda_devices": [
+      0,
+      1
+    ]
+  },
   "data_loader": {
-    "batch_size": 64
+    "batch_size": 1024
   },
   "trainer": {
     "num_epochs": 50,
     "patience": 2,
-    "cuda_device": -1
+//    "cuda_device": -1
   }
 }

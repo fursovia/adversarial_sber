@@ -14,9 +14,9 @@ poetry shell
 
 ```bash
 
-DISCRETIZER_PATH=./presets/age/discretizer_50_quantile \
-    LM_TRAIN_DATA_PATH=./data/age/valid.jsonl \
-    LM_VALID_DATA_PATH=./data/age/valid.jsonl \
+DISCRETIZER_PATH=./presets/age/discretizer_100_quantile \
+    LM_TRAIN_DATA_PATH=/notebook/morozov/data/age/train.jsonl \
+    LM_VALID_DATA_PATH=/notebook/morozov/data/age/valid.jsonl \
     allennlp train configs/language_models/bert.jsonnet \
     --serialization-dir ./logs/my_exp \
     --include-package advsber
