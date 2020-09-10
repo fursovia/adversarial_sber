@@ -45,11 +45,17 @@ class TransactionsDatasetReader(DatasetReader):
 
     def text_to_instance(
         self,
-        transactions: str,
-        amounts: str,
+        transactions: List[int],
+        amounts: List[float],
         label: Optional[int] = None,
         client_id: Optional[int] = None,
     ) -> Instance:
+
+        transactions = " ".join(map(str, transactions))
+        amounts = self.discretizer.transform([[x] for x in amounts])
+        # unpack and covert float -> int -> str
+        amounts = list(map(str, (map(int, chain(*amounts)))))
+        amounts = " ".join(amounts)
 
         transactions = self._tokenizer.tokenize(transactions)
         amounts = self._tokenizer.tokenize(amounts)
@@ -81,13 +87,9 @@ class TransactionsDatasetReader(DatasetReader):
                 amounts = items["amounts"]
                 assert len(transactions) == len(amounts)
 
-                amounts = self.discretizer.transform([[x] for x in amounts])
-                # unpack and covert float -> int -> str
-                amounts = list(map(str, (map(int, chain(*amounts)))))
-
                 instance = self.text_to_instance(
-                    transactions=" ".join(map(str, transactions)),
-                    amounts=" ".join(map(str, amounts)),
+                    transactions=transactions,
+                    amounts=amounts,
                     label=items.get("label"),
                     client_id=items.get("client_id"),
                 )
