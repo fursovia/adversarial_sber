@@ -12,7 +12,7 @@
 //      "tokens": 50000
 //    },
     "tokens_to_add": {
-      "tokens": [
+      "transactions": [
         "@@MASK@@",
         "<START>",
         "<END>"
@@ -21,7 +21,7 @@
   },
   "model": {
     "type": "masked_lm",
-    "text_field_embedder": {
+    "transactions_field_embedder": {
       "token_embedders": {
         "tokens": {
           "type": "embedding",
@@ -39,22 +39,23 @@
     },
     "tokens_masker": {
       "type": "tokens_masker",
-      "mask_probability": 0.5,
+      "mask_probability": 0.3,
       "replace_probability": 0.1
     }
   },
-  "distributed": {
-    "master_port": 29501,
-    "cuda_devices": [
-      2,
-      3
-    ]
-  },
+//  "distributed": {
+//    "master_port": 29501,
+//    "cuda_devices": [
+//      2,
+//      3
+//    ]
+//  },
   "data_loader": {
     "batch_size": 64
   },
   "trainer": {
     "num_epochs": 50,
-    "patience": 2
+    "patience": 2,
+    "cuda_device": 1
   }
 }

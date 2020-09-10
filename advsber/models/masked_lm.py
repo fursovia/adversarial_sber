@@ -12,21 +12,24 @@ from allennlp_models.lm.modules import LinearLanguageModelHead
 
 from advsber.utils.masker import TokensMasker
 
+from allennlp.data import Vocabulary
 
 @Model.register("masked_lm")
 class MaskedLanguageModel(Model):
     def __init__(
         self,
         vocab: Vocabulary,
-        text_field_embedder: TextFieldEmbedder,
+        transactions_field_embedder: TextFieldEmbedder,
         seq2seq_encoder: Seq2SeqEncoder,
+        amounts_field_embedder: Optional[TextFieldEmbedder] = None,
         tokens_masker: Optional[TokensMasker] = None,
     ) -> None:
         super().__init__(vocab)
-        self._text_field_embedder = text_field_embedder
+        self._transactions_field_embedder = transactions_field_embedder
+        self._amounts_field_embedder = amounts_field_embedder
         self._seq2seq_encoder = seq2seq_encoder
         self._head = LinearLanguageModelHead(
-            vocab=vocab, input_dim=self._seq2seq_encoder.get_output_dim(), vocab_namespace="tokens"
+            vocab=vocab, input_dim=self._seq2seq_encoder.get_output_dim(), vocab_namespace="transactions"
         )
         self._tokens_masker = tokens_masker
 
@@ -34,16 +37,25 @@ class MaskedLanguageModel(Model):
         self._loss = torch.nn.CrossEntropyLoss(ignore_index=ignore_index)
         self._perplexity = Perplexity()
 
-    def forward(self, tokens: TextFieldTensors, **kwargs) -> Dict[str, torch.Tensor]:
-        mask = get_text_field_mask(tokens)
+    def forward(
+        self,
+        transactions: TextFieldTensors,
+        amounts: Optional[TextFieldTensors] = None,
+        **kwargs,
+    ) -> Dict[str, torch.Tensor]:
+        mask = get_text_field_mask(transactions)
 
         if self._tokens_masker is not None:
-            tokens, targets = self._tokens_masker.mask_tokens(tokens)
+            transactions, targets = self._tokens_masker.mask_tokens(transactions)
         else:
-            targets = tokens
+            targets = transactions
 
-        embeddings = self._text_field_embedder(tokens)
-        contextual_embeddings = self._seq2seq_encoder(embeddings, mask)
+        transaction_embeddings = self._transactions_field_embedder(transactions)
+        if amounts is not None and self._amounts_field_embedder is not None:
+            amount_embeddings = self._amounts_field_embedder(amounts)
+            transaction_embeddings = torch.cat((transaction_embeddings, amount_embeddings), dim=-1)
+
+        contextual_embeddings = self._seq2seq_encoder(transaction_embeddings, mask)
 
         # take PAD tokens into account when decoding
         logits = self._head(contextual_embeddings)

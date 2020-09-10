@@ -10,6 +10,21 @@ poetry install
 poetry shell
 ```
 
+### Training 
+
+```bash
+
+DISCRETIZER_PATH=./presets/age/discretizer_50_quantile \
+    LM_TRAIN_DATA_PATH=./data/age/valid.jsonl \
+    LM_VALID_DATA_PATH=./data/age/valid.jsonl \
+    allennlp train configs/language_models/bert.jsonnet \
+    --serialization-dir ./logs/my_exp \
+    --include-package advsber
+```
+
+
+### Attacking
+
 Attack example
 
 ```bash
