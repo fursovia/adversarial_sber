@@ -6,8 +6,8 @@ authors = ["fursovia <fursov.ia@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.6.1"
-allennlp = "v1.1.0rc3"
-allennlp_models = "v1.1.0rc3"
+allennlp = "==1.1.0"
+allennlp_models = "==1.1.0"
 python-Levenshtein = "^0.12.0"
 jsonlines = "^1.2"
 typer = "^0.3.2"
@@ -20,7 +20,7 @@ mypy = "0.770"
 flake8 = "^3.7.9"
 
 [tool.black]
-line-length = 115
+line-length = 119
 
 include = '\.pyi?$'
 
