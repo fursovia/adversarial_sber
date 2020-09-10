@@ -13,7 +13,7 @@ from allennlp.data.tokenizers import Token, Tokenizer, WhitespaceTokenizer
 from allennlp.common.file_utils import cached_path
 
 
-@DatasetReader.register("classification-csv")
+@DatasetReader.register("ClassificationReader")
 class ClassificationReader(DatasetReader):
     def __init__(self,
                  tokenizer: Tokenizer = None,
