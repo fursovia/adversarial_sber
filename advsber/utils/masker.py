@@ -43,9 +43,7 @@ class TokensMasker(Registrable):
                 tokens[indices_masked] = self.mask_idx
 
                 indices_random = (
-                    torch.bernoulli(
-                        torch.full(labels.shape, self.replace_probability, device=tokens.device)
-                    ).bool()
+                    torch.bernoulli(torch.full(labels.shape, self.replace_probability, device=tokens.device)).bool()
                     & ~indices_masked
                 )
                 random_tokens = torch.randint(

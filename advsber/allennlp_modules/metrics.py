@@ -3,7 +3,6 @@ from allennlp.training.metrics import Average
 
 
 class FixedPerplexity(Average):
-
     def get_metric(self, reset: bool = False):
         """
         # Returns

@@ -2,17 +2,15 @@ from typing import List, Optional
 import jsonlines
 import math
 import logging
-from itertools import chain
 
-import pickle
-
-from sklearn.preprocessing import KBinsDiscretizer
 from allennlp.common.file_utils import cached_path
 from allennlp.data.dataset_readers.dataset_reader import DatasetReader
 from allennlp.data.fields import TextField, LabelField
 from allennlp.data.instance import Instance
 from allennlp.data.token_indexers import SingleIdTokenIndexer
 from allennlp.data.tokenizers import WhitespaceTokenizer, Token
+
+from advsber.utils.data import load_discretizer, transform_amounts
 
 
 logger = logging.getLogger(__name__)
@@ -23,18 +21,10 @@ END_TOKEN = "<END>"
 
 @DatasetReader.register("transactions_reader")
 class TransactionsDatasetReader(DatasetReader):
-    def __init__(
-        self,
-        discretizer_path: str,
-        max_sequence_length: int = None,
-        lazy: bool = False,
-    ) -> None:
+    def __init__(self, discretizer_path: str, max_sequence_length: int = None, lazy: bool = False,) -> None:
         super().__init__(lazy=lazy)
 
-        with open(discretizer_path, "rb") as f:
-            self.discretizer: KBinsDiscretizer = pickle.load(f)
-            assert self.discretizer.encode == "ordinal"
-
+        self.discretizer = load_discretizer(discretizer_path)
         self._max_sequence_length = max_sequence_length or math.inf
         self._tokenizer = WhitespaceTokenizer()
         self._start_token = Token(START_TOKEN)
@@ -52,9 +42,7 @@ class TransactionsDatasetReader(DatasetReader):
     ) -> Instance:
 
         transactions = " ".join(map(str, transactions))
-        amounts = self.discretizer.transform([[x] for x in amounts])
-        # unpack and covert float -> int -> str
-        amounts = list(map(str, (map(int, chain(*amounts)))))
+        amounts = transform_amounts(amounts, self.discretizer)
         amounts = " ".join(amounts)
 
         transactions = self._tokenizer.tokenize(transactions)
