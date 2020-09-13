@@ -21,6 +21,7 @@ class BasicClassifier(Model):
         self._amounts_field_embedder = amounts_field_embedder
         self._seq2seq_encoder = seq2seq_encoder
         num_labels = vocab.get_vocab_size("label")
+        print(num_labels, 'AAAAAA')
         self.fc = torch.nn.Linear(256, num_labels)
         self._loss = torch.nn.CrossEntropyLoss()
         self.accuracy = CategoricalAccuracy()
