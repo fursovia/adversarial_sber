@@ -41,6 +41,7 @@ class BasicClassifier(Model):
         contextual_embeddings = torch.mean(contextual_embeddings, dim=1)
         logits = self.fc(contextual_embeddings)
         probs = torch.nn.functional.softmax(logits)
+        print(label)
         loss = torch.nn.functional.cross_entropy(logits, label)
         self.accuracy(logits, label)
         output = {'loss': loss, 'probs': probs}
