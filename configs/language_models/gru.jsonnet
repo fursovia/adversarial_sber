@@ -37,7 +37,7 @@ local TOKEN_INDEXER = {
       "token_embedders": {
         "tokens": {
           "type": "embedding",
-          "embedding_dim": 64,
+          "embedding_dim": 128,
           "trainable": true,
           "vocab_namespace": "amounts"
         }
