@@ -22,7 +22,7 @@ local TOKEN_INDEXER = {
   "train_data_path": std.extVar("LM_TRAIN_DATA_PATH"),
   "validation_data_path": std.extVar("LM_VALID_DATA_PATH"),
   "model": {
-    "type": "basic_classifier_one_hot_support",
+    "type": "BacicClassifier",
     "transactions_field_embedder": {
       "token_embedders": {
         "tokens": {
