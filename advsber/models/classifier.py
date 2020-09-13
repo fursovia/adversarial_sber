@@ -21,7 +21,7 @@ class BasicClassifier(Model):
         self._transactions_field_embedder = transactions_field_embedder
         self._amounts_field_embedder = amounts_field_embedder
         self._seq2seq_encoder = seq2seq_encoder
-        num_labels = vocab.get_vocab_size("labels")
+        num_labels = vocab.get_vocab_size("label")
         self.fc = torch.nn.Linear(256, num_labels)
 
         #self._head = LinearLanguageModelHead(vocab=vocab,
