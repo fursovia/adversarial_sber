@@ -21,7 +21,6 @@ class BasicClassifier(Model):
         self._amounts_field_embedder = amounts_field_embedder
         self._seq2seq_encoder = seq2seq_encoder
         num_labels = vocab.get_vocab_size("label")
-        print(num_labels, 'AAAAAA')
         self.fc = torch.nn.Linear(256, num_labels)
         self._loss = torch.nn.CrossEntropyLoss()
         self.accuracy = CategoricalAccuracy()
@@ -40,9 +39,7 @@ class BasicClassifier(Model):
 
         contextual_embeddings = self._seq2seq_encoder(transaction_embeddings, mask=None)
         contextual_embeddings = torch.mean(contextual_embeddings, dim=1)
-        print(contextual_embeddings.shape, 'AAAAAAAA')
         logits = self.fc(contextual_embeddings)
-        print(logits.shape, 'AAAAAAAA')
         probs = torch.nn.functional.softmax(logits)
         loss = torch.nn.functional.cross_entropy(logits, label)
         self.accuracy(logits, label)
