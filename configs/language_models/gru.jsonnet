@@ -53,7 +53,7 @@ local TOKEN_INDEXER = {
     }
   },
   "data_loader": {
-    "batch_size": 32
+    "batch_size": 64
   },
 //  "distributed": {
 //    "master_port": 29555,

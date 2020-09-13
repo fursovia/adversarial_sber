@@ -37,7 +37,7 @@ class BasicClassifier(Model):
             amount_embeddings = self._amounts_field_embedder(amounts)
             transaction_embeddings = torch.cat((transaction_embeddings, amount_embeddings), dim=1)
         shapes = transaction_embeddings.shape
-        transaction_embeddings = transaction_embeddings.reshape(shapes[2],shapes[0],shapes[1])
+        transaction_embeddings = transaction_embeddings.reshape(shapes[1], shapes[0], shapes[2])
         print(transaction_embeddings.shape)
         contextual_embeddings = self._seq2seq_encoder(transaction_embeddings, mask=None)
         print(contextual_embeddings.shape)
