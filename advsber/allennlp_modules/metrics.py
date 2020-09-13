@@ -12,8 +12,12 @@ class FixedPerplexity(Average):
         average_loss = super().get_metric(reset)
         if average_loss == 0:
             perplexity = 0.0
+            return perplexity
+
+        if isinstance(average_loss, float):
+            average_loss = torch.tensor(average_loss)
 
         # Exponentiate the loss to compute perplexity
-        perplexity = float(torch.exp(torch.tensor(average_loss)))
+        perplexity = float(torch.exp(average_loss))
 
         return perplexity
