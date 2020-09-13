@@ -49,6 +49,7 @@ class BasicClassifier(Model):
         print(contextual_embeddings.shape)
         #logits = self.fc(contextual_embeddings)
         logits = self._head(contextual_embeddings)
+        print(logits.shape, 'AAAAAAAAAA')
         probs = torch.nn.functional.softmax(logits)
         loss = torch.nn.functional.cross_entropy(logits, label)
         self._accuracy(logits, label)
