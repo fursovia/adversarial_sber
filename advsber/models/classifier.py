@@ -8,8 +8,8 @@ from allennlp.modules import Seq2SeqEncoder, TextFieldEmbedder
 from allennlp.training.metrics import CategoricalAccuracy
 
 
-@Model.register("basic_classifier")
-class BacicClassifier(Model):
+@Model.register("BasicClassifier")
+class BasicClassifier(Model):
     def __init__(self,
                 vocab: Vocabulary,
                 transactions_field_embedder: TextFieldEmbedder,
