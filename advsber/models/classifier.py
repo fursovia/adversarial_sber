@@ -8,7 +8,7 @@ from allennlp.modules import Seq2SeqEncoder, TextFieldEmbedder
 from allennlp.training.metrics import CategoricalAccuracy
 
 
-@Model.register("BacicClassifier")
+@Model.register("BasicClassifier")
 class BacicClassifier(Model):
     def __init__(self,
                 vocab: Vocabulary,
