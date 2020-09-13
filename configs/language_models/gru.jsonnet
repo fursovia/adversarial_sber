@@ -45,7 +45,7 @@ local TOKEN_INDEXER = {
     },
     "seq2seq_encoder": {
         "type": "gru",
-        "input_size": 128,
+        "input_size": 256,
         "hidden_size": 128,
         "num_layers": 1,
         "dropout": 0.1,
