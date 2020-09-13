@@ -6,7 +6,6 @@ from allennlp.data import TextFieldTensors, Vocabulary
 from allennlp.models.model import Model
 from allennlp.modules import Seq2SeqEncoder, TextFieldEmbedder
 from allennlp.training.metrics import CategoricalAccuracy
-from allennlp_models.lm.modules import LinearLanguageModelHead
 
 @Model.register("BasicClassifier")
 class BasicClassifier(Model):
@@ -29,7 +28,7 @@ class BasicClassifier(Model):
         #                                     vocab_namespace="transactions")
 
         self._loss = torch.nn.CrossEntropyLoss()
-        self._accuracy = CategoricalAccuracy()
+        self.accuracy = CategoricalAccuracy()
 
     def forward(self,
                 transactions: TextFieldTensors,
@@ -52,7 +51,7 @@ class BasicClassifier(Model):
         print(logits.shape, 'AAAAAAAAAA')
         probs = torch.nn.functional.softmax(logits)
         loss = torch.nn.functional.cross_entropy(logits, label)
-        self._accuracy(logits, label)
+        self.accuracy(logits, label)
         output = {'loss': loss, 'probs': probs}
         return output
 
