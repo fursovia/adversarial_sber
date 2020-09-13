@@ -22,11 +22,11 @@ class BasicClassifier(Model):
         self._amounts_field_embedder = amounts_field_embedder
         self._seq2seq_encoder = seq2seq_encoder
         num_labels = vocab.get_vocab_size("labels")
-        #self.fc = torch.nn.Linear(128, num_labels)
+        self.fc = torch.nn.Linear(256, num_labels)
 
-        self._head = LinearLanguageModelHead(vocab=vocab,
-                                             input_dim=self._seq2seq_encoder.get_output_dim(),
-                                             vocab_namespace="transactions")
+        #self._head = LinearLanguageModelHead(vocab=vocab,
+        #                                     input_dim=self._seq2seq_encoder.get_output_dim(),
+        #                                     vocab_namespace="transactions")
 
         self._loss = torch.nn.CrossEntropyLoss()
         self._accuracy = CategoricalAccuracy()
@@ -46,9 +46,9 @@ class BasicClassifier(Model):
         #transaction_embeddings = transaction_embeddings.reshape(shapes[1], shapes[0], shapes[2])
         print(transaction_embeddings.shape)
         contextual_embeddings = self._seq2seq_encoder(transaction_embeddings, mask=None)
-        print(contextual_embeddings.shape)
-        #logits = self.fc(contextual_embeddings)
-        logits = self._head(contextual_embeddings)
+        contextual_embeddings = torch.mean(contextual_embeddings, dim=1)
+        logits = self.fc(contextual_embeddings)
+        #logits = self._head(contextual_embeddings)
         print(logits.shape, 'AAAAAAAAAA')
         probs = torch.nn.functional.softmax(logits)
         loss = torch.nn.functional.cross_entropy(logits, label)
