@@ -73,6 +73,7 @@ def load_discretizer(discretizer_path: str) -> KBinsDiscretizer:
 
 
 def transform_amounts(amounts: List[float], discretizer: KBinsDiscretizer) -> List[str]:
+    print(amounts.shape)
     amounts = discretizer.transform([[x] for x in amounts])
     # unpack and covert float -> int -> str
     amounts = list(map(str, (map(int, chain(*amounts)))))
