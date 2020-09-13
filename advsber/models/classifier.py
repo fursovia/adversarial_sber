@@ -32,8 +32,8 @@ class BasicClassifier(Model):
                 amounts: Optional[TextFieldTensors] = None,
                 **kwargs,
     ) -> Dict[str, torch.Tensor]:
-
         transaction_embeddings = self._transactions_field_embedder(transactions)
+        print(transaction_embeddings.shape)
         if amounts is not None and self._amounts_field_embedder is not None:
             amount_embeddings = self._amounts_field_embedder(amounts)
             transaction_embeddings = torch.cat((transaction_embeddings, amount_embeddings), dim=-1)
