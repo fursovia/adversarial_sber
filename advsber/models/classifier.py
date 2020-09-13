@@ -23,7 +23,7 @@ class BasicClassifier(Model):
         num_labels = vocab.get_vocab_size("label")
         self.fc = torch.nn.Linear(256, num_labels)
         self._loss = torch.nn.CrossEntropyLoss()
-        self.accuracy = CategoricalAccuracy()
+        self.accuracy = CategoricalAccuracy(skip_indexing=True)
 
     def forward(self,
                 transactions: TextFieldTensors,
