@@ -23,7 +23,11 @@ class BasicClassifier(Model):
         self._seq2seq_encoder = seq2seq_encoder
         num_labels = vocab.get_vocab_size("labels")
         #self.fc = torch.nn.Linear(128, num_labels)
-        self._head = LinearLanguageModelHead(vocab=vocab, input_dim=self._seq2seq_encoder.get_output_dim())
+
+        self._head = LinearLanguageModelHead(vocab=vocab,
+                                             input_dim=self._seq2seq_encoder.get_output_dim(),
+                                             vocab_namespace="transactions")
+
         self._loss = torch.nn.CrossEntropyLoss()
         self._accuracy = CategoricalAccuracy()
 
