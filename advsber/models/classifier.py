@@ -6,7 +6,7 @@ from allennlp.data import TextFieldTensors, Vocabulary
 from allennlp.models.model import Model
 from allennlp.modules import Seq2SeqEncoder, TextFieldEmbedder
 from allennlp.training.metrics import CategoricalAccuracy
-
+from allennlp_models.lm.modules import LinearLanguageModelHead
 
 @Model.register("BasicClassifier")
 class BasicClassifier(Model):
@@ -22,7 +22,8 @@ class BasicClassifier(Model):
         self._amounts_field_embedder = amounts_field_embedder
         self._seq2seq_encoder = seq2seq_encoder
         num_labels = vocab.get_vocab_size("labels")
-        self.fc = torch.nn.Linear(128, num_labels)
+        #self.fc = torch.nn.Linear(128, num_labels)
+        self._head = LinearLanguageModelHead(vocab=vocab, input_dim=self._seq2seq_encoder.get_output_dim())
         self._loss = torch.nn.CrossEntropyLoss()
         self._accuracy = CategoricalAccuracy()
 
@@ -42,7 +43,8 @@ class BasicClassifier(Model):
         print(transaction_embeddings.shape)
         contextual_embeddings = self._seq2seq_encoder(transaction_embeddings, mask=None)
         print(contextual_embeddings.shape)
-        logits = self.fc(contextual_embeddings)
+        #logits = self.fc(contextual_embeddings)
+        logits = self._head(contextual_embeddings)
         probs = torch.nn.functional.softmax(logits)
         loss = torch.nn.functional.cross_entropy(logits, label)
         self._accuracy(logits, label)
