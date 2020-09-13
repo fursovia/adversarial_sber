@@ -39,7 +39,7 @@ class BasicClassifier(Model):
             transaction_embeddings = torch.cat((transaction_embeddings, amount_embeddings), dim=-1)
 
         contextual_embeddings = self._seq2seq_encoder(transaction_embeddings, mask=None)
-
+        print(contextual_embeddings.shape)
         logits = self.fc(contextual_embeddings)
         probs = torch.nn.functional.softmax(logits)
         loss = torch.nn.functional.cross_entropy(logits, label)
