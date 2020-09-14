@@ -4,6 +4,7 @@ import jsonlines
 from tqdm import tqdm
 
 from advsber.attackers import Attacker
+from advsber.settings import TransactionsData
 from advsber.utils.data import load_jsonlines
 
 
@@ -15,9 +16,8 @@ def main(config_path: str, samples: int = typer.Option(None, help="Number of sam
 
     with jsonlines.open(params["output_path"], "w") as writer:
         for el in tqdm(data):
-            adversarial_output = attacker.attack(sequence_to_attack=el["text"], label_to_attack=el["label"],)
-
-            writer.write(adversarial_output.__dict__)
+            adversarial_output = attacker.attack(TransactionsData(**el))
+            writer.write(adversarial_output.to_dict())
 
 
 if __name__ == "__main__":

@@ -55,7 +55,7 @@ class Attacker(ABC, Registrable):
 
         changed_label_outputs = []
         for output in outputs:
-            if output.data.label != output.adversarial_data.label and output.wer > 0:
+            if output.data["label"] != output.adversarial_data["label"] and output.wer > 0:
                 changed_label_outputs.append(output)
 
         if changed_label_outputs:

@@ -62,8 +62,8 @@ class SamplingFool(Attacker):
             adv_prob = adv_probs[data_to_attack.label].item()
 
             output = AttackerOutput(
-                data=data_to_attack,
-                adversarial_data=adv_data,
+                data=data_to_attack.to_dict(),
+                adversarial_data=adv_data.to_dict(),
                 probability=orig_prob,
                 adversarial_probability=adv_prob,
                 prob_diff=(orig_prob - adv_prob),

@@ -57,12 +57,9 @@ CUDA_VISIBLE_DEVICES="0" bash bin/train_clf.sh gru_with_amounts ./presets/age ta
 Attack example
 
 ```bash
-# data to attack
-export DATA_PATH="./data/test.json"
-# where to save results
-export OUTPUT_PATH="./results/output.json"
-export MASKED_LM_PATH="./presets/age/lm.model.tar.gz"
-export CLF_PATH="./presets/age/target_clf.model.tar.gz"
-
-PYTHONPATH=. python advsber/commands/attack.py configs/attackers/sampling_fool.jsonnet --samples 100
+DATA_PATH="./presets/age/test.jsonl" \
+    OUTPUT_PATH="./results/output.json" \
+    MASKED_LM_PATH="./presets/age/lm.model.tar.gz" \
+    CLF_PATH="./presets/age/clf.model.tar.gz" \
+    PYTHONPATH=. python advsber/commands/attack.py configs/attackers/sampling_fool.jsonnet --samples 100
 ```
