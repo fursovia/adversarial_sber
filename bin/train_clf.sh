@@ -17,5 +17,4 @@ DISCRETIZER_PATH=./presets/${DATASET_NAME}/${DISCRETIZER_NAME} \
     VOCAB_PATH=./presets/${DATASET_NAME}/${DISCRETIZER_NAME}_vocabulary \
     allennlp train ./configs/classifiers/${CONFIG_NAME}.jsonnet \
     --serialization-dir ./logs/${DATASET_NAME}/${CLF_TYPE}_clf/${EXP_NAME} \
-    --include-package advsber \
-    -o '{"trainer.cuda_device": -1}'
+    --include-package advsber
