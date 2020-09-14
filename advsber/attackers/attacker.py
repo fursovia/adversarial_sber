@@ -48,6 +48,13 @@ class Attacker(ABC, Registrable):
         probs = self.classifier(**inputs)["probs"][0]
         return probs
 
+    def probs_to_label(self, probs: torch.Tensor) -> int:
+        label_idx = probs.argmax().item()
+        label = self.classifier.vocab.get_index_to_token_vocabulary("labels").get(
+            label_idx, str(label_idx)
+        )
+        return int(label)
+
     @staticmethod
     def find_best_attack(outputs: List[AttackerOutput]) -> AttackerOutput:
         if len(outputs) == 1:
