@@ -29,7 +29,8 @@ def ContrastiveLoss(embedding, labels):
     dist = torch.pow(x - y, 2).sum(2)
     part_1 = mask * dist
     part_2 = (torch.ones_like(dist) - mask) * relu(1e-3 * torch.ones_like(dist) - torch.sqrt(dist)).pow(2)
-    L = part_1.sum() + part_2.sum()
+    #L = part_1.sum() + part_2.sum()
+    L = part_1.sum()
     return L
 
 @Model.register("metric_learning")

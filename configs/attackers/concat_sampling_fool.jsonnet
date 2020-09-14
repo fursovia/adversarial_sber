@@ -2,7 +2,7 @@
   "data_path": std.extVar("DATA_PATH"),
   "output_path": std.extVar("OUTPUT_PATH"),
   "attacker": {
-    "type": "concat_sf_with_amounts",
+    "type": "concat_sf_with_amounts.py",
     "masked_lm_archive_path": std.extVar("MASKED_LM_PATH"),
     "classifier_archive_path": std.extVar("CLF_PATH"),
     "position": "end",

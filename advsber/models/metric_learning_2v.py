@@ -29,7 +29,8 @@ def ContrastiveLoss(embedding, labels):
     dist = torch.pow(x - y, 2).sum(2)
     part_1 = mask * dist
     part_2 = (torch.ones_like(dist) - mask) * relu(1e-3 * torch.ones_like(dist) - torch.sqrt(dist)).pow(2)
-    L = part_1.sum() + part_2.sum()
+    #L = part_1.sum() + part_2.sum()
+    L = part_1.sum()
     return L
 
 @Model.register("metric_learning_2")
@@ -49,11 +50,14 @@ class metriclr_2(Model):
         super().__init__(vocab)
         self._transactions_field_embedder = transactions_field_embedder
         self._amounts_field_embedder = amounts_field_embedder
+        
         self._seq2seq_encoder_transactions = seq2seq_encoder_transactions
         self._seq2seq_encoder_amounts = seq2seq_encoder_amounts
-        self.fc = torch.nn.Linear(2*seq2seq_encoder_transactions.get_input_dim(), num_classes)
-        self.accuracy = CategoricalAccuracy()
+        
         ignore_index = self.vocab.get_token_index(DEFAULT_PADDING_TOKEN)
+        self.fc = torch.nn.Linear(4*seq2seq_encoder_transactions.get_input_dim(), num_classes)
+        
+        self.accuracy = CategoricalAccuracy()
         self.loss_ = torch.nn.CrossEntropyLoss(ignore_index=ignore_index)
         self.dropout = Dropout(0.1)
         self._tokens_masker = tokens_masker
@@ -69,6 +73,7 @@ class metriclr_2(Model):
     ) -> Dict[str, torch.Tensor]:
 
         mask = get_text_field_mask(transactions)
+        #print(mask.shape)
 
         if self._tokens_masker is not None:
             transactions, targets = self._tokens_masker.mask_tokens(transactions)
@@ -77,17 +82,24 @@ class metriclr_2(Model):
 
         if amounts is not None and self._amounts_field_embedder is not None:
             amount_embeddings = self._amounts_field_embedder(amounts)
+            
+        #print(transaction_embeddings.shape, amount_embeddings.shape)
 
         transaction_embeddings = self._seq2seq_encoder_transactions(transaction_embeddings, mask=mask)
-        amount_embeddings = self._seq2seq_encoder_transactions(amount_embeddings, mask=None)
-
+        amount_embeddings = self._seq2seq_encoder_amounts(amount_embeddings, mask=None)
+        
+        #print(transaction_embeddings.shape, amount_embeddings.shape)
+        
         transaction_embeddings = torch.mean(transaction_embeddings, dim=1)
         amount_embeddings = torch.mean(amount_embeddings, dim=1)
-
+        
+        #print(transaction_embeddings.shape, amount_embeddings.shape)
+        
         loss_1 = ContrastiveLoss(transaction_embeddings, client_id)
         loss_2 = ContrastiveLoss(amount_embeddings, client_id)
 
-        contextual_embeddings = torch.cat((transaction_embeddings, amount_embeddings), dim=1)
+        contextual_embeddings = torch.cat((transaction_embeddings, amount_embeddings), dim=-1)
+        #print(contextual_embeddings.shape)
         contextual_embeddings = self.dropout(contextual_embeddings)
         logits = self.fc(contextual_embeddings)
         probs = torch.nn.functional.softmax(logits)
