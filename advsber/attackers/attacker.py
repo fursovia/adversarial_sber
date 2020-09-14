@@ -4,10 +4,10 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json
 from allennlp.common.registrable import Registrable
+from allennlp.models import Model
 import torch
 
 from advsber.settings import TransactionsData
-from advsber.models import TransactionsClassifier
 from advsber.dataset_readers import TransactionsDatasetReader
 
 
@@ -27,7 +27,7 @@ class Attacker(ABC, Registrable):
 
     def __init__(
         self,
-        classifier: TransactionsClassifier,
+        classifier: Model,
         reader: TransactionsDatasetReader,
         device: int = -1,
     ) -> None:
@@ -42,6 +42,11 @@ class Attacker(ABC, Registrable):
     @abstractmethod
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
         pass
+
+    # TODO: add typing
+    def get_clf_probs(self, inputs) -> torch.Tensor:
+        probs = self.classifier(**inputs)["probs"][0]
+        return probs
 
     @staticmethod
     def find_best_attack(outputs: List[AttackerOutput]) -> AttackerOutput:

@@ -3,14 +3,13 @@ from copy import deepcopy
 
 import torch
 from torch.distributions import Categorical
+from allennlp.models import Model
 
 from advsber.attackers.sampling_fool import SamplingFool
-from advsber.utils.data import decode_indexes, data_to_tensors
+from advsber.utils.data import decode_indexes, data_to_tensors, generate_transaction_amounts
 from advsber.settings import MASK_TOKEN
 from advsber.utils.metrics import word_error_rate_on_sequences
-from advsber.models.masked_lm import MaskedLanguageModel
 from advsber.dataset_readers.transactions_reader import TransactionsDatasetReader
-from advsber.models.classifier import TransactionsClassifier
 from advsber.attackers.attacker import Attacker, AttackerOutput
 from advsber.settings import TransactionsData
 
@@ -24,11 +23,12 @@ class Position(str, Enum):
 class ConcatSamplingFool(SamplingFool):
     def __init__(
         self,
-        masked_lm: MaskedLanguageModel,
-        classifier: TransactionsClassifier,
+        masked_lm: Model,
+        classifier: Model,
         reader: TransactionsDatasetReader,
         position: Position = Position.END,
         num_tokens_to_add: int = 2,
+        total_amount: float = 5000,
         num_samples: int = 100,
         temperature: float = 1.0,
         device: int = -1,
@@ -43,6 +43,7 @@ class ConcatSamplingFool(SamplingFool):
         )
         self.position = position
         self.num_tokens_to_add = num_tokens_to_add
+        self.total_amount = total_amount
 
     @torch.no_grad()
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
@@ -51,10 +52,13 @@ class ConcatSamplingFool(SamplingFool):
         orig_prob = self.get_clf_probs(inputs_to_attack)[data_to_attack.label].item()
 
         adv_data = deepcopy(data_to_attack)
+        amounts = generate_transaction_amounts(self.total_amount, self.num_tokens_to_add)
         if self.position == Position.END:
             adv_data.transactions = adv_data.transactions + [MASK_TOKEN] * self.num_tokens_to_add
+            adv_data.amounts = adv_data.amounts + amounts
         elif self.position == Position.START:
             adv_data.transactions = [MASK_TOKEN] * self.num_tokens_to_add + adv_data.transactions
+            adv_data.amounts = amounts + adv_data.amounts
         else:
             raise NotImplementedError
 
@@ -75,11 +79,13 @@ class ConcatSamplingFool(SamplingFool):
 
         if self.position == Position.END:
             adversarial_sequences = [
-                data_to_attack.transactions + decode_indexes(idx, self.lm_model.vocab) for idx in indexes
+                data_to_attack.transactions +
+                decode_indexes(idx, self.lm_model.vocab, drop_start_end=False) for idx in indexes
             ]
         elif self.position == Position.START:
             adversarial_sequences = [
-                decode_indexes(idx, self.lm_model.vocab) + data_to_attack.transactions for idx in indexes
+                decode_indexes(idx, self.lm_model.vocab, drop_start_end=False) +
+                data_to_attack.transactions for idx in indexes
             ]
         else:
             raise NotImplementedError
@@ -89,7 +95,7 @@ class ConcatSamplingFool(SamplingFool):
             adv_data.transactions = adv_sequence
             adv_inputs = data_to_tensors(adv_data, self.reader, self.lm_model.vocab, self.device)
 
-            adv_prob = self.calculate_probs(adv_inputs)[data_to_attack.label].item()
+            adv_prob = self.get_clf_probs(adv_inputs)[data_to_attack.label].item()
 
             output = AttackerOutput(
                 data=data_to_attack,

@@ -2,14 +2,13 @@ from copy import deepcopy
 
 import torch
 from torch.distributions import Categorical
+from allennlp.models import Model
 
 from advsber.attackers.attacker import Attacker, AttackerOutput
 from advsber.settings import TransactionsData
 from advsber.utils.data import decode_indexes, data_to_tensors
 from advsber.utils.metrics import word_error_rate_on_sequences
-from advsber.models.masked_lm import MaskedLanguageModel
 from advsber.dataset_readers.transactions_reader import TransactionsDatasetReader
-from advsber.models.classifier import TransactionsClassifier
 
 
 @Attacker.register("sampling_fool")
@@ -20,8 +19,8 @@ class SamplingFool(Attacker):
 
     def __init__(
         self,
-        masked_lm: MaskedLanguageModel,
-        classifier: TransactionsClassifier,
+        masked_lm: Model,
+        classifier: Model,
         reader: TransactionsDatasetReader,
         num_samples: int = 100,
         temperature: float = 1.0,
@@ -39,13 +38,8 @@ class SamplingFool(Attacker):
         self.num_samples = num_samples
         self.temperature = temperature
 
-    # TODO: add typing
-    def get_clf_probs(self, inputs) -> torch.Tensor:
-        probs = self.classifier(inputs)["probs"][0]
-        return probs
-
     def get_lm_logits(self, inputs) -> torch.Tensor:
-        logits = self.lm_model(inputs)["logits"]
+        logits = self.lm_model(**inputs)["logits"]
         return logits
 
     @torch.no_grad()
@@ -64,7 +58,7 @@ class SamplingFool(Attacker):
             adv_data.transactions = adv_sequence
             adv_inputs = data_to_tensors(adv_data, self.reader, self.lm_model.vocab, self.device)
 
-            adv_probs = self.calculate_probs(adv_inputs)
+            adv_probs = self.get_clf_probs(adv_inputs)
             adv_prob = adv_probs[data_to_attack.label].item()
 
             output = AttackerOutput(
