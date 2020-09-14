@@ -18,9 +18,10 @@ Train BERT
 DISCRETIZER_PATH=./presets/age/discretizer_100_quantile \
     LM_TRAIN_DATA_PATH=./presets/age/sample.jsonl \
     LM_VALID_DATA_PATH=./presets/age/sample.jsonl \
-    allennlp train ./configs/language_models/bert.jsonnet \
+    allennlp train ./configs/language_models/bert_with_amounts.jsonnet \
     --serialization-dir ./logs/age/lm \
-    --include-package advsber
+    --include-package advsber \
+    -o '{"trainer.cuda_device": -1}'
 ```
 
 Train classifier
@@ -31,7 +32,8 @@ DISCRETIZER_PATH=./presets/age/discretizer_100_quantile \
     CLF_VALID_DATA_PATH=./presets/age/sample.jsonl \
     allennlp train ./configs/classifiers/gru_with_amounts.jsonnet \
     --serialization-dir ./logs/age/clf \
-    --include-package advsber
+    --include-package advsber \
+    -o '{"trainer.cuda_device": -1}'
 ```
 
 
