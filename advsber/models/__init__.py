@@ -1,2 +1,2 @@
 from .masked_lm import MaskedLanguageModel
-from .classifier import BasicClassifierOneHotSupport
+from .classifier import TransactionsClassifier
