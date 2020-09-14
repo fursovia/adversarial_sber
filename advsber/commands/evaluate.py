@@ -5,7 +5,12 @@ import pandas as pd
 import numpy as np
 
 from advsber.utils.data import load_jsonlines
-from advsber.utils.metrics import normalized_accuracy_drop, misclassification_error, probability_drop
+from advsber.utils.metrics import (
+    normalized_accuracy_drop,
+    amount_normalized_accuracy_drop,
+    misclassification_error,
+    probability_drop,
+)
 
 
 def main(output_path: str, save_to: str = typer.Option(None), visualize: bool = typer.Option(False)):
@@ -26,11 +31,18 @@ def main(output_path: str, save_to: str = typer.Option(None), visualize: bool = 
     mean_wer = float(np.mean(output["wer"]))
     typer.echo(f"Mean WER = {mean_wer:.2f}")
 
+    added_amounts = []
+    for _, row in output.iterrows():
+        added_amounts.append(sum(row["adversarial_data"]["amounts"]) - sum(row["data"]["amounts"]))
+
+    anad = amount_normalized_accuracy_drop(added_amounts, y_true=y_true, y_adv=y_adv)
+    typer.echo(f"aNAD-1000 = {anad:.2f}")
+
     if visualize:
         assert save_to is not None
 
     if save_to is not None:
-        metrics = {"NAD": nad, "ME": misclf_error, "PD": prob_drop, "Mean_WER": mean_wer}
+        metrics = {"NAD": nad, "ME": misclf_error, "PD": prob_drop, "Mean_WER": mean_wer, "aNAD-1000": anad}
 
         with open(save_to, "w") as f:
             json.dump(metrics, f, indent=4)

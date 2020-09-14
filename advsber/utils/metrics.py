@@ -51,3 +51,22 @@ def probability_drop(true_prob: List[float], adv_prob: List[float],) -> float:
         prob_diffs.append(tp - ap)
 
     return sum(prob_diffs) / len(prob_diffs)
+
+
+def amount_normalized_accuracy_drop(
+        added_amounts: List[float],
+        y_true: List[int],
+        y_adv: List[int],
+        target_amount: float = 1000.0
+) -> float:
+    assert len(y_true) == len(y_adv)
+    nads = []
+    for amount, lab, alab in zip(added_amounts, y_true, y_adv):
+        penalty = amount / target_amount
+        penalty = penalty if penalty > 1.0 else 1.0
+        if lab != alab:
+            nads.append(1 / penalty)
+        else:
+            nads.append(0.0)
+
+    return sum(nads) / len(nads)
