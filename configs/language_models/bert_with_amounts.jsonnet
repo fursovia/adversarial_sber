@@ -58,15 +58,15 @@
       "replace_probability": 0.1
     }
   },
-  "distributed": {
-    "master_address": "127.0.0.1",
-    "master_port": 29502,
-    "num_nodes": 1,
-    "cuda_devices": [
-      0,
-      1
-    ]
-  },
+//  "distributed": {
+//    "master_address": "127.0.0.1",
+//    "master_port": 29502,
+//    "num_nodes": 1,
+//    "cuda_devices": [
+//      0,
+//      1
+//    ]
+//  },
   "data_loader": {
     "batch_size": 1024,
     "shuffle": true,
@@ -77,6 +77,6 @@
   "trainer": {
     "num_epochs": 50,
     "patience": 2,
-//    "cuda_device": -1
+    "cuda_device": 0
   }
 }

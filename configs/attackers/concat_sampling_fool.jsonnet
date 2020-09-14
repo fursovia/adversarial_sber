@@ -20,8 +20,9 @@ local clf_path = std.extVar("CLF_PATH");
     },
     "position": "end",
     "num_tokens_to_add": 2,
+    "total_amount": 5000,
     "num_samples": 100,
     "temperature": 1.5,
-    "device": 0
+    "device": -1
   }
 }

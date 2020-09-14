@@ -25,9 +25,17 @@ def data_to_tensors(
     return move_to_device(inputs, device)
 
 
-def decode_indexes(indexes: torch.Tensor, vocab: Vocabulary, namespace="transactions") -> List[str]:
+def decode_indexes(
+        indexes: torch.Tensor,
+        vocab: Vocabulary,
+        namespace="transactions",
+        drop_start_end: bool = True,
+) -> List[str]:
     out = [vocab.get_token_from_index(idx.item(), namespace=namespace) for idx in indexes]
-    out = [o for o in out if o not in [START_TOKEN, END_TOKEN]]
+
+    if drop_start_end:
+        return out[1:-1]
+
     return out
 
 
