@@ -1,12 +1,18 @@
 from enum import Enum
+from copy import deepcopy
 
 import torch
 from torch.distributions import Categorical
 
 from advsber.attackers.sampling_fool import SamplingFool
-from advsber.attackers.attacker import AttackerOutput, Attacker
-from advsber.utils.data import sequence_to_tensors, decode_indexes, MASK_TOKEN
-from advsber.utils.metrics import word_error_rate
+from advsber.utils.data import decode_indexes, data_to_tensors
+from advsber.settings import MASK_TOKEN
+from advsber.utils.metrics import word_error_rate_on_sequences
+from advsber.models.masked_lm import MaskedLanguageModel
+from advsber.dataset_readers.transactions_reader import TransactionsDatasetReader
+from advsber.models.classifier import TransactionsClassifier
+from advsber.attackers.attacker import Attacker, AttackerOutput
+from advsber.settings import TransactionsData
 
 
 class Position(str, Enum):
@@ -18,8 +24,9 @@ class Position(str, Enum):
 class ConcatSamplingFool(SamplingFool):
     def __init__(
         self,
-        masked_lm_archive_path: str,
-        classifier_archive_path: str,
+        masked_lm: MaskedLanguageModel,
+        classifier: TransactionsClassifier,
+        reader: TransactionsDatasetReader,
         position: Position = Position.END,
         num_tokens_to_add: int = 2,
         num_samples: int = 100,
@@ -27,38 +34,40 @@ class ConcatSamplingFool(SamplingFool):
         device: int = -1,
     ) -> None:
         super().__init__(
-            masked_lm_archive_path=masked_lm_archive_path,
-            classifier_archive_path=classifier_archive_path,
+            masked_lm=masked_lm,
+            classifier=classifier,
+            reader=reader,
             num_samples=num_samples,
             temperature=temperature,
-            device=device,
+            device=device
         )
         self.position = position
         self.num_tokens_to_add = num_tokens_to_add
 
     @torch.no_grad()
-    def attack(self, sequence_to_attack: str, label_to_attack: int,) -> AttackerOutput:
-        original_sequence = sequence_to_attack
+    def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
+        inputs_to_attack = data_to_tensors(data_to_attack, self.reader, self.lm_model.vocab, self.device)
 
+        orig_prob = self.get_clf_probs(inputs_to_attack)[data_to_attack.label].item()
+
+        adv_data = deepcopy(data_to_attack)
         if self.position == Position.END:
-            sequence_to_attack = original_sequence + " " + " ".join([MASK_TOKEN] * self.num_tokens_to_add)
+            adv_data.transactions = adv_data.transactions + [MASK_TOKEN] * self.num_tokens_to_add
         elif self.position == Position.START:
-            sequence_to_attack = " ".join([MASK_TOKEN] * self.num_tokens_to_add) + " " + original_sequence
+            adv_data.transactions = [MASK_TOKEN] * self.num_tokens_to_add + adv_data.transactions
         else:
             raise NotImplementedError
 
-        orig_prob = self.calculate_probs(original_sequence)[label_to_attack].item()
+        adv_inputs = data_to_tensors(adv_data, self.reader, self.lm_model.vocab, self.device)
 
-        inputs = sequence_to_tensors(sequence_to_attack, self.reader, self.lm_model.vocab, self.device)
-        logits = self.lm_model(inputs)["logits"]
-
+        logits = self.get_lm_logits(adv_inputs)
         # drop start and end tokens
         logits = logits[:, 1:-1]
 
         if self.position == Position.END:
-            logits_to_sample = logits[:, -self.num_tokens_to_add :][0]
+            logits_to_sample = logits[:, -self.num_tokens_to_add:][0]
         elif self.position == Position.START:
-            logits_to_sample = logits[:, : self.num_tokens_to_add][0]
+            logits_to_sample = logits[:, :self.num_tokens_to_add][0]
         else:
             raise NotImplementedError
 
@@ -66,28 +75,29 @@ class ConcatSamplingFool(SamplingFool):
 
         if self.position == Position.END:
             adversarial_sequences = [
-                original_sequence + " " + decode_indexes(idx, self.lm_model.vocab) for idx in indexes
+                data_to_attack.transactions + decode_indexes(idx, self.lm_model.vocab) for idx in indexes
             ]
         elif self.position == Position.START:
             adversarial_sequences = [
-                decode_indexes(idx, self.lm_model.vocab) + " " + original_sequence for idx in indexes
+                decode_indexes(idx, self.lm_model.vocab) + data_to_attack.transactions for idx in indexes
             ]
         else:
             raise NotImplementedError
 
         outputs = []
         for adv_sequence in adversarial_sequences:
-            adv_probs = self.calculate_probs(adv_sequence)
-            adv_prob = adv_probs[label_to_attack].item()
+            adv_data.transactions = adv_sequence
+            adv_inputs = data_to_tensors(adv_data, self.reader, self.lm_model.vocab, self.device)
+
+            adv_prob = self.calculate_probs(adv_inputs)[data_to_attack.label].item()
+
             output = AttackerOutput(
-                sequence=original_sequence,
-                adversarial_sequence=adv_sequence,
+                data=data_to_attack,
+                adversarial_data=adv_data,
                 probability=orig_prob,
                 adversarial_probability=adv_prob,
-                attacked_label=label_to_attack,
-                adversarial_label=adv_probs.argmax().item(),
-                wer=word_error_rate(original_sequence, adv_sequence),
                 prob_diff=(orig_prob - adv_prob),
+                wer=word_error_rate_on_sequences(data_to_attack.transactions, adv_data.transactions)
             )
             outputs.append(output)
 
