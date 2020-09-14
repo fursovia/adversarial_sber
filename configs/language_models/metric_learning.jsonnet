@@ -38,7 +38,7 @@ local TOKEN_INDEXER = {
     }
    },
   "model": {
-    "type": "BasicClassifier",
+    "type": "metric_learning",
     "transactions_field_embedder": {
       "token_embedders": {
         "tokens": {
@@ -60,17 +60,21 @@ local TOKEN_INDEXER = {
       }
     },
     "seq2seq_encoder": {
-      "type": "cnn",
-      "embedding_dim": 256,
-      "num_filters": 8,
-      "ngram_filter_sizes": [3, 5]
+        "type": "rnn",
+        "input_size": 256,
+        "hidden_size": 128,
+        "num_layers": 1,
+        "dropout": 0.1,
+        "bidirectional": true
     },
     "tokens_masker": {
       "type": "tokens_masker",
       "mask_probability": 0.3,
       "replace_probability": 0.1
     },
-    "num_classes": std.parseInt(std.extVar("NUM_CLASSES"))
+    "num_classes": std.parseInt(std.extVar("NUM_CLASSES")),
+    "alpha": std.parseFloat(std.extVar("ALPHA")),
+    "beta": std.parseFloat(std.extVar("BETA"))
   },
   "data_loader": {
     "batch_size": 64
