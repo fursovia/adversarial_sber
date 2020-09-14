@@ -38,7 +38,7 @@ local TOKEN_INDEXER = {
     }
    },
   "model": {
-    "type": "metric_learning",
+    "type": "metric_learning_2",
     "transactions_field_embedder": {
       "token_embedders": {
         "tokens": {
