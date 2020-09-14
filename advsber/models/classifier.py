@@ -37,7 +37,7 @@ class TransactionsClassifier(Model):
     def forward(
             self,
             transactions: TextFieldTensors,
-            label: torch.Tensor,
+            label: Optional[torch.Tensor] = None,
             amounts: Optional[TextFieldTensors] = None,
             **kwargs,
     ) -> Dict[str, torch.Tensor]:
