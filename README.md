@@ -65,3 +65,10 @@ CUDA_VISIBLE_DEVICES="0" \
     PYTHONPATH=. python advsber/commands/attack.py configs/attackers/sampling_fool.jsonnet \
     --samples 500
 ```
+
+
+Evaluate attack
+
+```bash
+PYTHONPATH=. python advsber/commands/evaluate.py ./results/output.json
+```
