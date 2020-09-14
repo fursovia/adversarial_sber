@@ -8,17 +8,21 @@
   "train_data_path": std.extVar("LM_TRAIN_DATA_PATH"),
   "validation_data_path": std.extVar("LM_VALID_DATA_PATH"),
   "vocabulary": {
+    "type": "from_files",
+    "directory": std.extVar("VOCAB_PATH")
+  },
+//  "vocabulary": {
 //    "max_vocab_size": {
 //      "tokens": 50000
 //    },
-    "tokens_to_add": {
-      "transactions": [
-        "@@MASK@@",
-        "<START>",
-        "<END>"
-      ]
-    },
-  },
+//    "tokens_to_add": {
+//      "transactions": [
+//        "@@MASK@@",
+//        "<START>",
+//        "<END>"
+//      ]
+//    },
+//  },
   "model": {
     "type": "masked_lm",
     "transactions_field_embedder": {

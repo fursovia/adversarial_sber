@@ -8,18 +8,22 @@
   "train_data_path": std.extVar("CLF_TRAIN_DATA_PATH"),
   "validation_data_path": std.extVar("CLF_VALID_DATA_PATH"),
   "vocabulary": {
-    "tokens_to_add": {
-      "transactions": [
-        "@@MASK@@",
-        "<START>",
-        "<END>"
-      ],
-    "amounts": [
-        "<START>",
-        "<END>"
-      ]
-    },
+    "type": "from_files",
+    "directory": std.extVar("VOCAB_PATH")
   },
+//  "vocabulary": {
+//    "tokens_to_add": {
+//      "transactions": [
+//        "@@MASK@@",
+//        "<START>",
+//        "<END>"
+//      ],
+//    "amounts": [
+//        "<START>",
+//        "<END>"
+//      ]
+//    },
+//  },
   "model": {
     "type": "transactions_classifier",
     "transactions_field_embedder": {
