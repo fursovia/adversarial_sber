@@ -20,6 +20,6 @@ local clf_path = std.extVar("CLF_PATH");
     },
     "num_samples": 100,
     "temperature": 1.5,
-    "device": -1
+    "device": 0
   }
 }
