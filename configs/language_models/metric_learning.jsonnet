@@ -73,8 +73,8 @@ local TOKEN_INDEXER = {
       "replace_probability": 0.1
     },
     "num_classes": std.parseInt(std.extVar("NUM_CLASSES")),
-    "alpha": std.parseFloat(std.extVar("ALPHA")),
-    "beta": std.parseFloat(std.extVar("BETA"))
+    "alpha": std.parseInt(std.extVar("ALPHA")),
+    "beta": std.parseInt(std.extVar("BETA"))
   },
   "data_loader": {
     "batch_size": 64
