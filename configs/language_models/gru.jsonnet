@@ -35,7 +35,8 @@ local TOKEN_INDEXER = {
         "<START>",
         "<END>"
       ]
-    },
+    }
+   },
   "model": {
     "type": "BasicClassifier",
     "transactions_field_embedder": {
