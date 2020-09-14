@@ -21,6 +21,21 @@ local TOKEN_INDEXER = {
   },
   "train_data_path": std.extVar("LM_TRAIN_DATA_PATH"),
   "validation_data_path": std.extVar("LM_VALID_DATA_PATH"),
+  "vocabulary": {
+//    "max_vocab_size": {
+//      "tokens": 50000
+//    },
+    "tokens_to_add": {
+      "transactions": [
+        "@@MASK@@",
+        "<START>",
+        "<END>"
+      ],
+    "amounts": [
+        "<START>",
+        "<END>"
+      ]
+    },
   "model": {
     "type": "BasicClassifier",
     "transactions_field_embedder": {
@@ -50,6 +65,11 @@ local TOKEN_INDEXER = {
         "num_layers": 1,
         "dropout": 0.1,
         "bidirectional": true
+    }
+    "tokens_masker": {
+      "type": "tokens_masker",
+      "mask_probability": 0.3,
+      "replace_probability": 0.1
     }
   },
   "data_loader": {
