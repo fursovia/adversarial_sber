@@ -79,7 +79,7 @@ class metriclr_2(Model):
             amount_embeddings = self._amounts_field_embedder(amounts)
 
         transaction_embeddings = self._seq2seq_encoder_transactions(transaction_embeddings, mask=mask)
-        amount_embeddings = self._seq2seq_encoder_transactions(amount_embeddings)
+        amount_embeddings = self._seq2seq_encoder_transactions(amount_embeddings, mask=None)
 
         transaction_embeddings = torch.mean(transaction_embeddings, dim=1)
         amount_embeddings = torch.mean(amount_embeddings, dim=1)
