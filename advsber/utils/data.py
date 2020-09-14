@@ -5,42 +5,30 @@ import torch
 import pickle
 import jsonlines
 import numpy as np
-from allennlp.data import TextFieldTensors, Batch
+from allennlp.data import Batch
 from allennlp.nn.util import move_to_device
 from allennlp.data.dataset_readers import DatasetReader
 from allennlp.data.vocabulary import Vocabulary
 from sklearn.preprocessing import KBinsDiscretizer
 
-
-START_TOKEN = "<START>"
-END_TOKEN = "<END>"
-MASK_TOKEN = "@@MASK@@"
-
-
-def sequence_to_tensors(
-    sequence: str, reader: DatasetReader, vocab: Vocabulary, device: Union[torch.device, int] = -1,
-) -> TextFieldTensors:
-    instances = Batch([reader.text_to_instance(sequence)])
-
-    instances.index_instances(vocab)
-    inputs = instances.as_tensor_dict()["tokens"]
-    return move_to_device(inputs, device)
+from advsber.settings import START_TOKEN, END_TOKEN, TransactionsData
 
 
 def data_to_tensors(
-    data: Dict[str, Any], reader: DatasetReader, vocab: Vocabulary, device: Union[torch.device, int] = -1
+    data: TransactionsData, reader: DatasetReader, vocab: Vocabulary, device: Union[torch.device, int] = -1
 ):
-    instances = Batch([reader.text_to_instance(**data)])
+
+    instances = Batch([reader.text_to_instance(**data.to_dict())])
 
     instances.index_instances(vocab)
     inputs = instances.as_tensor_dict()
     return move_to_device(inputs, device)
 
 
-def decode_indexes(indexes: torch.Tensor, vocab: Vocabulary) -> str:
-    out = [vocab.get_token_from_index(idx.item()) for idx in indexes]
+def decode_indexes(indexes: torch.Tensor, vocab: Vocabulary, namespace="transactions") -> List[str]:
+    out = [vocab.get_token_from_index(idx.item(), namespace=namespace) for idx in indexes]
     out = [o for o in out if o not in [START_TOKEN, END_TOKEN]]
-    return " ".join(out)
+    return out
 
 
 def load_jsonlines(path: str) -> List[Dict[str, Any]]:

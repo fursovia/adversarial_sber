@@ -6,7 +6,7 @@ from allennlp.data.vocabulary import DEFAULT_OOV_TOKEN
 from allennlp.common.registrable import Registrable
 from allennlp.data import TextFieldTensors
 
-from advsber.utils.data import MASK_TOKEN
+from advsber.settings import MASK_TOKEN
 
 
 # TODO: should take start/end/unknown tokens into account

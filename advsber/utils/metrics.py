@@ -16,6 +16,16 @@ def word_error_rate(sequence_a: str, sequence_b: str) -> int:
     return lvs_distance("".join(w1), "".join(w2))
 
 
+@functools.lru_cache(maxsize=5000)
+def word_error_rate_on_sequences(sequence_a: List[int], sequence_b: List[int]) -> int:
+    sequence_a = list(map(str, sequence_a))
+    sequence_b = list(map(str, sequence_b))
+
+    sequence_a = " ".join(sequence_a)
+    sequence_b = " ".join(sequence_b)
+    return word_error_rate(sequence_a, sequence_b)
+
+
 def normalized_accuracy_drop(wers: List[int], y_true: List[int], y_adv: List[int], gamma: float = 1.0,) -> float:
     assert len(y_true) == len(y_adv)
     nads = []
