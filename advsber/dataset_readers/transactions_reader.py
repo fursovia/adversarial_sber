@@ -9,14 +9,12 @@ from allennlp.data.fields import TextField, LabelField
 from allennlp.data.instance import Instance
 from allennlp.data.token_indexers import SingleIdTokenIndexer
 from allennlp.data.tokenizers import WhitespaceTokenizer, Token
+from allennlp.models.archival import load_archive
 
 from advsber.utils.data import load_discretizer, transform_amounts
-
+from advsber.settings import START_TOKEN, END_TOKEN
 
 logger = logging.getLogger(__name__)
-
-START_TOKEN = "<START>"
-END_TOKEN = "<END>"
 
 
 @DatasetReader.register("transactions_reader")
@@ -57,10 +55,10 @@ class TransactionsDatasetReader(DatasetReader):
         }
 
         if label is not None:
-            fields["label"] = LabelField(label=label, skip_indexing=True)
+            fields["label"] = LabelField(label=str(label), skip_indexing=False)
 
         if client_id is not None:
-            fields["client_id"] = LabelField(label=client_id, skip_indexing=True)
+            fields["client_id"] = LabelField(label=client_id, skip_indexing=True, label_namespace="client_id")
 
         return Instance(fields)
 
@@ -90,3 +88,12 @@ class TransactionsDatasetReader(DatasetReader):
             logger.info(f"No instances dropped from {file_path}.")
         else:
             logger.warning(f"Dropped {dropped_instances} instances from {file_path}.")
+
+    @classmethod
+    def from_archive(cls, archive_file: str) -> "TransactionsDatasetReader":
+        config = load_archive(archive_file).config["dataset_reader"]
+        assert config.pop("type") == "transactions_reader"
+        return cls(**config)
+
+
+TransactionsDatasetReader.register("from_archive", constructor="from_archive")(TransactionsDatasetReader)
