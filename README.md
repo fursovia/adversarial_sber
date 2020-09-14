@@ -10,32 +10,47 @@ poetry install
 poetry shell
 ```
 
+## Data
+
+```text
+.
+├── lm
+│   ├── train.jsonl
+│   └── valid.jsonl
+├── substitute_clf
+│   ├── train.jsonl
+│   └── valid.jsonl
+├── target_clf
+│   ├── train.jsonl
+│   └── valid.jsonl
+└── test.jsonl
+```
+
 ### Training 
 
-Train BERT
+Train vanilla BERT (w/o amounts)
 
 ```bash
-DISCRETIZER_PATH=./presets/age/discretizer_100_quantile \
-    LM_TRAIN_DATA_PATH=./presets/age/sample.jsonl \
-    LM_VALID_DATA_PATH=./presets/age/sample.jsonl \
-    allennlp train ./configs/language_models/bert_with_amounts.jsonnet \
-    --serialization-dir ./logs/age/lm \
-    --include-package advsber \
-    -o '{"trainer.cuda_device": -1}'
+CUDA_VISIBLE_DEVICES="0" bash bin/train_lm.sh bert ./presets/age
 ```
 
-Train classifier
+Train BERT (w/ amounts)
 
 ```bash
-DISCRETIZER_PATH=./presets/age/discretizer_100_quantile \
-    CLF_TRAIN_DATA_PATH=./presets/age/sample.jsonl \
-    CLF_VALID_DATA_PATH=./presets/age/sample.jsonl \
-    allennlp train ./configs/classifiers/gru_with_amounts.jsonnet \
-    --serialization-dir ./logs/age/clf \
-    --include-package advsber \
-    -o '{"trainer.cuda_device": -1}'
+CUDA_VISIBLE_DEVICES="0" bash bin/train_lm.sh bert_with_amounts ./presets/age
 ```
 
+Train substitute classifier
+
+```bash
+CUDA_VISIBLE_DEVICES="0" bash bin/train_clf.sh gru_with_amounts ./presets/age substitute
+```
+
+Train target classifier
+
+```bash
+CUDA_VISIBLE_DEVICES="0" bash bin/train_clf.sh gru_with_amounts ./presets/age target
+```
 
 ### Attacking
 
