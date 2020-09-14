@@ -23,7 +23,7 @@ def main(output_path: str, save_to: str = typer.Option(None), visualize: bool = 
     prob_drop = probability_drop(true_prob=output["probability"], adv_prob=output["adversarial_probability"])
     typer.echo(f"Probability drop = {prob_drop:.2f}")
     
-    mean_wer = float(np.mean(np.array(output["wer"])))
+    mean_wer = float(np.mean(output["wer"]))
     typer.echo(f"Mean WER = {mean_wer:.2f}")
 
     if visualize:
