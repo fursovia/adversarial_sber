@@ -23,6 +23,17 @@ DISCRETIZER_PATH=./presets/age/discretizer_100_quantile \
     --include-package advsber
 ```
 
+Train classifier
+
+```bash
+DISCRETIZER_PATH=./presets/age/discretizer_100_quantile \
+    CLF_TRAIN_DATA_PATH=./presets/age/sample.jsonl \
+    CLF_VALID_DATA_PATH=./presets/age/sample.jsonl \
+    allennlp train ./configs/classifiers/gru_with_amounts.jsonnet \
+    --serialization-dir ./logs/age/clf \
+    --include-package advsber
+```
+
 
 ### Attacking
 
