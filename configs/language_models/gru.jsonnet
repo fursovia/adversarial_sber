@@ -65,7 +65,7 @@ local TOKEN_INDEXER = {
         "num_layers": 1,
         "dropout": 0.1,
         "bidirectional": true
-    }
+    },
     "tokens_masker": {
       "type": "tokens_masker",
       "mask_probability": 0.3,
@@ -76,13 +76,6 @@ local TOKEN_INDEXER = {
   "data_loader": {
     "batch_size": 64
   },
-//  "distributed": {
-//    "master_port": 29555,
-//    "cuda_devices": [
-//      0,
-//      1
-//    ]
-//  },
   "trainer": {
     "num_epochs": 50,
     "patience": 2,
