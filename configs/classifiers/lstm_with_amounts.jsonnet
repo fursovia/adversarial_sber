@@ -47,7 +47,7 @@
       }
     },
     "seq2seq_encoder": {
-      "type": "gru",
+      "type": "lstm",
       "input_size": 128,
       "hidden_size": 128,
       "num_layers": 1,
