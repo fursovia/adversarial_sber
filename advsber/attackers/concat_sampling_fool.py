@@ -49,7 +49,7 @@ class ConcatSamplingFool(SamplingFool):
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
         inputs_to_attack = data_to_tensors(data_to_attack, self.reader, self.lm_model.vocab, self.device)
 
-        orig_prob = self.get_clf_probs(inputs_to_attack)[data_to_attack.label].item()
+        orig_prob = self.get_clf_probs(inputs_to_attack)[self.label_to_index(data_to_attack.label)].item()
 
         adv_data = deepcopy(data_to_attack)
         amounts = generate_transaction_amounts(self.total_amount, self.num_tokens_to_add)
@@ -99,7 +99,7 @@ class ConcatSamplingFool(SamplingFool):
             adv_label = self.probs_to_label(adv_probs)
             adv_data.label = adv_label
 
-            adv_prob = adv_probs[data_to_attack.label].item()
+            adv_prob = adv_probs[self.label_to_index(data_to_attack.label)].item()
 
             output = AttackerOutput(
                 data=data_to_attack.to_dict(),
