@@ -70,14 +70,13 @@ local TOKEN_INDEXER = {
           5
         ]
     },
-    },
     "tokens_masker": {
       "type": "tokens_masker",
       "mask_probability": 0.3,
       "replace_probability": 0.1
     },
     "num_classes": std.parseInt(std.extVar("NUM_CLASSES"))
-  }
+  },
   "data_loader": {
     "batch_size": 64
   },
