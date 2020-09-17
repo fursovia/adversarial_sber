@@ -77,7 +77,7 @@ local TOKEN_INDEXER = {
       "replace_probability": 0.1
     },
     "num_classes": std.parseInt(std.extVar("NUM_CLASSES"))
-  },
+  }
   "data_loader": {
     "batch_size": 64
   },
