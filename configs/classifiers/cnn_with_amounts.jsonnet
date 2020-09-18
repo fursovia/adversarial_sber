@@ -49,11 +49,13 @@
     "seq2vec_encoder": {
         "type": "cnn",
         "embedding_dim": 200,
-        "num_filters": 8,
+        "num_filters": 10,
         "ngram_filter_sizes": [
           3,
-          5
-        ]
+          3,
+          3
+        ],
+        "conv_layer_activation" : "relu"
     },
     },
     "data_loader": {
