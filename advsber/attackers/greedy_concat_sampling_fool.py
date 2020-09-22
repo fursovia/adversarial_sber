@@ -30,22 +30,17 @@ class GreedyConcatSamplingFool(Attacker):
             temperature: float = 1.0,
             device: int = -1,
     ) -> None:
-        super().__init__(classifier, reader)
-
-        self.lm_model = masked_lm
-        self.lm_model._tokens_masker = None
-        self.lm_model.eval()
-
-        if self.device >= 0 and torch.cuda.is_available():
-            self.lm_model.cuda(self.device)
+        super().__init__(classifier = classifier,
+                         reader = reader,
+                         device = device)
 
         self.total_amount = total_amount
         self.num_tokens_to_add = num_tokens_to_add
 
-        self.attacker = ConcatSamplingFool(masked_lm,
-                                        classifier,
-                                        reader,
-                                        position,
+        self.attacker = ConcatSamplingFool(masked_lm=masked_lm,
+                                        classifier=classifier,
+                                        reader=reader,
+                                        position=position,
                                         num_tokens_to_add=1,
                                         total_amount=0.0,
                                         num_samples=num_samples,
@@ -55,7 +50,7 @@ class GreedyConcatSamplingFool(Attacker):
 
     @torch.no_grad()
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
-        inputs_to_attack = data_to_tensors(data_to_attack, self.reader, self.lm_model.vocab, self.device)
+        inputs_to_attack = data_to_tensors(data_to_attack, self.reader, self.attacker.lm_model.vocab, self.device)
         orig_prob = self.get_clf_probs(inputs_to_attack)[self.label_to_index(data_to_attack.label)].item()
 
         adv_data = deepcopy(data_to_attack)
@@ -63,7 +58,7 @@ class GreedyConcatSamplingFool(Attacker):
 
         for amount in amounts:
             self.attacker.total_amount = amount
-            adv_data = data_to_tensors(adv_data, self.reader, self.lm_model.vocab, self.device)
+            adv_data = data_to_tensors(adv_data, self.reader, self.attacker.lm_model.vocab, self.device)
             output = self.attacker.attack(adv_data)
             adv_data = output.to_dict()['data']
             adv_data = TransactionsData(**adv_data)
