@@ -24,7 +24,12 @@ class AttackerOutput:
 
 
 class Attacker(ABC, Registrable):
-    def __init__(self, classifier: Model, reader: TransactionsDatasetReader, device: int = -1,) -> None:
+    def __init__(
+        self,
+        classifier: Model,
+        reader: TransactionsDatasetReader,
+        device: int = -1,
+    ) -> None:
         self.classifier = classifier
         self.classifier.eval()
         self.reader = reader
