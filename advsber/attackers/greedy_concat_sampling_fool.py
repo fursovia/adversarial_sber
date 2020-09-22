@@ -13,11 +13,7 @@ from advsber.dataset_readers.transactions_reader import TransactionsDatasetReade
 from advsber.attackers.attacker import Attacker, AttackerOutput
 from advsber.settings import TransactionsData
 from advsber.attackers.concat_sampling_fool import ConcatSamplingFool
-
-
-class Position(str, Enum):
-    START = "start"
-    END = "end"
+from advsber.attackers.concat_sampling_fool import Position
 
 
 @Attacker.register("greedy_concat_sampling_fool")
@@ -42,14 +38,17 @@ class GreedyConcatSamplingFool(SamplingFool):
             temperature=temperature,
             device=device
         )
-        self.position = position
-        self.num_tokens_to_add = num_tokens_to_add
         self.total_amount = total_amount
-        self.attacker = self.attacker(masked_lm=self.lm_model,
-                                     classifier=self.classifier,
-                                     num_tokens_to_add=1,
-                                     reader=self.reader,
-                                     device=self.device)
+        self.attacker = ConcatSamplingFool(masked_lm,
+                                        classifier,
+                                        reader,
+                                        position,
+                                        num_tokens_to_add=1,
+                                        total_amount=0.0,
+                                        num_samples=num_samples,
+                                        temperature=temperature,
+                                        device=device
+                                    )
 
     @torch.no_grad()
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
