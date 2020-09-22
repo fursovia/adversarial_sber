@@ -22,10 +22,11 @@ class TestTransactionAttackers:
                     ext_vars={
                         "DATA_PATH": "",
                         "OUTPUT_PATH": "",
-                        "CLF_PATH": str(PROJECT_ROOT / "presets/age/clf.model.tar.gz"),
+                        "CLF_PATH": str(PROJECT_ROOT / "presets/age/gru_age_target_clf.tar.gz"),
                         "MASKED_LM_PATH": str(PROJECT_ROOT / "presets/age/lm.model.tar.gz"),
                     },
                 )
+                params["attacker"]["device"] = -1
                 attacker = advsber.Attacker.from_params(params["attacker"])
             except Exception as e:
                 raise AssertionError(f"unable to load params from {config_path}, because {e}")
