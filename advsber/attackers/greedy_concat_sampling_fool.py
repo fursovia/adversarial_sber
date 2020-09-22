@@ -47,71 +47,77 @@ class GreedyConcatSamplingFool(SamplingFool):
 
     @torch.no_grad()
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
+
         inputs_to_attack = data_to_tensors(data_to_attack, self.reader, self.lm_model.vocab, self.device)
 
         orig_prob = self.get_clf_probs(inputs_to_attack)[self.label_to_index(data_to_attack.label)].item()
 
         adv_data = deepcopy(data_to_attack)
         amounts = generate_transaction_amounts(self.total_amount, self.num_tokens_to_add)
-        if self.position == Position.END:
-            adv_data.transactions = adv_data.transactions + [MASK_TOKEN] * self.num_tokens_to_add
-            adv_data.amounts = adv_data.amounts + amounts
-        elif self.position == Position.START:
-            adv_data.transactions = [MASK_TOKEN] * self.num_tokens_to_add + adv_data.transactions
-            adv_data.amounts = amounts + adv_data.amounts
-        else:
-            raise NotImplementedError
 
-        adv_inputs = data_to_tensors(adv_data, self.reader, self.lm_model.vocab, self.device)
+        for amount in amounts:
+            if self.position == Position.END:
+                adv_data.transactions = adv_data.transactions + [MASK_TOKEN]
+                adv_data.amounts = adv_data.amounts + [amount]
+            elif self.position == Position.START:
+                adv_data.transactions = [MASK_TOKEN] + adv_data.transactions
+                adv_data.amounts = [amount] + adv_data.amounts
+            else:
+                raise NotImplementedError
 
-        logits = self.get_lm_logits(adv_inputs)
-        # drop start and end tokens
-        logits = logits[:, 1:-1]
-
-        if self.position == Position.END:
-            logits_to_sample = logits[:, -self.num_tokens_to_add:][0]
-        elif self.position == Position.START:
-            logits_to_sample = logits[:, :self.num_tokens_to_add][0]
-        else:
-            raise NotImplementedError
-
-        indexes = Categorical(logits=logits_to_sample / self.temperature).sample((self.num_samples,))
-
-        if self.position == Position.END:
-            adversarial_sequences = [
-                data_to_attack.transactions +
-                decode_indexes(idx, self.lm_model.vocab, drop_start_end=False) for idx in indexes
-            ]
-        elif self.position == Position.START:
-            adversarial_sequences = [
-                decode_indexes(idx, self.lm_model.vocab, drop_start_end=False) +
-                data_to_attack.transactions for idx in indexes
-            ]
-        else:
-            raise NotImplementedError
-
-        outputs = []
-        for adv_sequence in adversarial_sequences:
-            adv_data.transactions = adv_sequence
             adv_inputs = data_to_tensors(adv_data, self.reader, self.lm_model.vocab, self.device)
 
-            adv_probs = self.get_clf_probs(adv_inputs)
-            adv_label = self.probs_to_label(adv_probs)
-            adv_data.label = adv_label
+            logits = self.get_lm_logits(adv_inputs)
+            # drop start and end tokens
+            logits = logits[:, 1:-1]
 
-            adv_prob = adv_probs[self.label_to_index(data_to_attack.label)].item()
+            if self.position == Position.END:
+                logits_to_sample = logits[:, -1:][0]
+            elif self.position == Position.START:
+                logits_to_sample = logits[:, :1][0]
+            else:
+                raise NotImplementedError
 
-            output = AttackerOutput(
-                data=data_to_attack.to_dict(),
-                adversarial_data=adv_data.to_dict(),
-                probability=orig_prob,
-                adversarial_probability=adv_prob,
-                prob_diff=(orig_prob - adv_prob),
-                wer=word_error_rate_on_sequences(data_to_attack.transactions, adv_data.transactions)
-            )
-            outputs.append(output)
+            indexes = Categorical(logits=logits_to_sample / self.temperature).sample((self.num_samples,))
 
-        best_output = self.find_best_attack(outputs)
-        # we don't need history here actually
-        # best_output.history = [deepcopy(o.__dict__) for o in outputs]
+            if self.position == Position.END:
+                adversarial_sequences = [
+                    data_to_attack.transactions +
+                    decode_indexes(idx, self.lm_model.vocab, drop_start_end=False) for idx in indexes
+                ]
+            elif self.position == Position.START:
+                adversarial_sequences = [
+                    decode_indexes(idx, self.lm_model.vocab, drop_start_end=False) +
+                    data_to_attack.transactions for idx in indexes
+                ]
+            else:
+                raise NotImplementedError
+
+            outputs = []
+            for adv_sequence in adversarial_sequences:
+                adv_data.transactions = adv_sequence
+                adv_inputs = data_to_tensors(adv_data, self.reader, self.lm_model.vocab, self.device)
+
+                adv_probs = self.get_clf_probs(adv_inputs)
+                adv_label = self.probs_to_label(adv_probs)
+                adv_data.label = adv_label
+
+                adv_prob = adv_probs[self.label_to_index(data_to_attack.label)].item()
+
+                output = AttackerOutput(
+                    data=data_to_attack.to_dict(),
+                    adversarial_data=adv_data.to_dict(),
+                    probability=orig_prob,
+                    adversarial_probability=adv_prob,
+                    prob_diff=(orig_prob - adv_prob),
+                    wer=word_error_rate_on_sequences(data_to_attack.transactions, adv_data.transactions)
+                )
+                outputs.append(output)
+
+            best_output = self.find_best_attack(outputs)
+            adv_data = best_output.to_dict()['data']
+            adv_data = TransactionsData(**adv_data)
+            # we don't need history here actually
+            # best_output.history = [deepcopy(o.__dict__) for o in outputs]
         return best_output
+
