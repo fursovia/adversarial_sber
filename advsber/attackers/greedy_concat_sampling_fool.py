@@ -23,16 +23,16 @@ class Position(str, Enum):
 @Attacker.register("greedy_concat_sampling_fool")
 class GreedyConcatSamplingFool(SamplingFool):
     def __init__(
-        self,
-        masked_lm: Model,
-        classifier: Model,
-        reader: TransactionsDatasetReader,
-        position: Position = Position.END,
-        num_tokens_to_add: int = 2,
-        total_amount: float = 5000,
-        num_samples: int = 100,
-        temperature: float = 1.0,
-        device: int = -1,
+            self,
+            masked_lm: Model,
+            classifier: Model,
+            reader: TransactionsDatasetReader,
+            position: Position = Position.END,
+            num_tokens_to_add: int = 2,
+            total_amount: float = 5000,
+            num_samples: int = 100,
+            temperature: float = 1.0,
+            device: int = -1,
     ) -> None:
         super().__init__(
             masked_lm=masked_lm,
@@ -45,19 +45,21 @@ class GreedyConcatSamplingFool(SamplingFool):
         self.position = position
         self.num_tokens_to_add = num_tokens_to_add
         self.total_amount = total_amount
-        self.attacker = ConcatSamplingFool(masked_lm=self.lm_model,
-                                           classifier=self.classifier,
-                                           num_tokens_to_add=1,
-                                           reader=self.reader)
+        self.attacker = ConcatSamplingFool
 
     @torch.no_grad()
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
-
         adv_data = deepcopy(data_to_attack)
         amounts = generate_transaction_amounts(self.total_amount, self.num_tokens_to_add)
 
         for amount in amounts:
-            attacker = self.attacker(total_amount=amount)
+            attacker = self.attacker(masked_lm=self.lm_model,
+                                     classifier=self.classifier,
+                                     num_tokens_to_add=1,
+                                     reader=self.reader,
+                                     total_amount=amount,
+                                     device=self.device)
+
             output = attacker.attack(adv_data)
             adv_data = output.to_dict()['data']
             adv_data = TransactionsData(**adv_data)
