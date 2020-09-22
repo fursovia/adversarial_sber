@@ -17,7 +17,7 @@ from advsber.attackers.concat_sampling_fool import Position
 
 
 @Attacker.register("greedy_concat_sampling_fool")
-class GreedyConcatSamplingFool(SamplingFool):
+class GreedyConcatSamplingFool(Attacker):
     def __init__(
             self,
             masked_lm: Model,
@@ -30,14 +30,8 @@ class GreedyConcatSamplingFool(SamplingFool):
             temperature: float = 1.0,
             device: int = -1,
     ) -> None:
-        super().__init__(
-            masked_lm=masked_lm,
-            classifier=classifier,
-            reader=reader,
-            num_samples=num_samples,
-            temperature=temperature,
-            device=device
-        )
+        super().__init__(classifier, reader)
+
         self.total_amount = total_amount
         self.attacker = ConcatSamplingFool(masked_lm,
                                         classifier,
