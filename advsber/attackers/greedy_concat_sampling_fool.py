@@ -57,7 +57,7 @@ class GreedyConcatSamplingFool(SamplingFool):
 
         for amount in amounts:
             attacker = ConcatSamplingFool(
-                masked_lm=self.masked_lm,
+                masked_lm=self.lm_model,
                 classifier=self.classifier,
                 num_tokens_to_add=1,
                 total_amount=amount,
