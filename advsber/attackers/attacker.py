@@ -24,13 +24,7 @@ class AttackerOutput:
 
 
 class Attacker(ABC, Registrable):
-
-    def __init__(
-        self,
-        classifier: Model,
-        reader: TransactionsDatasetReader,
-        device: int = -1,
-    ) -> None:
+    def __init__(self, classifier: Model, reader: TransactionsDatasetReader, device: int = -1,) -> None:
         self.classifier = classifier
         self.classifier.eval()
         self.reader = reader
@@ -54,15 +48,11 @@ class Attacker(ABC, Registrable):
         return label
 
     def index_to_label(self, label_idx: int) -> int:
-        label = self.classifier.vocab.get_index_to_token_vocabulary("labels").get(
-            label_idx, str(label_idx)
-        )
+        label = self.classifier.vocab.get_index_to_token_vocabulary("labels").get(label_idx, str(label_idx))
         return int(label)
 
     def label_to_index(self, label: int) -> int:
-        label_idx = self.classifier.vocab.get_token_to_index_vocabulary("labels").get(
-            str(label), label
-        )
+        label_idx = self.classifier.vocab.get_token_to_index_vocabulary("labels").get(str(label), label)
         return label_idx
 
     @staticmethod

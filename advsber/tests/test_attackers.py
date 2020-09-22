@@ -12,20 +12,21 @@ CONFIG_DIR = PROJECT_ROOT / "configs"
 
 
 class TestTransactionAttackers:
-
     def test_from_params(self):
         data = load_jsonlines(str(PROJECT_ROOT / "presets/age/sample.jsonl"))
 
         for config_path in (CONFIG_DIR / "attackers").glob("*.jsonnet"):
             try:
                 params = Params.from_file(
-                    str(config_path), ext_vars={
+                    str(config_path),
+                    ext_vars={
                         "DATA_PATH": "",
                         "OUTPUT_PATH": "",
-                        "CLF_PATH": str(PROJECT_ROOT / "presets/age/models/target_clf/gru_target_age.tar.gz"),
-                        "MASKED_LM_PATH": str(PROJECT_ROOT / "presets/age/models/lm/lm.model.tar.gz")
-                    }
+                        "CLF_PATH": str(PROJECT_ROOT / "presets/age/gru_age_target_clf.tar.gz"),
+                        "MASKED_LM_PATH": str(PROJECT_ROOT / "presets/age/lm.model.tar.gz"),
+                    },
                 )
+                params["attacker"]["device"] = -1
                 attacker = advsber.Attacker.from_params(params["attacker"])
             except Exception as e:
                 raise AssertionError(f"unable to load params from {config_path}, because {e}")

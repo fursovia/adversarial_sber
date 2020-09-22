@@ -39,7 +39,7 @@ class ConcatSamplingFool(SamplingFool):
             reader=reader,
             num_samples=num_samples,
             temperature=temperature,
-            device=device
+            device=device,
         )
         self.position = position
         self.num_tokens_to_add = num_tokens_to_add
@@ -69,9 +69,9 @@ class ConcatSamplingFool(SamplingFool):
         logits = logits[:, 1:-1]
 
         if self.position == Position.END:
-            logits_to_sample = logits[:, -self.num_tokens_to_add:][0]
+            logits_to_sample = logits[:, -self.num_tokens_to_add :][0]
         elif self.position == Position.START:
-            logits_to_sample = logits[:, :self.num_tokens_to_add][0]
+            logits_to_sample = logits[:, : self.num_tokens_to_add][0]
         else:
             raise NotImplementedError
 
@@ -79,13 +79,13 @@ class ConcatSamplingFool(SamplingFool):
 
         if self.position == Position.END:
             adversarial_sequences = [
-                data_to_attack.transactions +
-                decode_indexes(idx, self.lm_model.vocab, drop_start_end=False) for idx in indexes
+                data_to_attack.transactions + decode_indexes(idx, self.lm_model.vocab, drop_start_end=False)
+                for idx in indexes
             ]
         elif self.position == Position.START:
             adversarial_sequences = [
-                decode_indexes(idx, self.lm_model.vocab, drop_start_end=False) +
-                data_to_attack.transactions for idx in indexes
+                decode_indexes(idx, self.lm_model.vocab, drop_start_end=False) + data_to_attack.transactions
+                for idx in indexes
             ]
         else:
             raise NotImplementedError
@@ -107,7 +107,7 @@ class ConcatSamplingFool(SamplingFool):
                 probability=orig_prob,
                 adversarial_probability=adv_prob,
                 prob_diff=(orig_prob - adv_prob),
-                wer=word_error_rate_on_sequences(data_to_attack.transactions, adv_data.transactions)
+                wer=word_error_rate_on_sequences(data_to_attack.transactions, adv_data.transactions),
             )
             outputs.append(output)
 
