@@ -33,6 +33,8 @@ class GreedyConcatSamplingFool(Attacker):
         super().__init__(classifier, reader)
 
         self.total_amount = total_amount
+        self.num_tokens_to_add = num_tokens_to_add
+
         self.attacker = ConcatSamplingFool(masked_lm,
                                         classifier,
                                         reader,
