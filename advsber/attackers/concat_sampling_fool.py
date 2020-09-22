@@ -115,7 +115,8 @@ class ConcatSamplingFool(SamplingFool):
                 outputs.append(output)
 
             best_output = self.find_best_attack(outputs)
-            adv_data = deepcopy(best_output)
+            adv_data = best_output.to_dict()['data']
+            adv_data = TransactionsData(**adv_data)
             # we don't need history here actually
             # best_output.history = [deepcopy(o.__dict__) for o in outputs]
         return best_output
