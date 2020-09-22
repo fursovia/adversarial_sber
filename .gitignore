@@ -4,4 +4,7 @@
 .idea
 *.egg-info
 *.ipynb
-
+.cache/
+data
+logs
+results
