@@ -19,7 +19,7 @@ class Position(str, Enum):
     END = "end"
 
 
-@Attacker.register("concat_sampling_fool")
+@Attacker.register("greedy_concat_sampling_fool")
 class ConcatSamplingFool(SamplingFool):
     def __init__(
         self,
