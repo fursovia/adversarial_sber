@@ -45,8 +45,9 @@ class GreedyConcatSamplingFool(SamplingFool):
         self.position = position
         self.num_tokens_to_add = num_tokens_to_add
         self.total_amount = total_amount
-        self.masked_lm = masked_lm
-        self.classifier = classifier
+        #self.masked_lm = masked_lm
+        #self.classifier = classifier
+        #self.reader = reader
 
     @torch.no_grad()
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
@@ -59,7 +60,8 @@ class GreedyConcatSamplingFool(SamplingFool):
                 masked_lm=self.masked_lm,
                 classifier=self.classifier,
                 num_tokens_to_add=1,
-                total_amount=amount
+                total_amount=amount,
+                reader=self.reader
             )
             output = attacker.attack(adv_data)
             adv_data = output.to_dict()['data']
