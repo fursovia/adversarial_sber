@@ -59,7 +59,7 @@ class GreedyConcatSamplingFool(Attacker):
         for amount in amounts:
             self.attacker.total_amount = amount
             output = self.attacker.attack(adv_data)
-            adv_data = output.to_dict().adversarial_data
+            adv_data = output.to_dict()['adversarial_data']
             adv_data = TransactionsData(**adv_data)
 
         adv_inputs = data_to_tensors(adv_data, self.reader, self.attacker.lm_model.vocab, self.device)
