@@ -48,15 +48,29 @@ class GreedyConcatSamplingFool(Attacker):
 
     @torch.no_grad()
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
+        inputs_to_attack = data_to_tensors(data_to_attack, self.reader, self.lm_model.vocab, self.device)
+        orig_prob = self.get_clf_probs(inputs_to_attack)[self.label_to_index(data_to_attack.label)].item()
+
         adv_data = deepcopy(data_to_attack)
         amounts = generate_transaction_amounts(self.total_amount, self.num_tokens_to_add)
 
         for amount in amounts:
             self.attacker.total_amount = amount
-
             output = self.attacker.attack(adv_data)
             adv_data = output.to_dict()['data']
             adv_data = TransactionsData(**adv_data)
 
+        adv_inputs = data_to_tensors(adv_data, self.reader, self.lm_model.vocab, self.device)
+        adv_probs = self.get_clf_probs(adv_inputs)
+        adv_prob = adv_probs[self.label_to_index(data_to_attack.label)].item()
+
+        output = AttackerOutput(
+            data=data_to_attack.to_dict(),
+            adversarial_data=adv_data.to_dict(),
+            probability=orig_prob,
+            adversarial_probability=adv_prob,
+            prob_diff=(orig_prob - adv_prob),
+            wer=word_error_rate_on_sequences(data_to_attack.transactions, adv_data.transactions),
+        )
         return output
 
