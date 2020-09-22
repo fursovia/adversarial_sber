@@ -33,6 +33,8 @@ class GreedyConcatSamplingFool(Attacker):
         super().__init__(classifier, reader)
 
         self.lm_model = masked_lm
+        self.lm_model._tokens_masker = None
+        self.lm_model.eval()
 
         if self.device >= 0 and torch.cuda.is_available():
             self.lm_model.cuda(self.device)
