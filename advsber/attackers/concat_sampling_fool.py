@@ -55,7 +55,6 @@ class ConcatSamplingFool(SamplingFool):
         adv_data = deepcopy(data_to_attack)
         amounts = generate_transaction_amounts(self.total_amount, self.num_tokens_to_add)
 
-
         for amount in amounts:
             if self.position == Position.END:
                 adv_data.transactions = adv_data.transactions + [MASK_TOKEN]
