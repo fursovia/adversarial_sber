@@ -22,8 +22,8 @@ class TestTransactionAttackers:
                     str(config_path), ext_vars={
                         "DATA_PATH": "",
                         "OUTPUT_PATH": "",
-                        "CLF_PATH": str(PROJECT_ROOT / "presets/age/clf.model.tar.gz"),
-                        "MASKED_LM_PATH": str(PROJECT_ROOT / "presets/age/lm.model.tar.gz")
+                        "CLF_PATH": str(PROJECT_ROOT / "presets/age/model/gru_target_age.tar.gz"),
+                        "MASKED_LM_PATH": str(PROJECT_ROOT / "presets/age/models/lm/lm.model.tar.gz")
                     }
                 )
                 attacker = advsber.Attacker.from_params(params["attacker"])
