@@ -69,7 +69,7 @@ class SamplingFool(Attacker):
                 probability=orig_prob,
                 adversarial_probability=adv_prob,
                 prob_diff=(orig_prob - adv_prob),
-                wer=word_error_rate_on_sequences(data_to_attack.transactions, adv_data.transactions)
+                wer=word_error_rate_on_sequences(data_to_attack.transactions, adv_data.transactions),
             )
             outputs.append(output)
 

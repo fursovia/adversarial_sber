@@ -12,19 +12,19 @@ CONFIG_DIR = PROJECT_ROOT / "configs"
 
 
 class TestTransactionAttackers:
-
     def test_from_params(self):
         data = load_jsonlines(str(PROJECT_ROOT / "presets/age/sample.jsonl"))
 
         for config_path in (CONFIG_DIR / "attackers").glob("*.jsonnet"):
             try:
                 params = Params.from_file(
-                    str(config_path), ext_vars={
+                    str(config_path),
+                    ext_vars={
                         "DATA_PATH": "",
                         "OUTPUT_PATH": "",
                         "CLF_PATH": str(PROJECT_ROOT / "presets/age/clf.model.tar.gz"),
-                        "MASKED_LM_PATH": str(PROJECT_ROOT / "presets/age/lm.model.tar.gz")
-                    }
+                        "MASKED_LM_PATH": str(PROJECT_ROOT / "presets/age/lm.model.tar.gz"),
+                    },
                 )
                 attacker = advsber.Attacker.from_params(params["attacker"])
             except Exception as e:

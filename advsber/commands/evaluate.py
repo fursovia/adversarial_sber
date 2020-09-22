@@ -16,9 +16,9 @@ from advsber.utils.metrics import (
 def main(output_path: str, save_to: str = typer.Option(None), visualize: bool = typer.Option(False)):
     output = load_jsonlines(output_path)
     output = pd.DataFrame(output).drop(columns="history")
-    
-    y_true = [output['data'][i]['label'] for i in range(len(output))]
-    y_adv = [output['adversarial_data'][i]['label'] for i in range(len(output))]
+
+    y_true = [output["data"][i]["label"] for i in range(len(output))]
+    y_adv = [output["adversarial_data"][i]["label"] for i in range(len(output))]
     nad = normalized_accuracy_drop(wers=output["wer"], y_true=y_true, y_adv=y_adv)
     typer.echo(f"NAD = {nad:.2f}")
 
@@ -27,7 +27,7 @@ def main(output_path: str, save_to: str = typer.Option(None), visualize: bool = 
 
     prob_drop = probability_drop(true_prob=output["probability"], adv_prob=output["adversarial_probability"])
     typer.echo(f"Probability drop = {prob_drop:.2f}")
-    
+
     mean_wer = float(np.mean(output["wer"]))
     typer.echo(f"Mean WER = {mean_wer:.2f}")
 

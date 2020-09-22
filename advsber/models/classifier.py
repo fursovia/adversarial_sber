@@ -35,11 +35,11 @@ class TransactionsClassifier(Model):
         self._accuracy = CategoricalAccuracy()
 
     def forward(
-            self,
-            transactions: TextFieldTensors,
-            label: Optional[torch.Tensor] = None,
-            amounts: Optional[TextFieldTensors] = None,
-            **kwargs,
+        self,
+        transactions: TextFieldTensors,
+        label: Optional[torch.Tensor] = None,
+        amounts: Optional[TextFieldTensors] = None,
+        **kwargs,
     ) -> Dict[str, torch.Tensor]:
         mask = get_text_field_mask(transactions)
         transaction_embeddings = self._transactions_field_embedder(transactions)
@@ -57,9 +57,7 @@ class TransactionsClassifier(Model):
         probs = torch.nn.functional.softmax(logits, dim=-1)
 
         output_dict = dict(
-            logits=logits,
-            probs=probs,
-            token_ids=util.get_token_ids_from_text_field_tensors(transactions)
+            logits=logits, probs=probs, token_ids=util.get_token_ids_from_text_field_tensors(transactions)
         )
         if label is not None:
             loss = self._loss(logits, label.long().view(-1))
