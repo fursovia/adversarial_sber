@@ -33,3 +33,11 @@ class TestTransactionAttackers:
 
             output = attacker.attack(TransactionsData(**data[0]))
             assert isinstance(output, advsber.AttackerOutput)
+            assert isinstance(output.wer, int)
+            assert output.wer >= 0
+            assert isinstance(output.prob_diff, float)
+            assert abs(output.prob_diff) <= 1.0
+            assert isinstance(output.probability, float)
+            assert output.probability >= 0.0
+            assert isinstance(output.adversarial_probability, float)
+            assert output.adversarial_probability >= 0.0
