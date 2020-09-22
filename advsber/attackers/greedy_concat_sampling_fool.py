@@ -20,7 +20,7 @@ class Position(str, Enum):
 
 
 @Attacker.register("greedy_concat_sampling_fool")
-class ConcatSamplingFool(SamplingFool):
+class GreedyConcatSamplingFool(SamplingFool):
     def __init__(
         self,
         masked_lm: Model,
