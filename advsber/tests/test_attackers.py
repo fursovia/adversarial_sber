@@ -22,8 +22,8 @@ class TestTransactionAttackers:
                     ext_vars={
                         "DATA_PATH": "",
                         "OUTPUT_PATH": "",
-                        "CLF_PATH": str(PROJECT_ROOT / "presets/age/gru_age_target_clf.tar.gz"),
-                        "MASKED_LM_PATH": str(PROJECT_ROOT / "presets/age/lm.model.tar.gz"),
+                        "CLF_PATH": str(PROJECT_ROOT / "presets/age/models/target_clf/gru_target_age.tar.gz"),
+                        "MASKED_LM_PATH": str(PROJECT_ROOT / "presets/age/lm/lm.model.tar.gz"),
                     },
                 )
                 params["attacker"]["device"] = -1
