@@ -59,7 +59,7 @@ class GreedyConcatSamplingFool(Attacker):
 
         adv_inputs = data_to_tensors(adv_data, self.reader, self.attacker.lm_model.vocab, self.device)
         adv_probs = self.get_clf_probs(adv_inputs)
-        adv_prob = adv_probs[self.label_to_index(data_to_attack.label)].item()
+        adv_prob = adv_probs[self.label_to_index(adv_data.label)].item()
 
         output = AttackerOutput(
             data=data_to_attack.to_dict(),
@@ -69,4 +69,5 @@ class GreedyConcatSamplingFool(Attacker):
             prob_diff=(orig_prob - adv_prob),
             wer=word_error_rate_on_sequences(data_to_attack.transactions, adv_data.transactions),
         )
+
         return output
