@@ -60,7 +60,7 @@ class TransactionsClassifier(Model):
         probs = torch.nn.functional.softmax(logits, dim=-1)
 
         output_dict = dict(
-            logits=logits, probs=probs, token_ids=util.get_token_ids_from_text_field_tensors(transactions)
+            logits=logits, probs=probs
         )
         if label is not None:
             loss = self._loss(logits, label.long().view(-1))
@@ -77,12 +77,15 @@ class TransactionsClassifier(Model):
         **kwargs,
     ) -> Dict[str, torch.Tensor]:
         emb_out = self.get_transaction_embeddings(transactions)
-        transaction_embeddings = emb_out["transaction_embeddings"]
-        mask = emb_out["mask"]
 
         output_dict = self.forward_on_transaction_embeddings(
-            transaction_embeddings=transaction_embeddings, mask=mask, label=label, amounts=amounts
+            transaction_embeddings=emb_out["transaction_embeddings"],
+            mask=emb_out["mask"],
+            label=label,
+            amounts=amounts,
         )
+
+        output_dict["token_ids"] = util.get_token_ids_from_text_field_tensors(transactions)
 
         return output_dict
 
