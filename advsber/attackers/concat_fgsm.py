@@ -74,8 +74,7 @@ class ConcatFGSM(Attacker):
             # choose random index of embeddings (except for start/end tokens)
             if self.position == Position.END:
                 random_idx = random.randint(
-                    len(data_to_attack.transactions) - 2,
-                    max(1, len(adv_data.transactions) - 2)
+                    len(data_to_attack.transactions) - 2, max(1, len(adv_data.transactions) - 2)
                 )
             else:
                 raise NotImplementedError
