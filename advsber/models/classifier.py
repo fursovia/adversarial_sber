@@ -59,9 +59,7 @@ class TransactionsClassifier(Model):
         logits = self._classification_layer(embedded_transactions)
         probs = torch.nn.functional.softmax(logits, dim=-1)
 
-        output_dict = dict(
-            logits=logits, probs=probs
-        )
+        output_dict = dict(logits=logits, probs=probs)
         if label is not None:
             loss = self._loss(logits, label.long().view(-1))
             output_dict["loss"] = loss

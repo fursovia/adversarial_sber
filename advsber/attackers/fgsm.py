@@ -68,8 +68,9 @@ class FGSM(Attacker):
             loss.backward()
 
             # update the chosen embedding
-            embeddings_splitted[random_idx] = embeddings_splitted[random_idx] + \
-                                              self.epsilon * embeddings_splitted[random_idx].grad.data.sign()
+            embeddings_splitted[random_idx] = (
+                embeddings_splitted[random_idx] + self.epsilon * embeddings_splitted[random_idx].grad.data.sign()
+            )
             self.classifier.zero_grad()
 
             # find the closest embedding for the modified one
