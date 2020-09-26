@@ -59,8 +59,7 @@ class SamplingFool(Attacker):
             adv_inputs = data_to_tensors(adv_data, self.reader, self.lm_model.vocab, self.device)
 
             adv_probs = self.get_clf_probs(adv_inputs)
-            adv_label = self.probs_to_label(adv_probs)
-            adv_data.label = adv_label
+            adv_data.label = self.probs_to_label(adv_probs)
             adv_prob = adv_probs[self.label_to_index(data_to_attack.label)].item()
 
             output = AttackerOutput(
