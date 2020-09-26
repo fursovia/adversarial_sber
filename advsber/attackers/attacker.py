@@ -7,8 +7,8 @@ from allennlp.common.registrable import Registrable
 from allennlp.models import Model
 import torch
 
-from advsber.settings import TransactionsData
-from advsber.dataset_readers import TransactionsDatasetReader
+from advsber.settings import TransactionsData, ModelsInput
+from advsber.dataset_readers.transactions_reader import TransactionsDatasetReader
 
 
 @dataclass_json
@@ -37,8 +37,7 @@ class Attacker(ABC, Registrable):
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
         pass
 
-    # TODO: add typing
-    def get_clf_probs(self, inputs) -> torch.Tensor:
+    def get_clf_probs(self, inputs: ModelsInput) -> torch.Tensor:
         probs = self.classifier(**inputs)["probs"][0]
         return probs
 
