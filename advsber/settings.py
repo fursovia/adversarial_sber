@@ -1,4 +1,7 @@
-from typing import List, Optional
+from typing import List, Optional, Dict, Union
+
+import torch
+from allennlp.data import TextFieldTensors
 
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json
@@ -16,3 +19,6 @@ class TransactionsData:
     amounts: List[float]
     label: int
     client_id: Optional[int] = None
+
+
+ModelsInput = Dict[str, Union[TextFieldTensors, torch.Tensor]]

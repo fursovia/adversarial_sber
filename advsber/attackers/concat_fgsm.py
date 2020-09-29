@@ -6,14 +6,15 @@ from allennlp.models import Model
 from allennlp.nn import util
 
 from advsber.attackers.attacker import Attacker, AttackerOutput
+from advsber.attackers.concat_sampling_fool import Position
 from advsber.settings import TransactionsData, START_TOKEN, END_TOKEN, MASK_TOKEN
 from advsber.dataset_readers.transactions_reader import TransactionsDatasetReader
-from advsber.utils.data import data_to_tensors, decode_indexes
+from advsber.utils.data import data_to_tensors, decode_indexes, generate_transaction_amounts
 from advsber.utils.metrics import word_error_rate_on_sequences
 
 
-@Attacker.register("fgsm")
-class FGSM(Attacker):
+@Attacker.register("concat_fgsm")
+class ConcatFGSM(Attacker):
 
     SPECIAL_TOKENS = ("@@UNKNOWN@@", "@@PADDING@@", START_TOKEN, END_TOKEN, MASK_TOKEN)
 
@@ -23,6 +24,9 @@ class FGSM(Attacker):
         reader: TransactionsDatasetReader,
         num_steps: int = 10,
         epsilon: float = 0.01,
+        position: Position = Position.END,
+        num_tokens_to_add: int = 2,
+        total_amount: float = 5000,
         device: int = -1,
     ) -> None:
         super().__init__(classifier=classifier, reader=reader, device=device)
@@ -34,6 +38,10 @@ class FGSM(Attacker):
             self.classifier.vocab.get_token_index(token, "transactions") for token in self.SPECIAL_TOKENS
         ]
 
+        self.position = position
+        self.num_tokens_to_add = num_tokens_to_add
+        self.total_amount = total_amount
+
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
         # get inputs to the model
         inputs = data_to_tensors(data_to_attack, reader=self.reader, vocab=self.classifier.vocab, device=self.device)
@@ -44,8 +52,18 @@ class FGSM(Attacker):
         # original probability of the true label
         orig_prob = self.get_clf_probs(inputs)[self.label_to_index(data_to_attack.label)].item()
 
+        adv_data = deepcopy(data_to_attack)
+        amounts = generate_transaction_amounts(self.total_amount, self.num_tokens_to_add)
+        if self.position == Position.END:
+            adv_data.transactions = adv_data.transactions + [MASK_TOKEN] * self.num_tokens_to_add
+            adv_data.amounts = adv_data.amounts + amounts
+        else:
+            raise NotImplementedError
+
+        adv_inputs = data_to_tensors(adv_data, self.reader, self.classifier.vocab, self.device)
+
         # get mask and transaction embeddings
-        emb_out = self.classifier.get_transaction_embeddings(transactions=inputs["transactions"])
+        emb_out = self.classifier.get_transaction_embeddings(transactions=adv_inputs["transactions"])
 
         # disable gradients using a trick
         embeddings = emb_out["transaction_embeddings"].detach()
@@ -54,7 +72,13 @@ class FGSM(Attacker):
         outputs = []
         for step in range(self.num_steps):
             # choose random index of embeddings (except for start/end tokens)
-            random_idx = random.randint(1, max(1, len(data_to_attack.transactions) - 2))
+            if self.position == Position.END:
+                random_idx = random.randint(
+                    len(data_to_attack.transactions) - 2, max(1, len(adv_data.transactions) - 2)
+                )
+            else:
+                raise NotImplementedError
+
             # only one embedding can be modified
             embeddings_splitted[random_idx].requires_grad = True
 
@@ -62,8 +86,8 @@ class FGSM(Attacker):
             loss = self.classifier.forward_on_transaction_embeddings(
                 transaction_embeddings=torch.stack(embeddings_splitted, dim=0).unsqueeze(0),
                 mask=emb_out["mask"],
-                amounts=inputs["amounts"],
-                label=inputs["label"],
+                amounts=adv_inputs["amounts"],
+                label=adv_inputs["label"],
             )["loss"]
             loss.backward()
 
@@ -90,10 +114,10 @@ class FGSM(Attacker):
             adv_data = deepcopy(data_to_attack)
             adv_data.transactions = decode_indexes(adversarial_idexes[0], vocab=self.classifier.vocab)
 
-            adv_inputs = data_to_tensors(adv_data, self.reader, self.classifier.vocab, self.device)
+            adversarial_inputs = data_to_tensors(adv_data, self.reader, self.classifier.vocab, self.device)
 
             # get adversarial probability and adversarial label
-            adv_probs = self.get_clf_probs(adv_inputs)
+            adv_probs = self.get_clf_probs(adversarial_inputs)
             adv_data.label = self.probs_to_label(adv_probs)
             adv_prob = adv_probs[self.label_to_index(data_to_attack.label)].item()
 
