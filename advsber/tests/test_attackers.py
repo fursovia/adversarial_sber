@@ -23,7 +23,7 @@ class TestTransactionAttackers:
                         "DATA_PATH": "",
                         "OUTPUT_PATH": "",
                         "CLF_PATH": str(PROJECT_ROOT / "presets/age/models/target_clf/gru_target_age.tar.gz"),
-                        "MASKED_LM_PATH": str(PROJECT_ROOT / "presets/age/models/lm/lm.model.tar.gz"),
+                        "MASKED_LM_PATH": str(PROJECT_ROOT / "presets/age/models/lm/bert_with_amounts.tar.gz"),
                     },
                 )
                 params["attacker"]["device"] = -1
