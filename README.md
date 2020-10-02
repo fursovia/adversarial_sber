@@ -57,11 +57,11 @@ CUDA_VISIBLE_DEVICES="0" bash bin/train_clf.sh gru_with_amounts ./presets/age ta
 Attack example
 
 ```bash
-CUDA_VISIBLE_DEVICES="0" \
-    DATA_PATH="./presets/age/test.jsonl" \
+CUDA_VISIBLE_DEVICES="1" \
+    DATA_PATH="/notebook/morozov/data/age/test.jsonl" \
     OUTPUT_PATH="./results/output.json" \
     MASKED_LM_PATH="./presets/age/lm.model.tar.gz" \
-    CLF_PATH="./presets/age/substitute_clf.model.tar.gz" \
+    CLF_PATH="./presets/age/gru_age_subsitute_clf.tar.gz" \
     PYTHONPATH=. python advsber/commands/attack.py configs/attackers/sampling_fool.jsonnet \
     --samples 500
 ```

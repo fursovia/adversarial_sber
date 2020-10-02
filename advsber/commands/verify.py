@@ -25,7 +25,7 @@ def main(checks):
         if "mypy" in checks:
             print("Typechecker (mypy):", flush=True)
             run(
-                "mypy deeplev"
+                "mypy advsber"
                 # This is necessary because not all the imported libraries have type stubs.
                 " --ignore-missing-imports"
                 # This is necessary because PyTorch has some type stubs but they're incomplete,

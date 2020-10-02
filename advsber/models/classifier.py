@@ -34,15 +34,18 @@ class TransactionsClassifier(Model):
         self._loss = torch.nn.CrossEntropyLoss()
         self._accuracy = CategoricalAccuracy()
 
-    def forward(
-            self,
-            transactions: TextFieldTensors,
-            label: Optional[torch.Tensor] = None,
-            amounts: Optional[TextFieldTensors] = None,
-            **kwargs,
-    ) -> Dict[str, torch.Tensor]:
+    def get_transaction_embeddings(self, transactions: TextFieldTensors) -> Dict[str, torch.Tensor]:
         mask = get_text_field_mask(transactions)
         transaction_embeddings = self._transactions_field_embedder(transactions)
+        return {"mask": mask, "transaction_embeddings": transaction_embeddings}
+
+    def forward_on_transaction_embeddings(
+        self,
+        transaction_embeddings: torch.Tensor,
+        mask: torch.Tensor,
+        label: Optional[torch.Tensor] = None,
+        amounts: Optional[TextFieldTensors] = None,
+    ) -> Dict[str, torch.Tensor]:
 
         if amounts is not None and self._amounts_field_embedder is not None:
             amount_embeddings = self._amounts_field_embedder(amounts)
@@ -56,15 +59,31 @@ class TransactionsClassifier(Model):
         logits = self._classification_layer(embedded_transactions)
         probs = torch.nn.functional.softmax(logits, dim=-1)
 
-        output_dict = dict(
-            logits=logits,
-            probs=probs,
-            token_ids=util.get_token_ids_from_text_field_tensors(transactions)
-        )
+        output_dict = dict(logits=logits, probs=probs)
         if label is not None:
             loss = self._loss(logits, label.long().view(-1))
             output_dict["loss"] = loss
             self._accuracy(logits, label)
+
+        return output_dict
+
+    def forward(
+        self,
+        transactions: TextFieldTensors,
+        label: Optional[torch.Tensor] = None,
+        amounts: Optional[TextFieldTensors] = None,
+        **kwargs,
+    ) -> Dict[str, torch.Tensor]:
+        emb_out = self.get_transaction_embeddings(transactions)
+
+        output_dict = self.forward_on_transaction_embeddings(
+            transaction_embeddings=emb_out["transaction_embeddings"],
+            mask=emb_out["mask"],
+            label=label,
+            amounts=amounts,
+        )
+
+        output_dict["token_ids"] = util.get_token_ids_from_text_field_tensors(transactions)
 
         return output_dict
 
