@@ -15,52 +15,69 @@ from advsber.dataset_readers import TransactionsDatasetReader
 @dataclass
 class AttackerOutput:
     data: TransactionsData
-    adversarial_data: TransactionsData
-    probability: float  # original probability
-    adversarial_probability: float
-    prob_diff: float
+    adversarial_data_target: TransactionsData
+    probability_target: float  # original probability
+    adversarial_probability_target: float
+    prob_diff_target: float
     wer: int
     history: Optional[List[Dict[str, Any]]] = None
-
-
+    adversarial_probability_subst: Optional[float] = None
+    adversarial_data_subst: Optional[TransactionsData] = None
+    prob_diff_subst: Optional[float] = None
+    probability_subst: Optional[float] = None
 class Attacker(ABC, Registrable):
-
     def __init__(
         self,
-        classifier: Model,
+        classifier_target: Model,
         reader: TransactionsDatasetReader,
         device: int = -1,
+        classifier_subst: Optional[Model] = None,
     ) -> None:
-        self.classifier = classifier
-        self.classifier.eval()
+        self.classifier_target = classifier_target
+        self.classifier_subst = classifier_subst if classifier_subst is not None else classifier_target
+        self.classifier_subst.eval()
+        self.classifier_target.eval()
         self.reader = reader
-
         self.device = device
         if self.device >= 0 and torch.cuda.is_available():
-            self.classifier.cuda(self.device)
-
+            self.classifier_subst.cuda(self.device)
+            self.classifier_target.cuda(self.device)
     @abstractmethod
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
         pass
 
     # TODO: add typing
-    def get_clf_probs(self, inputs) -> torch.Tensor:
-        probs = self.classifier(**inputs)["probs"][0]
-        return probs
+    def get_clf_probs_target(self, inputs) -> torch.Tensor:
+        probs_target = self.classifier_target(**inputs)["probs"][0]
+        return probs_target
+    def get_clf_probs_subst(self, inputs) -> torch.Tensor:
+        probs_subst = self.classifier_subst(**inputs)["probs"][0]
+        return probs_subst
 
-    def probs_to_label(self, probs: torch.Tensor) -> int:
-        label_idx = probs.argmax().item()
-        label = self.index_to_label(label_idx)
-        return label
+    def probs_to_label(self,probs_target: torch.Tensor, probs_subst: torch.Tensor) -> tuple[int,int]:
+        label_idx_subst = probs_subst.argmax().item()
+        label_subst = self.index_to_label_subst(label_idx_subst)
+        label_idx_target = probs_target.argmax().item()
+        label_target = self.index_to_label_target(label_idx_target)
+        return label_target, label_subst
 
-    def index_to_label(self, label_idx: int) -> int:
-        label = self.classifier.vocab.get_index_to_token_vocabulary("labels").get(
+    def index_to_label_subst(self, label_idx: int) -> int:
+        label = self.classifier_subst.vocab.get_index_to_token_vocabulary("labels").get(
             label_idx, str(label_idx)
         )
         return int(label)
-
-    def label_to_index(self, label: int) -> int:
-        label_idx = self.classifier.vocab.get_token_to_index_vocabulary("labels").get(
+    def index_to_label_target(self, label_idx: int) -> int:
+        label = self.classifier_target.vocab.get_index_to_token_vocabulary("labels").get(
+            label_idx, str(label_idx)
+        )
+        return int(label)
+    def label_to_index_target(self, label: int) -> int:
+        label_idx = self.classifier_target.vocab.get_token_to_index_vocabulary("labels").get(
+            str(label), label
+        )
+        return label_idx
+    def label_to_index_subst(self, label: int) -> int:
+        label_idx = self.classifier_subst.vocab.get_token_to_index_vocabulary("labels").get(
             str(label), label
         )
         return label_idx
@@ -69,16 +86,15 @@ class Attacker(ABC, Registrable):
     def find_best_attack(outputs: List[AttackerOutput]) -> AttackerOutput:
         if len(outputs) == 1:
             return outputs[0]
-
         changed_label_outputs = []
         for output in outputs:
-            if output.data["label"] != output.adversarial_data["label"] and output.wer > 0:
+            if output.data["label"] != output.adversarial_data_target["label"] and output.wer > 0:
                 changed_label_outputs.append(output)
-
+            if output.prob_diff_subst == None:
+                output.prob_diff_subst = output.prob_diff_target
         if changed_label_outputs:
-            sorted_outputs = sorted(changed_label_outputs, key=lambda x: x.prob_diff, reverse=True)
+            sorted_outputs = sorted(changed_label_outputs, key=lambda x: x.prob_diff_subst, reverse=True)
             best_output = min(sorted_outputs, key=lambda x: x.wer)
         else:
-            best_output = max(outputs, key=lambda x: x.prob_diff)
-
+            best_output = max(outputs, key=lambda x: x.prob_diff_subst)
         return best_output
