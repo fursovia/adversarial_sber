@@ -70,27 +70,19 @@ class Attacker(ABC, Registrable):
         return label_subst
 
     def index_to_label_subst(self, label_idx: int) -> int:
-        label = self.classifier_subst.vocab.get_index_to_token_vocabulary("labels").get(
-            label_idx, str(label_idx)
-        )
+        label = self.classifier_subst.vocab.get_index_to_token_vocabulary("labels").get(label_idx, str(label_idx))
         return int(label)
 
     def index_to_label_target(self, label_idx: int) -> int:
-        label = self.classifier_target.vocab.get_index_to_token_vocabulary("labels").get(
-            label_idx, str(label_idx)
-        )
+        label = self.classifier_target.vocab.get_index_to_token_vocabulary("labels").get(label_idx, str(label_idx))
         return int(label)
 
     def label_to_index_target(self, label: int) -> int:
-        label_idx = self.classifier_target.vocab.get_token_to_index_vocabulary("labels").get(
-            str(label), label
-        )
+        label_idx = self.classifier_target.vocab.get_token_to_index_vocabulary("labels").get(str(label), label)
         return label_idx
 
     def label_to_index_subst(self, label: int) -> int:
-        label_idx = self.classifier_subst.vocab.get_token_to_index_vocabulary("labels").get(
-            str(label), label
-        )
+        label_idx = self.classifier_subst.vocab.get_token_to_index_vocabulary("labels").get(str(label), label)
         return label_idx
 
     @staticmethod

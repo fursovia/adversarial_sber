@@ -27,8 +27,9 @@ class SamplingFool(Attacker):
         device: int = -1,
         classifier_subst: Optional[Model] = None,
     ) -> None:
-        super().__init__(classifier_target=classifier_target, classifier_subst=classifier_subst,
-                         reader=reader, device=device)
+        super().__init__(
+            classifier_target=classifier_target, classifier_subst=classifier_subst, reader=reader, device=device
+        )
         self.lm_model = masked_lm
         # disable masker by hands
         self.lm_model._tokens_masker = None
@@ -47,10 +48,12 @@ class SamplingFool(Attacker):
     @torch.no_grad()
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
         inputs_to_attack = data_to_tensors(data_to_attack, self.reader, self.lm_model.vocab, self.device)
-        orig_prob_target = \
-            self.get_clf_probs_target(inputs_to_attack)[self.label_to_index_target(data_to_attack.label)].item()
-        orig_prob_subst = \
-            self.get_clf_probs_subst(inputs_to_attack)[self.label_to_index_subst(data_to_attack.label)].item()
+        orig_prob_target = self.get_clf_probs_target(inputs_to_attack)[
+            self.label_to_index_target(data_to_attack.label)
+        ].item()
+        orig_prob_subst = self.get_clf_probs_subst(inputs_to_attack)[
+            self.label_to_index_subst(data_to_attack.label)
+        ].item()
         logits = self.get_lm_logits(inputs_to_attack)
         indexes = Categorical(logits=logits[0] / self.temperature).sample((self.num_samples,))
         adversarial_sequences = [decode_indexes(idx, self.lm_model.vocab) for idx in indexes]
