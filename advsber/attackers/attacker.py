@@ -46,6 +46,7 @@ class Attacker(ABC, Registrable):
         if self.device >= 0 and torch.cuda.is_available():
             self.classifier_subst.cuda(self.device)
             self.classifier_target.cuda(self.device)
+
     @abstractmethod
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
         pass
@@ -53,6 +54,7 @@ class Attacker(ABC, Registrable):
     def get_clf_probs_target(self, inputs) -> torch.Tensor:
         probs_target = self.classifier_target(**inputs)["probs"][0]
         return probs_target
+
     def get_clf_probs_subst(self, inputs) -> torch.Tensor:
         probs_subst = self.classifier_subst(**inputs)["probs"][0]
         return probs_subst
@@ -78,6 +80,7 @@ class Attacker(ABC, Registrable):
             label_idx, str(label_idx)
         )
         return int(label)
+
     def label_to_index_target(self, label: int) -> int:
         label_idx = self.classifier_target.vocab.get_token_to_index_vocabulary("labels").get(
             str(label), label

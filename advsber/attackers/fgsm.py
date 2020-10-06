@@ -105,16 +105,16 @@ class FGSM(Attacker):
             adv_data_subst.label = self.probs_to_label_subst(adv_probs_subst)
             adv_prob_subst = adv_probs_subst[self.label_to_index_subst(data_to_attack.label)].item()
             output = AttackerOutput(
-                    data=data_to_attack.to_dict(),
-                    adversarial_data_target=adv_data_target.to_dict(),
-                    probability_target=orig_prob_target,
-                    probability_subst=orig_prob_subst,
-                    adversarial_probability_target=adv_prob_target,
-                    prob_diff_target=(orig_prob_target - adv_prob_target),
-                    wer=word_error_rate_on_sequences(data_to_attack.transactions, adv_data_target.transactions),
-                    adversarial_data_subst=adv_data_subst.to_dict(),
-                    adversarial_probability_subst=adv_prob_subst,
-                    prob_diff_subst=(orig_prob_subst - adv_prob_subst),
+                data=data_to_attack.to_dict(),
+                adversarial_data_target=adv_data_target.to_dict(),
+                probability_target=orig_prob_target,
+                probability_subst=orig_prob_subst,
+                adversarial_probability_target=adv_prob_target,
+                prob_diff_target=(orig_prob_target - adv_prob_target),
+                wer=word_error_rate_on_sequences(data_to_attack.transactions, adv_data_target.transactions),
+                adversarial_data_subst=adv_data_subst.to_dict(),
+                adversarial_probability_subst=adv_prob_subst,
+                prob_diff_subst=(orig_prob_subst - adv_prob_subst),
             )
             outputs.append(output)
 

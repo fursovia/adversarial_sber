@@ -87,8 +87,8 @@ class ConcatSamplingFool(SamplingFool):
             ]
         elif self.position == Position.START:
             adversarial_sequences = [
-                decode_indexes(idx, self.lm_model.vocab, drop_start_end=False) +
-                data_to_attack.transactions for idx in indexes
+                decode_indexes(idx, self.lm_model.vocab, drop_start_end=False) + data_to_attack.transactions
+                for idx in indexes
             ]
         else:
             raise NotImplementedError

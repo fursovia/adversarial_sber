@@ -28,7 +28,7 @@ class GreedyConcatSamplingFool(Attacker):
         classifier_subst: Optional[Model] = None,
     ) -> None:
         super().__init__(classifier_target=classifier_target, classifier_subst=classifier_subst,
-                         reader=reader,  device=device)
+                         reader=reader, device=device)
 
         self.total_amount = total_amount
         self.num_tokens_to_add = num_tokens_to_add
