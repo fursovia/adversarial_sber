@@ -22,7 +22,8 @@ class TestTransactionAttackers:
                     ext_vars={
                         "DATA_PATH": "",
                         "OUTPUT_PATH": "",
-                        "CLF_PATH": str(PROJECT_ROOT / "presets/age/models/target_clf/gru_target_age.tar.gz"),
+                        "CLF_TARGET_PATH": str(PROJECT_ROOT / "presets/age/models/target_clf/gru_target_age.tar.gz"),
+                        "CLF_SUBST_PATH": str(PROJECT_ROOT / "presets/age/models/substitute_clf/gru_target_age.tar.gz"),
                         "MASKED_LM_PATH": str(PROJECT_ROOT / "presets/age/models/lm/lm.model.tar.gz"),
                     },
                 )
@@ -35,9 +36,15 @@ class TestTransactionAttackers:
             assert isinstance(output, advsber.AttackerOutput)
             assert isinstance(output.wer, int)
             assert output.wer >= 0
-            assert isinstance(output.prob_diff, float)
-            assert abs(output.prob_diff) <= 1.0
-            assert isinstance(output.probability, float)
-            assert output.probability >= 0.0
-            assert isinstance(output.adversarial_probability, float)
-            assert output.adversarial_probability >= 0.0
+            assert isinstance(output.prob_diff_subst, float)
+            assert isinstance(output.prob_diff_target, float)
+            assert abs(output.prob_diff_target) <= 1.0
+            assert abs(output.prob_diff_subst) <= 1.0
+            assert isinstance(output.probability_target, float)
+            assert isinstance(output.probability_subst, float)
+            assert output.probability_target >= 0.0
+            assert output.probability_subst >= 0.0
+            assert isinstance(output.adversarial_probability_target, float)
+            assert isinstance(output.adversarial_probability_subst, float)
+            assert output.adversarial_probability_target >= 0.0
+            assert output.adversarial_probability_subst >= 0.0
