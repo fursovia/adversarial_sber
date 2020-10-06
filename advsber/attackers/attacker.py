@@ -20,11 +20,11 @@ class AttackerOutput:
     adversarial_probability_target: float
     prob_diff_target: float
     wer: int
+    adversarial_probability_subst: float
+    adversarial_data_subst: TransactionsData
+    prob_diff_subst: float
+    probability_subst: float
     history: Optional[List[Dict[str, Any]]] = None
-    adversarial_probability_subst: Optional[float] = None
-    adversarial_data_subst: Optional[TransactionsData] = None
-    prob_diff_subst: Optional[float] = None
-    probability_subst: Optional[float] = None
 class Attacker(ABC, Registrable):
     def __init__(
         self,
@@ -34,7 +34,7 @@ class Attacker(ABC, Registrable):
         classifier_subst: Optional[Model] = None,
     ) -> None:
         self.classifier_target = classifier_target
-        self.classifier_subst = classifier_subst if classifier_subst is not None else classifier_target
+        self.classifier_subst = classifier_subst
         self.classifier_subst.eval()
         self.classifier_target.eval()
         self.reader = reader
@@ -93,8 +93,6 @@ class Attacker(ABC, Registrable):
         for output in outputs:
             if output.data["label"] != output.adversarial_data_subst["label"] and output.wer > 0:
                 changed_label_outputs.append(output)
-            if output.prob_diff_subst == None:
-                output.prob_diff_subst = output.prob_diff_target
         if changed_label_outputs:
             sorted_outputs = sorted(changed_label_outputs, key=lambda x: x.prob_diff_subst, reverse=True)
             best_output = min(sorted_outputs, key=lambda x: x.wer)

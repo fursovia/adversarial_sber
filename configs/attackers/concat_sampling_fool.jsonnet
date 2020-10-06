@@ -20,7 +20,7 @@ local clf_subst_path = std.extVar("CLF_SUBST_PATH");
     "reader": {
       "type": "from_archive",
       // we parse reader args from archive
-      "archive_file": clf_path
+      "archive_file": clf_target_path
     },
     "position": "end",
     "num_tokens_to_add": 2,

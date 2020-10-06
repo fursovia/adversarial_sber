@@ -1,26 +1,28 @@
-local clf_path = std.extVar("CLF_PATH");
+local clf_target_path = std.extVar("CLF_TARGET_PATH");
+local clf_subst_path = std.extVar("CLF_SUBST_PATH");
 
 {
   "data_path": std.extVar("DATA_PATH"),
   "output_path": std.extVar("OUTPUT_PATH"),
   "attacker": {
-    "type": "greedy_concat_sampling_fool",
+    "type": "sampling_fool",
     "masked_lm": {
       "type": "from_archive",
       "archive_file": std.extVar("MASKED_LM_PATH")
     },
-    "classifier": {
+    "classifier_subst": {
       "type": "from_archive",
-      "archive_file": clf_path
+      "archive_file": clf_subst_path
+    },
+    "classifier_target": {
+      "type": "from_archive",
+      "archive_file": clf_target_path
     },
     "reader": {
       "type": "from_archive",
       // we parse reader args from archive
-      "archive_file": clf_path
+      "archive_file": clf_target_path
     },
-    "position": "end",
-    "num_tokens_to_add": 2,
-    "total_amount": 5000,
     "num_samples": 100,
     "temperature": 1.5,
     "device": 0

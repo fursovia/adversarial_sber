@@ -27,7 +27,7 @@ class SamplingFool(Attacker):
         device: int = -1,
         classifier_subst: Optional[Model] = None,
     ) -> None:
-        super().__init__(classifier_target=classifier_target, classifier_subst = classifier_subst, reader=reader, device=device)
+        super().__init__(classifier_target=classifier_target, classifier_subst=classifier_subst, reader=reader, device=device)
         self.lm_model = masked_lm
         # disable masker by hands
         self.lm_model._tokens_masker = None
@@ -63,31 +63,22 @@ class SamplingFool(Attacker):
             adv_label_target = self.probs_to_label_target(adv_probs_target)
             adv_data_target.label = adv_label_target
             adv_prob_target = adv_probs_target[self.label_to_index_target(data_to_attack.label)].item()
-            if self.classifier_subst is not None:
-                adv_probs_subst = self.get_clf_probs_subst(adv_inputs)
-                adv_label_subst = self.probs_to_label_subst(adv_probs_target)
-                adv_data_subst.label = adv_label_subst
-                output = AttackerOutput(
+            adv_probs_subst = self.get_clf_probs_subst(adv_inputs)
+            adv_label_subst = self.probs_to_label_subst(adv_probs_subst)
+            adv_data_subst.label = adv_label_subst
+            adv_prob_subst = adv_probs_subst[self.label_to_index_subst(data_to_attack.label)].item()
+            output = AttackerOutput(
                     data=data_to_attack.to_dict(),
                     adversarial_data_target=adv_data_target.to_dict(),
                     probability_target=orig_prob_target,
                     probability_subst=orig_prob_subst,
                     adversarial_probability_target=adv_prob_target,
                     prob_diff_target=(orig_prob_target - adv_prob_target),
-                    wer=word_error_rate_on_sequences(data_to_attack.transactions, adv_data_target.transactions),
+                    wer=word_error_rate_on_sequences(data_to_attack.transactions, adv_data_subst.transactions),
                     adversarial_data_subst = adv_data_subst.to_dict(),
-                    adversarial_probability_subst = adv_probs_subst,
-                    prob_diff_subst=(orig_prob_subst - adv_probs_subst),
-                )
-            else:
-                output = AttackerOutput(
-                    data=data_to_attack.to_dict(),
-                    adversarial_data_target=adv_data_target.to_dict(),
-                    probability_target=orig_prob_target,
-                    adversarial_probability_target=adv_prob_target,
-                    prob_diff_target=(orig_prob_target - adv_prob_target),
-                    wer=word_error_rate_on_sequences(data_to_attack.transactions, adv_data_target.transactions)
-                )
+                    adversarial_probability_subst = adv_prob_subst,
+                    prob_diff_subst=(orig_prob_subst - adv_prob_subst),
+            )
             outputs.append(output)
         best_output = self.find_best_attack(outputs)
         # we don't need history here actually

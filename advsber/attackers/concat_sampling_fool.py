@@ -1,6 +1,6 @@
 from enum import Enum
 from copy import deepcopy
-from typing import List, Optional, Dict, Any
+from typing import Optional
 import torch
 from torch.distributions import Categorical
 from allennlp.models import Model
@@ -99,11 +99,11 @@ class ConcatSamplingFool(SamplingFool):
             adv_label_target = self.probs_to_label_target(adv_probs_target)
             adv_data_target.label = adv_label_target
             adv_prob_target = adv_probs_target[self.label_to_index_target(data_to_attack.label)].item()
-            if self.classifier_subst is not None:
-                adv_probs_subst = self.get_clf_probs_subst(adv_inputs)
-                adv_label_subst = self.probs_to_label_subst(adv_probs_subst)
-                adv_data_subst.label = adv_label_subst
-                output = AttackerOutput(
+            adv_probs_subst = self.get_clf_probs_subst(adv_inputs)
+            adv_label_subst = self.probs_to_label_subst(adv_probs_subst)
+            adv_data_subst.label = adv_label_subst
+            adv_prob_subst = adv_probs_subst[self.label_to_index_subst(data_to_attack.label)].item()
+            output = AttackerOutput(
                     data=data_to_attack.to_dict(),
                     adversarial_data_target=adv_data_target.to_dict(),
                     probability_target=orig_prob_target,
@@ -112,18 +112,9 @@ class ConcatSamplingFool(SamplingFool):
                     prob_diff_target=(orig_prob_target - adv_prob_target),
                     wer=word_error_rate_on_sequences(data_to_attack.transactions, adv_data_target.transactions),
                     adversarial_data_subst = adv_data_subst.to_dict(),
-                    adversarial_probability_subst = adv_probs_subst,
-                    prob_diff_subst=(orig_prob_subst - adv_probs_subst),
-                )
-            else:
-                output = AttackerOutput(
-                    data=data_to_attack.to_dict(),
-                    adversarial_data_target=adv_data_target.to_dict(),
-                    probability_target=orig_prob_target,
-                    adversarial_probability_target=adv_prob_target,
-                    prob_diff_target=(orig_prob_target - adv_prob_target),
-                    wer=word_error_rate_on_sequences(data_to_attack.transactions, adv_data_target.transactions)
-                )
+                    adversarial_probability_subst = adv_prob_subst,
+                    prob_diff_subst=(orig_prob_subst - adv_prob_subst),
+            )
             outputs.append(output)
 
         best_output = self.find_best_attack(outputs)
