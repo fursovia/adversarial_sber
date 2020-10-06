@@ -23,7 +23,8 @@ class TestTransactionAttackers:
                         "DATA_PATH": "",
                         "OUTPUT_PATH": "",
                         "CLF_TARGET_PATH": str(PROJECT_ROOT / "presets/age/models/target_clf/gru_target_age.tar.gz"),
-                        "CLF_SUBST_PATH": str(PROJECT_ROOT / "presets/age/models/substitute_clf/gru_target_age.tar.gz"),
+                        "CLF_SUBST_PATH":
+                            str(PROJECT_ROOT / "presets/age/models/substitute_clf/gru_target_age.tar.gz"),
                         "MASKED_LM_PATH": str(PROJECT_ROOT / "presets/age/models/lm/lm.model.tar.gz"),
                     },
                 )
