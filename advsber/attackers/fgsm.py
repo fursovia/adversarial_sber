@@ -26,8 +26,9 @@ class FGSM(Attacker):
         device: int = -1,
         classifier_subst: Optional[Model] = None,
     ) -> None:
-        super().__init__(classifier_target=classifier_target, classifier_subst=classifier_subst,
-                         reader=reader, device=device)
+        super().__init__(
+            classifier_target=classifier_target, classifier_subst=classifier_subst, reader=reader, device=device
+        )
         self.num_steps = num_steps
         self.epsilon = epsilon
         self.classifier_subst.train()
@@ -38,8 +39,9 @@ class FGSM(Attacker):
 
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
         # get inputs to the model
-        inputs = data_to_tensors(data_to_attack, reader=self.reader, vocab=self.classifier_target.vocab,
-                                 device=self.device)
+        inputs = data_to_tensors(
+            data_to_attack, reader=self.reader, vocab=self.classifier_target.vocab, device=self.device
+        )
 
         # get original indexes of a sequence
         orig_indexes = inputs["transactions"]["tokens"]["tokens"]

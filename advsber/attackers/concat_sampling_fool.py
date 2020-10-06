@@ -41,7 +41,7 @@ class ConcatSamplingFool(SamplingFool):
             reader=reader,
             num_samples=num_samples,
             temperature=temperature,
-            device=device
+            device=device,
         )
         self.position = position
         self.num_tokens_to_add = num_tokens_to_add
@@ -50,10 +50,12 @@ class ConcatSamplingFool(SamplingFool):
     @torch.no_grad()
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
         inputs_to_attack = data_to_tensors(data_to_attack, self.reader, self.lm_model.vocab, self.device)
-        orig_prob_target = \
-            self.get_clf_probs_target(inputs_to_attack)[self.label_to_index_target(data_to_attack.label)].item()
-        orig_prob_subst = \
-            self.get_clf_probs_subst(inputs_to_attack)[self.label_to_index_subst(data_to_attack.label)].item()
+        orig_prob_target = self.get_clf_probs_target(inputs_to_attack)[
+            self.label_to_index_target(data_to_attack.label)
+        ].item()
+        orig_prob_subst = self.get_clf_probs_subst(inputs_to_attack)[
+            self.label_to_index_subst(data_to_attack.label)
+        ].item()
         adv_data_target = deepcopy(data_to_attack)
         amounts = generate_transaction_amounts(self.total_amount, self.num_tokens_to_add)
         if self.position == Position.END:
@@ -72,9 +74,9 @@ class ConcatSamplingFool(SamplingFool):
         logits = logits[:, 1:-1]
 
         if self.position == Position.END:
-            logits_to_sample = logits[:, -self.num_tokens_to_add:][0]
+            logits_to_sample = logits[:, -self.num_tokens_to_add :][0]
         elif self.position == Position.START:
-            logits_to_sample = logits[:, :self.num_tokens_to_add][0]
+            logits_to_sample = logits[:, : self.num_tokens_to_add][0]
         else:
             raise NotImplementedError
 

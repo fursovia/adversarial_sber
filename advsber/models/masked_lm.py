@@ -37,7 +37,10 @@ class MaskedLanguageModel(Model):
         self._perplexity = FixedPerplexity()
 
     def forward(
-        self, transactions: TextFieldTensors, amounts: Optional[TextFieldTensors] = None, **kwargs,
+        self,
+        transactions: TextFieldTensors,
+        amounts: Optional[TextFieldTensors] = None,
+        **kwargs,
     ) -> Dict[str, torch.Tensor]:
         mask = get_text_field_mask(transactions)
 
