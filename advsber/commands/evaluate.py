@@ -18,14 +18,14 @@ def main(output_path: str, save_to: str = typer.Option(None), visualize: bool = 
     output = pd.DataFrame(output).drop(columns="history")
 
     y_true = [output["data"][i]["label"] for i in range(len(output))]
-    y_adv = [output["adversarial_data"][i]["label"] for i in range(len(output))]
+    y_adv = [output["adversarial_data_target"][i]["label"] for i in range(len(output))]
     nad = normalized_accuracy_drop(wers=output["wer"], y_true=y_true, y_adv=y_adv)
     typer.echo(f"NAD = {nad:.2f}")
 
     misclf_error = misclassification_error(y_true=y_true, y_adv=y_adv)
     typer.echo(f"Misclassification Error = {misclf_error:.2f}")
 
-    prob_drop = probability_drop(true_prob=output["probability"], adv_prob=output["adversarial_probability"])
+    prob_drop = probability_drop(true_prob=output["probability_target"], adv_prob=output["adversarial_probability_target"])
     typer.echo(f"Probability drop = {prob_drop:.2f}")
 
     mean_wer = float(np.mean(output["wer"]))
@@ -33,7 +33,7 @@ def main(output_path: str, save_to: str = typer.Option(None), visualize: bool = 
 
     added_amounts = []
     for _, row in output.iterrows():
-        added_amounts.append(sum(row["adversarial_data"]["amounts"]) - sum(row["data"]["amounts"]))
+        added_amounts.append(sum(row["adversarial_data_target"]["amounts"]) - sum(row["data"]["amounts"]))
 
     anad = amount_normalized_accuracy_drop(added_amounts, y_true=y_true, y_adv=y_adv)
     typer.echo(f"aNAD-1000 = {anad:.2f}")

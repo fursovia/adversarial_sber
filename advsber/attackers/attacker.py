@@ -54,12 +54,15 @@ class Attacker(ABC, Registrable):
         probs_subst = self.classifier_subst(**inputs)["probs"][0]
         return probs_subst
 
-    def probs_to_label(self,probs_target: torch.Tensor, probs_subst: torch.Tensor) -> tuple[int,int]:
-        label_idx_subst = probs_subst.argmax().item()
-        label_subst = self.index_to_label_subst(label_idx_subst)
+    def probs_to_label_target(self,probs_target: torch.Tensor) -> int:
         label_idx_target = probs_target.argmax().item()
         label_target = self.index_to_label_target(label_idx_target)
-        return label_target, label_subst
+        return label_target
+
+    def probs_to_label_subst(self, probs_subst: torch.Tensor) -> int:
+        label_idx_subst = probs_subst.argmax().item()
+        label_subst = self.index_to_label_subst(label_idx_subst)
+        return label_subst
 
     def index_to_label_subst(self, label_idx: int) -> int:
         label = self.classifier_subst.vocab.get_index_to_token_vocabulary("labels").get(
@@ -88,7 +91,7 @@ class Attacker(ABC, Registrable):
             return outputs[0]
         changed_label_outputs = []
         for output in outputs:
-            if output.data["label"] != output.adversarial_data_target["label"] and output.wer > 0:
+            if output.data["label"] != output.adversarial_data_subst["label"] and output.wer > 0:
                 changed_label_outputs.append(output)
             if output.prob_diff_subst == None:
                 output.prob_diff_subst = output.prob_diff_target

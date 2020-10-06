@@ -101,7 +101,7 @@ class ConcatSamplingFool(SamplingFool):
             adv_prob_target = adv_probs_target[self.label_to_index_target(data_to_attack.label)].item()
             if self.classifier_subst is not None:
                 adv_probs_subst = self.get_clf_probs_subst(adv_inputs)
-                adv_label_subst = self.probs_to_label_subst(adv_probs_target)
+                adv_label_subst = self.probs_to_label_subst(adv_probs_subst)
                 adv_data_subst.label = adv_label_subst
                 output = AttackerOutput(
                     data=data_to_attack.to_dict(),
