@@ -25,7 +25,8 @@ def main(output_path: str, save_to: str = typer.Option(None), visualize: bool = 
     misclf_error = misclassification_error(y_true=y_true, y_adv=y_adv)
     typer.echo(f"Misclassification Error = {misclf_error:.2f}")
 
-    prob_drop = probability_drop(true_prob=output["probability_target"], adv_prob=output["adversarial_probability_target"])
+    prob_drop = \
+        probability_drop(true_prob=output["probability_target"], adv_prob=output["adversarial_probability_target"])
     typer.echo(f"Probability drop = {prob_drop:.2f}")
 
     mean_wer = float(np.mean(output["wer"]))

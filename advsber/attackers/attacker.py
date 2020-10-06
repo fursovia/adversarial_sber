@@ -1,6 +1,7 @@
 from typing import List, Optional, Dict, Any
 from abc import ABC, abstractmethod
 
+
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json
 from allennlp.common.registrable import Registrable
@@ -25,6 +26,8 @@ class AttackerOutput:
     prob_diff_subst: float
     probability_subst: float
     history: Optional[List[Dict[str, Any]]] = None
+
+
 class Attacker(ABC, Registrable):
     def __init__(
         self,
@@ -38,6 +41,7 @@ class Attacker(ABC, Registrable):
         self.classifier_subst.eval()
         self.classifier_target.eval()
         self.reader = reader
+
         self.device = device
         if self.device >= 0 and torch.cuda.is_available():
             self.classifier_subst.cuda(self.device)
@@ -46,7 +50,6 @@ class Attacker(ABC, Registrable):
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
         pass
 
-    # TODO: add typing
     def get_clf_probs_target(self, inputs) -> torch.Tensor:
         probs_target = self.classifier_target(**inputs)["probs"][0]
         return probs_target
@@ -54,7 +57,7 @@ class Attacker(ABC, Registrable):
         probs_subst = self.classifier_subst(**inputs)["probs"][0]
         return probs_subst
 
-    def probs_to_label_target(self,probs_target: torch.Tensor) -> int:
+    def probs_to_label_target(self, probs_target: torch.Tensor) -> int:
         label_idx_target = probs_target.argmax().item()
         label_target = self.index_to_label_target(label_idx_target)
         return label_target
@@ -69,6 +72,7 @@ class Attacker(ABC, Registrable):
             label_idx, str(label_idx)
         )
         return int(label)
+
     def index_to_label_target(self, label_idx: int) -> int:
         label = self.classifier_target.vocab.get_index_to_token_vocabulary("labels").get(
             label_idx, str(label_idx)
@@ -79,6 +83,7 @@ class Attacker(ABC, Registrable):
             str(label), label
         )
         return label_idx
+
     def label_to_index_subst(self, label: int) -> int:
         label_idx = self.classifier_subst.vocab.get_token_to_index_vocabulary("labels").get(
             str(label), label

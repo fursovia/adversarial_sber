@@ -37,7 +37,7 @@ class ConcatSamplingFool(SamplingFool):
         super().__init__(
             masked_lm=masked_lm,
             classifier_target=classifier_target,
-            classifier_subst = classifier_subst,
+            classifier_subst=classifier_subst,
             reader=reader,
             num_samples=num_samples,
             temperature=temperature,
@@ -50,8 +50,10 @@ class ConcatSamplingFool(SamplingFool):
     @torch.no_grad()
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
         inputs_to_attack = data_to_tensors(data_to_attack, self.reader, self.lm_model.vocab, self.device)
-        orig_prob_target = self.get_clf_probs_target(inputs_to_attack)[self.label_to_index_target(data_to_attack.label)].item()
-        orig_prob_subst = self.get_clf_probs_subst(inputs_to_attack)[self.label_to_index_subst(data_to_attack.label)].item()
+        orig_prob_target = \
+            self.get_clf_probs_target(inputs_to_attack)[self.label_to_index_target(data_to_attack.label)].item()
+        orig_prob_subst = \
+            self.get_clf_probs_subst(inputs_to_attack)[self.label_to_index_subst(data_to_attack.label)].item()
         adv_data_target = deepcopy(data_to_attack)
         amounts = generate_transaction_amounts(self.total_amount, self.num_tokens_to_add)
         if self.position == Position.END:
@@ -80,8 +82,8 @@ class ConcatSamplingFool(SamplingFool):
 
         if self.position == Position.END:
             adversarial_sequences = [
-                data_to_attack.transactions +
-                decode_indexes(idx, self.lm_model.vocab, drop_start_end=False) for idx in indexes
+                data_to_attack.transactions + decode_indexes(idx, self.lm_model.vocab, drop_start_end=False)
+                for idx in indexes
             ]
         elif self.position == Position.START:
             adversarial_sequences = [
@@ -104,16 +106,16 @@ class ConcatSamplingFool(SamplingFool):
             adv_data_subst.label = adv_label_subst
             adv_prob_subst = adv_probs_subst[self.label_to_index_subst(data_to_attack.label)].item()
             output = AttackerOutput(
-                    data=data_to_attack.to_dict(),
-                    adversarial_data_target=adv_data_target.to_dict(),
-                    probability_target=orig_prob_target,
-                    probability_subst=orig_prob_subst,
-                    adversarial_probability_target=adv_prob_target,
-                    prob_diff_target=(orig_prob_target - adv_prob_target),
-                    wer=word_error_rate_on_sequences(data_to_attack.transactions, adv_data_target.transactions),
-                    adversarial_data_subst = adv_data_subst.to_dict(),
-                    adversarial_probability_subst = adv_prob_subst,
-                    prob_diff_subst=(orig_prob_subst - adv_prob_subst),
+                data=data_to_attack.to_dict(),
+                adversarial_data_target=adv_data_target.to_dict(),
+                probability_target=orig_prob_target,
+                probability_subst=orig_prob_subst,
+                adversarial_probability_target=adv_prob_target,
+                prob_diff_target=(orig_prob_target - adv_prob_target),
+                wer=word_error_rate_on_sequences(data_to_attack.transactions, adv_data_target.transactions),
+                adversarial_data_subst=adv_data_subst.to_dict(),
+                adversarial_probability_subst=adv_prob_subst,
+                prob_diff_subst=(orig_prob_subst - adv_prob_subst),
             )
             outputs.append(output)
 
