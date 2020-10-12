@@ -5,7 +5,7 @@
 
 CONFIG_NAME=$1
 DATA_DIR=$2
-DISCRETIZER_NAME=${3:-"discretizer_100_quantile"}
+DISCRETIZER_NAME=${3:-"discretizers/discretizer_100_quantile"}
 DATASET_NAME=$(basename ${DATA_DIR})
 DATE=$(date +%H%M%S-%d%m)
 EXP_NAME=${DATE}-${CONFIG_NAME}
