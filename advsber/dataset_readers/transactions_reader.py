@@ -19,12 +19,7 @@ logger = logging.getLogger(__name__)
 
 @DatasetReader.register("transactions_reader")
 class TransactionsDatasetReader(DatasetReader):
-    def __init__(
-        self,
-        discretizer_path: str,
-        max_sequence_length: int = None,
-        lazy: bool = False,
-    ) -> None:
+    def __init__(self, discretizer_path: str, max_sequence_length: int = None, lazy: bool = False,) -> None:
         super().__init__(lazy=lazy)
 
         self.discretizer = load_discretizer(discretizer_path)
