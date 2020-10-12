@@ -25,7 +25,12 @@ def word_error_rate_on_sequences(sequence_a: List[int], sequence_b: List[int]) -
     return word_error_rate(sequence_a, sequence_b)
 
 
-def normalized_accuracy_drop(wers: List[int], y_true: List[int], y_adv: List[int], gamma: float = 1.0,) -> float:
+def normalized_accuracy_drop(
+    wers: List[int],
+    y_true: List[int],
+    y_adv: List[int],
+    gamma: float = 1.0,
+) -> float:
     assert len(y_true) == len(y_adv)
     nads = []
     for wer, lab, alab in zip(wers, y_true, y_adv):
@@ -37,7 +42,10 @@ def normalized_accuracy_drop(wers: List[int], y_true: List[int], y_adv: List[int
     return sum(nads) / len(nads)
 
 
-def misclassification_error(y_true: List[int], y_adv: List[int],) -> float:
+def misclassification_error(
+    y_true: List[int],
+    y_adv: List[int],
+) -> float:
     misses = []
     for lab, alab in zip(y_true, y_adv):
         misses.append(float(lab != alab))
@@ -45,7 +53,10 @@ def misclassification_error(y_true: List[int], y_adv: List[int],) -> float:
     return sum(misses) / len(misses)
 
 
-def probability_drop(true_prob: List[float], adv_prob: List[float],) -> float:
+def probability_drop(
+    true_prob: List[float],
+    adv_prob: List[float],
+) -> float:
     prob_diffs = []
     for tp, ap in zip(true_prob, adv_prob):
         prob_diffs.append(tp - ap)
@@ -78,6 +89,6 @@ def diversity_rate(output: List[Dict[str, Any]]) -> float:
             if t > len(y_true[i]) - 1:
                 y_ins.append(int(y_adv[i][t]))
             else:
-                if y_adv[i][t] != y_true[i][t] :
+                if y_adv[i][t] != y_true[i][t]:
                     y_ins.append(int(y_adv[i][t]))
-    return len(list(dict.fromkeys(y_ins)))/len(y_ins)
+    return len(list(dict.fromkeys(y_ins))) / len(y_ins)

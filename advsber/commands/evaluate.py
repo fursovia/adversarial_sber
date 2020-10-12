@@ -39,8 +39,8 @@ def main(output_path: str, save_to: str = typer.Option(None), visualize: bool = 
 
     anad = amount_normalized_accuracy_drop(added_amounts, y_true=y_true, y_adv=y_adv)
     typer.echo(f"aNAD-1000 = {anad:.2f}")
-    diversity_rate = diversity_rate(output)
-    typer.echo(f"Diversity_rate = {diversity_rate:.2f}")
+    diversity = diversity_rate(output)
+    typer.echo(f"Diversity_rate = {diversity:.2f}")
     if visualize:
         assert save_to is not None
 

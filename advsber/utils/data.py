@@ -26,7 +26,10 @@ def data_to_tensors(
 
 
 def decode_indexes(
-    indexes: torch.Tensor, vocab: Vocabulary, namespace="transactions", drop_start_end: bool = True,
+    indexes: torch.Tensor,
+    vocab: Vocabulary,
+    namespace="transactions",
+    drop_start_end: bool = True,
 ) -> List[str]:
     out = [vocab.get_token_from_index(idx.item(), namespace=namespace) for idx in indexes]
 
