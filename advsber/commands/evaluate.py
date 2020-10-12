@@ -48,3 +48,5 @@ def main(output_path: str, save_to: str = typer.Option(None), visualize: bool = 
 
         with open(save_to, "w") as f:
             json.dump(metrics, f, indent=4)
+if __name__ == "__main__":
+    typer.run(main)
