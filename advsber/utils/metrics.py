@@ -1,5 +1,5 @@
 import functools
-from typing import List
+from typing import List, Dict, Any
 
 from Levenshtein import distance as lvs_distance
 
@@ -67,3 +67,17 @@ def amount_normalized_accuracy_drop(
             nads.append(0.0)
 
     return sum(nads) / len(nads)
+
+
+def diversity_rate(output: List[Dict[str, Any]]) -> float:
+    y_true = [output["data"][i]["transactions"] for i in range(len(output))]
+    y_adv = [output["adversarial_data_target"][i]["transactions"] for i in range(len(output))]
+    y_ins = []
+    for i in range(len(y_adv)):
+        for t in range(len(y_adv[i])):
+            if t > len(y_true[i]) - 1:
+                y_ins.append(int(y_adv[i][t]))
+            else:
+                if y_adv[i][t] != y_true[i][t] :
+                    y_ins.append(int(y_adv[i][t]))
+    return len(list(dict.fromkeys(y_ins)))/len(y_ins)

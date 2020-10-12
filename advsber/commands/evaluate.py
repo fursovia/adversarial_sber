@@ -10,6 +10,7 @@ from advsber.utils.metrics import (
     amount_normalized_accuracy_drop,
     misclassification_error,
     probability_drop,
+    diversity_rate,
 )
 
 
@@ -32,14 +33,14 @@ def main(output_path: str, save_to: str = typer.Option(None), visualize: bool = 
 
     mean_wer = float(np.mean(output["wer"]))
     typer.echo(f"Mean WER = {mean_wer:.2f}")
-
     added_amounts = []
     for _, row in output.iterrows():
         added_amounts.append(sum(row["adversarial_data_target"]["amounts"]) - sum(row["data"]["amounts"]))
 
     anad = amount_normalized_accuracy_drop(added_amounts, y_true=y_true, y_adv=y_adv)
     typer.echo(f"aNAD-1000 = {anad:.2f}")
-
+    diversity_rate = diversity_rate(output)
+    typer.echo(f"Diversity_rate = {diversity_rate:.2f}")
     if visualize:
         assert save_to is not None
 
