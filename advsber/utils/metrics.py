@@ -89,6 +89,6 @@ def diversity_rate(output: List[Dict[str, Any]]) -> float:
             if t > len(y_true[i]) - 1:
                 y_ins.append(int(y_adv[i][t]))
             else:
-                if y_adv[i][t] != y_true[i][t]:
+                if int(y_adv[i][t]) != int(y_true[i][t]):
                     y_ins.append(int(y_adv[i][t]))
     return len(list(dict.fromkeys(y_ins))) / len(y_ins)
