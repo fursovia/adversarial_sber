@@ -86,8 +86,14 @@ def diversity_rate(output: List[Dict[str, Any]]) -> float:
     y_ins = []
     for i in range(len(y_adv)):
         for t in range(len(y_adv[i])):
+            # if addition
             if t > len(y_true[i]) - 1:
+                if y_adv[i][t] == "<START>":
+                    y_adv[i][t] = 0
+                if y_adv[i][t] == "<END>":
+                    y_adv[i][t] = -1
                 y_ins.append(int(y_adv[i][t]))
+            # if insertion
             else:
                 if int(y_adv[i][t]) != int(y_true[i][t]):
                     y_ins.append(int(y_adv[i][t]))
