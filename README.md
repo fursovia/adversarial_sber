@@ -28,28 +28,10 @@ poetry shell
 
 ### Training 
 
-Train vanilla BERT (w/o amounts)
+Train language models and classifiers
 
 ```bash
-CUDA_VISIBLE_DEVICES="0" bash bin/train_lm.sh bert ./presets/age
-```
-
-Train BERT (w/ amounts)
-
-```bash
-CUDA_VISIBLE_DEVICES="0" bash bin/train_lm.sh bert_with_amounts ./presets/age
-```
-
-Train substitute classifier
-
-```bash
-CUDA_VISIBLE_DEVICES="0" bash bin/train_clf.sh gru_with_amounts ./presets/age substitute
-```
-
-Train target classifier
-
-```bash
-CUDA_VISIBLE_DEVICES="0" bash bin/train_clf.sh gru_with_amounts ./presets/age target
+CUDA_VISIBLE_DEVICES="0" bash bin/train_all_models.sh
 ```
 
 ### Attacking
