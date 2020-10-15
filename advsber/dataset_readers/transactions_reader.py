@@ -57,7 +57,7 @@ class TransactionsDatasetReader(DatasetReader):
 
         fields = {
             "transactions": TextField(transactions, {"tokens": SingleIdTokenIndexer("transactions")}),
-            "amounts": ArrayField(np.array(amounts, {"tokens": SingleIdTokenIndexer("amounts")})),
+            "amounts": ArrayField(np.array(amounts)),
         }
 
         if label is not None:

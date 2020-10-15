@@ -36,16 +36,6 @@
         }
       }
     },
-    "amounts_field_embedder": {
-      "token_embedders": {
-        "tokens": {
-          "type": "embedding",
-          "embedding_dim": 64,
-          "trainable": true,
-          "vocab_namespace": "amounts"
-        }
-      }
-    },
     "seq2seq_encoder": {
       "type": "lstm",
       "input_size": 128,
