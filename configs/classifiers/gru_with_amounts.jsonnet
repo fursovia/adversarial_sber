@@ -11,19 +11,6 @@
     "type": "from_files",
     "directory": std.extVar("VOCAB_PATH")
   },
-//  "vocabulary": {
-//    "tokens_to_add": {
-//      "transactions": [
-//        "@@MASK@@",
-//        "<START>",
-//        "<END>"
-//      ],
-//    "amounts": [
-//        "<START>",
-//        "<END>"
-//      ]
-//    },
-//  },
   "model": {
     "type": "transactions_classifier",
     "transactions_field_embedder": {
@@ -40,7 +27,7 @@
       "token_embedders": {
         "tokens": {
           "type": "embedding",
-          "embedding_dim": 64,
+          "embedding_dim": 32,
           "trainable": true,
           "vocab_namespace": "amounts"
         }
@@ -48,7 +35,7 @@
     },
     "seq2seq_encoder": {
       "type": "gru",
-      "input_size": 128,
+      "input_size": 96,
       "hidden_size": 128,
       "num_layers": 1,
       "dropout": 0.1,
@@ -60,15 +47,7 @@
       "averaged": true
     },
   },
-//  "distributed": {
-//    "master_address": "127.0.0.1",
-//    "master_port": 29502,
-//    "num_nodes": 1,
-//    "cuda_devices": [
-//      0,
-//      1
-//    ]
-//  },
+
   "data_loader": {
     "batch_size": 1024,
     "shuffle": true,

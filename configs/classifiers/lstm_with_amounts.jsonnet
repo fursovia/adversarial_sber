@@ -1,3 +1,11 @@
+
+local transactions_emb_dim = 64;
+local amounts_emb_dim = 32;
+local lstm_hidden_size = 256;
+local lstm_num_layers = 1;
+local lstm_dropout = 0.1;
+local bidirectional = true;
+
 {
   "dataset_reader": {
     "type": "transactions_reader",
@@ -11,26 +19,13 @@
     "type": "from_files",
     "directory": std.extVar("VOCAB_PATH")
   },
-//  "vocabulary": {
-//    "tokens_to_add": {
-//      "transactions": [
-//        "@@MASK@@",
-//        "<START>",
-//        "<END>"
-//      ],
-//    "amounts": [
-//        "<START>",
-//        "<END>"
-//      ]
-//    },
-//  },
   "model": {
     "type": "transactions_classifier",
     "transactions_field_embedder": {
       "token_embedders": {
         "tokens": {
           "type": "embedding",
-          "embedding_dim": 64,
+          "embedding_dim": transactions_emb_dim,
           "trainable": true,
           "vocab_namespace": "transactions"
         }
@@ -40,35 +35,21 @@
       "token_embedders": {
         "tokens": {
           "type": "embedding",
-          "embedding_dim": 64,
+          "embedding_dim": amounts_emb_dim,
           "trainable": true,
           "vocab_namespace": "amounts"
         }
       }
     },
-    "seq2seq_encoder": {
-      "type": "lstm",
-      "input_size": 128,
-      "hidden_size": 128,
-      "num_layers": 1,
-      "dropout": 0.1,
-      "bidirectional": true
-    },
     "seq2vec_encoder": {
-      "type": "bag_of_embeddings",
-      "embedding_dim": 256,
-      "averaged": true
+      "type": "lstm",
+      "input_size": transactions_emb_dim + amounts_emb_dim,
+      "hidden_size": lstm_hidden_size,
+      "num_layers": lstm_num_layers,
+      "dropout": lstm_dropout,
+      "bidirectional": bidirectional
     },
   },
-//  "distributed": {
-//    "master_address": "127.0.0.1",
-//    "master_port": 29502,
-//    "num_nodes": 1,
-//    "cuda_devices": [
-//      0,
-//      1
-//    ]
-//  },
   "data_loader": {
     "batch_size": 1024,
     "shuffle": true,
