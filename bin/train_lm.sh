@@ -5,16 +5,17 @@
 
 CONFIG_NAME=$1
 DATA_DIR=$2
-DISCRETIZER_NAME=${3:-"discretizer_100_quantile"}
+DISCRETIZER_NAME=${3:-"100_quantile"}
 
 DATASET_NAME=$(basename ${DATA_DIR})
 DATE=$(date +%H%M%S-%d%m)
 EXP_NAME=${DATE}-${CONFIG_NAME}
 
-DISCRETIZER_PATH=./presets/${DATASET_NAME}/${DISCRETIZER_NAME} \
-    LM_TRAIN_DATA_PATH=${DATA_DIR}/lm/train.jsonl \
+
+LM_TRAIN_DATA_PATH=${DATA_DIR}/lm/train.jsonl \
     LM_VALID_DATA_PATH=${DATA_DIR}/lm/valid.jsonl \
-    VOCAB_PATH=./presets/${DATASET_NAME}/${DISCRETIZER_NAME}_vocabulary \
+    DISCRETIZER_PATH=./presets/${DATASET_NAME}/discretizers/${DISCRETIZER_NAME} \
+    VOCAB_PATH=./presets/${DATASET_NAME}/vocabs/${DISCRETIZER_NAME} \
     allennlp train ./configs/language_models/${CONFIG_NAME}.jsonnet \
-    --serialization-dir ./logs/${DATASET_NAME}/lm/${EXP_NAME} \
-    --include-package advsber
+        --serialization-dir ./logs/${DATASET_NAME}/lm/${EXP_NAME} \
+        --include-package advsber
