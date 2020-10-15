@@ -41,8 +41,6 @@ class ConcatFGSM(Attacker):
         # get inputs to the model
         inputs = data_to_tensors(data_to_attack, reader=self.reader, vocab=self.vocab, device=self.device)
 
-        adversarial_idexes = inputs["transactions"]["tokens"]["tokens"][0]
-
         # original probability of the true label
         orig_prob = self.get_clf_probs(inputs)[self.label_to_index(data_to_attack.label)].item()
 
@@ -55,6 +53,7 @@ class ConcatFGSM(Attacker):
             raise NotImplementedError
 
         adv_inputs = data_to_tensors(adv_data, self.reader, self.vocab, self.device)
+        adversarial_indexes = adv_inputs["transactions"]["tokens"]["tokens"][0]
 
         # get mask and transaction embeddings
         emb_out = self.classifier.get_transaction_embeddings(transactions=adv_inputs["transactions"])
@@ -102,9 +101,9 @@ class ConcatFGSM(Attacker):
             embeddings_splitted = [e.detach() for e in embeddings_splitted]
 
             # get adversarial indexes
-            adversarial_idexes[random_idx] = closest_idx
+            adversarial_indexes[random_idx] = closest_idx
 
-            adv_data.transactions = decode_indexes(adversarial_idexes, vocab=self.vocab)
+            adv_data.transactions = decode_indexes(adversarial_indexes, vocab=self.vocab)
             adversarial_inputs = data_to_tensors(adv_data, self.reader, self.vocab, self.device)
 
             # get adversarial probability and adversarial label
