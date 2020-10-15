@@ -2,8 +2,6 @@ from typing import List, Optional
 import jsonlines
 import math
 import logging
-import numpy as np
-from allennlp.data.fields import ArrayField
 from allennlp.common.file_utils import cached_path
 from allennlp.data.dataset_readers.dataset_reader import DatasetReader
 from allennlp.data.fields import TextField, LabelField

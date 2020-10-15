@@ -3,7 +3,6 @@ from typing import Dict, Optional
 import torch
 
 from allennlp.data import TextFieldTensors, Vocabulary
-from allennlp.data.fields import ArrayField
 from allennlp.models.model import Model
 from allennlp.modules import Seq2VecEncoder, Seq2SeqEncoder, TextFieldEmbedder
 from allennlp.training.metrics import CategoricalAccuracy
@@ -44,10 +43,11 @@ class TransactionsClassifier(Model):
         transaction_embeddings: torch.Tensor,
         mask: torch.Tensor,
         label: Optional[torch.Tensor] = None,
-        amounts: Optional[ArrayField] = None,
+        amounts: Optional[TextFieldTensors] = None,
     ) -> Dict[str, torch.Tensor]:
 
         if amounts is not None:
+            amount_embeddings = self._amounts_field_embedder(amounts)
             transaction_embeddings = torch.cat((transaction_embeddings, amount_embeddings), dim=-1)
 
         if self._seq2seq_encoder is not None:
@@ -70,7 +70,7 @@ class TransactionsClassifier(Model):
         self,
         transactions: TextFieldTensors,
         label: Optional[torch.Tensor] = None,
-        amounts: Optional[ArrayField] = None,
+        amounts: Optional[TextFieldTensors] = None,
         **kwargs,
     ) -> Dict[str, torch.Tensor]:
         emb_out = self.get_transaction_embeddings(transactions)
