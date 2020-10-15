@@ -3,8 +3,6 @@ from allennlp.common import Params
 from allennlp.data import Batch, DatasetReader, Vocabulary
 from allennlp.models import Model
 
-# we need to register all modules, so they are available in here
-# import advsber  # noqa pylint: disable=unused-import
 from advsber.tests import CONFIG_DIR, PRESETS_DIR
 
 CLF_CONFIGS_DIR = CONFIG_DIR / "classifiers"
