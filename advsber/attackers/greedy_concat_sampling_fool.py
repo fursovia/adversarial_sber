@@ -45,7 +45,7 @@ class GreedyConcatSamplingFool(Attacker):
 
     @torch.no_grad()
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
-        inputs_to_attack = data_to_tensors(data_to_attack, self.reader, self.attacker.lm_model.vocab, self.device)
+        inputs_to_attack = data_to_tensors(data_to_attack, self.reader, self.vocab, self.device)
         orig_prob = self.get_clf_probs(inputs_to_attack)[self.label_to_index(data_to_attack.label)].item()
 
         adv_data = deepcopy(data_to_attack)
@@ -57,7 +57,7 @@ class GreedyConcatSamplingFool(Attacker):
             adv_data = output.to_dict()["adversarial_data"]
             adv_data = TransactionsData(**adv_data)
 
-        adv_inputs = data_to_tensors(adv_data, self.reader, self.attacker.lm_model.vocab, self.device)
+        adv_inputs = data_to_tensors(adv_data, self.reader, self.vocab, self.device)
         adv_probs = self.get_clf_probs(adv_inputs)
         adv_prob = adv_probs[self.label_to_index(data_to_attack.label)].item()
 

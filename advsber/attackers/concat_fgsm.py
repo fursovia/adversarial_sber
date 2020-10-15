@@ -32,9 +32,6 @@ class ConcatFGSM(Attacker):
         self.epsilon = epsilon
 
         self.emb_layer = util.find_embedding_layer(self.classifier).weight
-        self.special_indexes = [
-            self.classifier.vocab.get_token_index(token, "transactions") for token in self.SPECIAL_TOKENS
-        ]
 
         self.position = position
         self.num_tokens_to_add = num_tokens_to_add
@@ -42,7 +39,7 @@ class ConcatFGSM(Attacker):
 
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
         # get inputs to the model
-        inputs = data_to_tensors(data_to_attack, reader=self.reader, vocab=self.classifier.vocab, device=self.device)
+        inputs = data_to_tensors(data_to_attack, reader=self.reader, vocab=self.vocab, device=self.device)
 
         # get original indexes of a sequence
         orig_indexes = inputs["transactions"]["tokens"]["tokens"]
@@ -58,7 +55,7 @@ class ConcatFGSM(Attacker):
         else:
             raise NotImplementedError
 
-        adv_inputs = data_to_tensors(adv_data, self.reader, self.classifier.vocab, self.device)
+        adv_inputs = data_to_tensors(adv_data, self.reader, self.vocab, self.device)
 
         # get mask and transaction embeddings
         emb_out = self.classifier.get_transaction_embeddings(transactions=adv_inputs["transactions"])
@@ -110,9 +107,9 @@ class ConcatFGSM(Attacker):
             adversarial_idexes[0, random_idx] = closest_idx
 
             adv_data = deepcopy(data_to_attack)
-            adv_data.transactions = decode_indexes(adversarial_idexes[0], vocab=self.classifier.vocab)
+            adv_data.transactions = decode_indexes(adversarial_idexes[0], vocab=self.vocab)
 
-            adversarial_inputs = data_to_tensors(adv_data, self.reader, self.classifier.vocab, self.device)
+            adversarial_inputs = data_to_tensors(adv_data, self.reader, self.vocab, self.device)
 
             # get adversarial probability and adversarial label
             adv_probs = self.get_clf_probs(adversarial_inputs)

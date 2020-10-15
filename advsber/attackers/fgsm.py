@@ -31,7 +31,7 @@ class FGSM(Attacker):
 
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
         # get inputs to the model
-        inputs = data_to_tensors(data_to_attack, reader=self.reader, vocab=self.classifier.vocab, device=self.device)
+        inputs = data_to_tensors(data_to_attack, reader=self.reader, vocab=self.vocab, device=self.device)
 
         # get original indexes of a sequence
         orig_indexes = inputs["transactions"]["tokens"]["tokens"]
@@ -83,9 +83,9 @@ class FGSM(Attacker):
             adversarial_idexes[0, random_idx] = closest_idx
 
             adv_data = deepcopy(data_to_attack)
-            adv_data.transactions = decode_indexes(adversarial_idexes[0], vocab=self.classifier.vocab)
+            adv_data.transactions = decode_indexes(adversarial_idexes[0], vocab=self.vocab)
 
-            adv_inputs = data_to_tensors(adv_data, self.reader, self.classifier.vocab, self.device)
+            adv_inputs = data_to_tensors(adv_data, self.reader, self.vocab, self.device)
 
             # get adversarial probability and adversarial label
             adv_probs = self.get_clf_probs(adv_inputs)

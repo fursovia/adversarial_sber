@@ -47,7 +47,7 @@ class ConcatSamplingFool(SamplingFool):
 
     @torch.no_grad()
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
-        inputs_to_attack = data_to_tensors(data_to_attack, self.reader, self.lm_model.vocab, self.device)
+        inputs_to_attack = data_to_tensors(data_to_attack, self.reader, self.vocab, self.device)
 
         orig_prob = self.get_clf_probs(inputs_to_attack)[self.label_to_index(data_to_attack.label)].item()
 
@@ -62,7 +62,7 @@ class ConcatSamplingFool(SamplingFool):
         else:
             raise NotImplementedError
 
-        adv_inputs = data_to_tensors(adv_data, self.reader, self.lm_model.vocab, self.device)
+        adv_inputs = data_to_tensors(adv_data, self.reader, self.vocab, self.device)
 
         logits = self.get_lm_logits(adv_inputs)
         # drop start and end tokens
@@ -83,12 +83,12 @@ class ConcatSamplingFool(SamplingFool):
 
         if self.position == Position.END:
             adversarial_sequences = [
-                data_to_attack.transactions + decode_indexes(idx, self.lm_model.vocab, drop_start_end=False)
+                data_to_attack.transactions + decode_indexes(idx, self.vocab, drop_start_end=False)
                 for idx in indexes
             ]
         elif self.position == Position.START:
             adversarial_sequences = [
-                decode_indexes(idx, self.lm_model.vocab, drop_start_end=False) + data_to_attack.transactions
+                decode_indexes(idx, self.vocab, drop_start_end=False) + data_to_attack.transactions
                 for idx in indexes
             ]
         else:
@@ -97,7 +97,7 @@ class ConcatSamplingFool(SamplingFool):
         outputs = []
         for adv_sequence in adversarial_sequences:
             adv_data.transactions = adv_sequence
-            adv_inputs = data_to_tensors(adv_data, self.reader, self.lm_model.vocab, self.device)
+            adv_inputs = data_to_tensors(adv_data, self.reader, self.vocab, self.device)
 
             adv_probs = self.get_clf_probs(adv_inputs)
             adv_label = self.probs_to_label(adv_probs)

@@ -44,7 +44,7 @@ class SamplingFool(Attacker):
 
     @torch.no_grad()
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
-        inputs_to_attack = data_to_tensors(data_to_attack, self.reader, self.lm_model.vocab, self.device)
+        inputs_to_attack = data_to_tensors(data_to_attack, self.reader, self.vocab, self.device)
 
         orig_prob = self.get_clf_probs(inputs_to_attack)[self.label_to_index(data_to_attack.label)].item()
 
@@ -53,13 +53,13 @@ class SamplingFool(Attacker):
         probs = torch.softmax(logits, dim=-1)
         probs[:, :, self.special_indexes] = 0.0
         indexes = Categorical(probs=probs[0]).sample((self.num_samples,))
-        adversarial_sequences = [decode_indexes(idx, self.lm_model.vocab) for idx in indexes]
+        adversarial_sequences = [decode_indexes(idx, self.vocab) for idx in indexes]
 
         outputs = []
         adv_data = deepcopy(data_to_attack)
         for adv_sequence in adversarial_sequences:
             adv_data.transactions = adv_sequence
-            adv_inputs = data_to_tensors(adv_data, self.reader, self.lm_model.vocab, self.device)
+            adv_inputs = data_to_tensors(adv_data, self.reader, self.vocab, self.device)
 
             adv_probs = self.get_clf_probs(adv_inputs)
             adv_data.label = self.probs_to_label(adv_probs)

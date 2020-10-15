@@ -31,13 +31,14 @@ class Attacker(ABC, Registrable):
         self.classifier = classifier
         self.classifier.eval()
         self.reader = reader
+        self.vocab = self.classifier.vocab
 
         self.device = device
         if self.device >= 0 and torch.cuda.is_available():
             self.classifier.cuda(self.device)
 
         self.special_indexes = [
-            self.classifier.vocab.get_token_index(token, "transactions") for token in self.SPECIAL_TOKENS
+            self.vocab.get_token_index(token, "transactions") for token in self.SPECIAL_TOKENS
         ]
 
     @abstractmethod
@@ -54,11 +55,11 @@ class Attacker(ABC, Registrable):
         return label
 
     def index_to_label(self, label_idx: int) -> int:
-        label = self.classifier.vocab.get_index_to_token_vocabulary("labels").get(label_idx, str(label_idx))
+        label = self.vocab.get_index_to_token_vocabulary("labels").get(label_idx, str(label_idx))
         return int(label)
 
     def label_to_index(self, label: int) -> int:
-        label_idx = self.classifier.vocab.get_token_to_index_vocabulary("labels").get(str(label), label)
+        label_idx = self.vocab.get_token_to_index_vocabulary("labels").get(str(label), label)
         return label_idx
 
     @staticmethod
