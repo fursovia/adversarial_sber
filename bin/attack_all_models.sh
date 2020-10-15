@@ -19,7 +19,7 @@ for dataset_name in "age" "gender"; do
         attack_name=$(basename ${config_path})
         attack_name="${attack_name%.*}"
 
-        RESULTS_PATH=${RESULTS_DIR}/${DATE}/${dataset_name}/${TARGET_CONFIG_NAME}_with_${SUBSTITUTE_CONFIG_NAME}/${attack_name}
+        RESULTS_PATH=${RESULTS_DIR}/${DATE}/${dataset_name}/${TARGET_CONFIG_NAME}_via_${SUBSTITUTE_CONFIG_NAME}/${attack_name}
         mkdir -p ${RESULTS_PATH}
 
         DATA_PATH=${CURR_DATA_PATH} \
