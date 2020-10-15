@@ -6,16 +6,16 @@
 CONFIG_NAME=$1
 DATA_DIR=$2
 CLF_TYPE=${3:-"substitute"}
-DISCRETIZER_NAME=${4:-"discretizer_100_quantile"}
+DISCRETIZER_NAME=${4:-"100_quantile"}
 
 DATASET_NAME=$(basename ${DATA_DIR})
 DATE=$(date +%H%M%S-%d%m)
 EXP_NAME=${DATE}-${CONFIG_NAME}
 
-DISCRETIZER_PATH=./presets/${DATASET_NAME}/${DISCRETIZER_NAME} \
-    CLF_TRAIN_DATA_PATH=${DATA_DIR}/${CLF_TYPE}_clf/train.jsonl \
+CLF_TRAIN_DATA_PATH=${DATA_DIR}/${CLF_TYPE}_clf/train.jsonl \
     CLF_VALID_DATA_PATH=${DATA_DIR}/${CLF_TYPE}_clf/valid.jsonl \
-    VOCAB_PATH=./presets/${DATASET_NAME}/${DISCRETIZER_NAME}_vocabulary \
+    DISCRETIZER_PATH=./presets/${DATASET_NAME}/discretizers/${DISCRETIZER_NAME} \
+    VOCAB_PATH=./presets/${DATASET_NAME}/vocabs/${DISCRETIZER_NAME} \
     allennlp train ./configs/classifiers/${CONFIG_NAME}.jsonnet \
-    --serialization-dir ./logs/${DATASET_NAME}/${CLF_TYPE}_clf/${EXP_NAME} \
-    --include-package advsber
+        --serialization-dir ./logs/${DATASET_NAME}/${CLF_TYPE}_clf/${EXP_NAME} \
+        --include-package advsber
