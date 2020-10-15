@@ -12,6 +12,8 @@ from allennlp.nn import util
 
 @Model.register("transactions_classifier")
 class TransactionsClassifier(Model):
+    default_predictor = "transactions"
+
     def __init__(
         self,
         vocab: Vocabulary,
@@ -90,3 +92,17 @@ class TransactionsClassifier(Model):
     def get_metrics(self, reset: bool = False) -> Dict[str, float]:
         metrics = {"accuracy": self._accuracy.get_metric(reset)}
         return metrics
+
+    def make_output_human_readable(self, output_dict: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
+        predictions = output_dict["probs"]
+        if predictions.dim() == 2:
+            predictions_list = [predictions[i] for i in range(predictions.shape[0])]
+        else:
+            predictions_list = [predictions]
+        classes = []
+        for prediction in predictions_list:
+            label_idx = prediction.argmax(dim=-1).item()
+            label_str = self.vocab.get_index_to_token_vocabulary("labels").get(label_idx, str(label_idx))
+            classes.append(label_str)
+        output_dict["label"] = classes
+        return output_dict
