@@ -36,7 +36,7 @@ def main(output_path: str, save_to: str = typer.Option(None), target_clf_path: s
         for i, pred in enumerate(preds):
             label = pred["label"]
             prob = pred["probs"][predictor._model.vocab.get_token_index(str(label), namespace="labels")]
-            output["adversarial_data"][i]["label"] = label
+            output["adversarial_data"][i]["label"] = int(label)
             output["adversarial_probability"][i] = prob
 
     y_true = [output["data"][i]["label"] for i in range(len(output))]
