@@ -7,7 +7,7 @@ from allennlp.common.registrable import Registrable
 from allennlp.models import Model
 import torch
 
-from advsber.settings import TransactionsData, ModelsInput
+from advsber.settings import TransactionsData, ModelsInput, START_TOKEN, END_TOKEN, MASK_TOKEN
 from advsber.dataset_readers.transactions_reader import TransactionsDatasetReader
 
 
@@ -24,6 +24,9 @@ class AttackerOutput:
 
 
 class Attacker(ABC, Registrable):
+
+    SPECIAL_TOKENS = ("@@UNKNOWN@@", "@@PADDING@@", START_TOKEN, END_TOKEN, MASK_TOKEN)
+
     def __init__(self, classifier: Model, reader: TransactionsDatasetReader, device: int = -1,) -> None:
         self.classifier = classifier
         self.classifier.eval()
@@ -32,6 +35,10 @@ class Attacker(ABC, Registrable):
         self.device = device
         if self.device >= 0 and torch.cuda.is_available():
             self.classifier.cuda(self.device)
+
+        self.special_indexes = [
+            self.classifier.vocab.get_token_index(token, "transactions") for token in self.SPECIAL_TOKENS
+        ]
 
     @abstractmethod
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:

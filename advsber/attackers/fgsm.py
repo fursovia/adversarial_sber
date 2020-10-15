@@ -6,7 +6,7 @@ from allennlp.models import Model
 from allennlp.nn import util
 
 from advsber.attackers.attacker import Attacker, AttackerOutput
-from advsber.settings import TransactionsData, START_TOKEN, END_TOKEN, MASK_TOKEN
+from advsber.settings import TransactionsData
 from advsber.dataset_readers.transactions_reader import TransactionsDatasetReader
 from advsber.utils.data import data_to_tensors, decode_indexes
 from advsber.utils.metrics import word_error_rate_on_sequences
@@ -14,8 +14,6 @@ from advsber.utils.metrics import word_error_rate_on_sequences
 
 @Attacker.register("fgsm")
 class FGSM(Attacker):
-
-    SPECIAL_TOKENS = ("@@UNKNOWN@@", "@@PADDING@@", START_TOKEN, END_TOKEN, MASK_TOKEN)
 
     def __init__(
         self,
@@ -26,13 +24,11 @@ class FGSM(Attacker):
         device: int = -1,
     ) -> None:
         super().__init__(classifier=classifier, reader=reader, device=device)
+        self.classifier = self.classifier.train()
         self.num_steps = num_steps
         self.epsilon = epsilon
 
         self.emb_layer = util.find_embedding_layer(self.classifier).weight
-        self.special_indexes = [
-            self.classifier.vocab.get_token_index(token, "transactions") for token in self.SPECIAL_TOKENS
-        ]
 
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
         # get inputs to the model

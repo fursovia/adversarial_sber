@@ -7,7 +7,7 @@ from allennlp.nn import util
 
 from advsber.attackers.attacker import Attacker, AttackerOutput
 from advsber.attackers.concat_sampling_fool import Position
-from advsber.settings import TransactionsData, START_TOKEN, END_TOKEN, MASK_TOKEN
+from advsber.settings import TransactionsData, MASK_TOKEN
 from advsber.dataset_readers.transactions_reader import TransactionsDatasetReader
 from advsber.utils.data import data_to_tensors, decode_indexes, generate_transaction_amounts
 from advsber.utils.metrics import word_error_rate_on_sequences
@@ -15,8 +15,6 @@ from advsber.utils.metrics import word_error_rate_on_sequences
 
 @Attacker.register("concat_fgsm")
 class ConcatFGSM(Attacker):
-
-    SPECIAL_TOKENS = ("@@UNKNOWN@@", "@@PADDING@@", START_TOKEN, END_TOKEN, MASK_TOKEN)
 
     def __init__(
         self,
@@ -30,6 +28,7 @@ class ConcatFGSM(Attacker):
         device: int = -1,
     ) -> None:
         super().__init__(classifier=classifier, reader=reader, device=device)
+        self.classifier = self.classifier.train()
         self.num_steps = num_steps
         self.epsilon = epsilon
 
