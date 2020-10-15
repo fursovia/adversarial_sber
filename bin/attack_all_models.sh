@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+SUBSTITUTE_CONFIG_NAME="gru_with_amounts"
+TARGET_CONFIG_NAME="lstm_with_amounts"
+
 NUM_SAMPLES=${1:-"100"}
 DATA_DIR=${2:-"/notebook/fursov/adversarial_sber/datasets"}
 
@@ -8,8 +11,6 @@ PRESETS_DIR="./presets"
 RESULTS_DIR="./results"
 DATE=$(date +%H%M%S-%d%m)
 
-SUBSTITUTE_CONFIG_NAME="gru_with_amounts"
-TARGET_CONFIG_NAME="lstm_with_amounts"
 
 for dataset_name in "age" "gender"; do
     CURR_DATA_PATH=${DATA_DIR}/${dataset_name}/test.jsonl
