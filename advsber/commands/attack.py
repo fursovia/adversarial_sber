@@ -15,7 +15,7 @@ def main(config_path: str, samples: int = typer.Option(None, help="Number of sam
     data = load_jsonlines(params["data_path"])[:samples]
 
     output_path = params["output_path"]
-    typer.echo(f"Saving results to {output_path}")
+    typer.secho(f"Saving results to {output_path} ...", fg="green")
     with jsonlines.open(output_path, "w") as writer:
         for el in tqdm(data):
             adversarial_output = attacker.attack(TransactionsData(**el))
