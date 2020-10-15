@@ -11,7 +11,6 @@ from advsber.utils.data import load_jsonlines
 def main(config_path: str, samples: int = typer.Option(None, help="Number of samples")):
     params = Params.from_file(config_path)
     # enable for testing params['attacker']['device'] = -1
-    params['attacker']['device'] = -1
     attacker = Attacker.from_params(params["attacker"])
 
     data = load_jsonlines(params["data_path"])[:samples]
