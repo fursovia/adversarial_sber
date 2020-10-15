@@ -101,5 +101,6 @@ class FGSM(Attacker):
             outputs.append(output)
 
         best_output = self.find_best_attack(outputs)
+        best_output.history = [output.to_dict() for output in outputs]
 
         return best_output
