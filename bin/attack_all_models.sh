@@ -3,7 +3,7 @@
 SUBSTITUTE_CONFIG_NAME="gru_with_amounts"
 TARGET_CONFIG_NAME="lstm_with_amounts"
 
-NUM_SAMPLES=${1:-"100"}
+NUM_SAMPLES=${1:-"500"}
 DATA_DIR=${2:-"/notebook/fursov/adversarial_sber/datasets"}
 
 CONFIG_DIR="configs/attackers"
