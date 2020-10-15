@@ -19,7 +19,7 @@ local clf_path = std.extVar("CLF_PATH");
       "archive_file": clf_path
     },
     "num_samples": 100,
-    "temperature": 1.5,
+    "temperature": 2.0,
     "device": 0
   }
 }
