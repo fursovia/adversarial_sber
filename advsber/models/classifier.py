@@ -69,7 +69,7 @@ class TransactionsClassifier(Model):
         self,
         transactions: TextFieldTensors,
         label: Optional[torch.Tensor] = None,
-        amounts:Optional[ArrayField] = None,
+        amounts: Optional[ArrayField] = None,
         **kwargs,
     ) -> Dict[str, torch.Tensor]:
         emb_out = self.get_transaction_embeddings(transactions)
