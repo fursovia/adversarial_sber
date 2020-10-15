@@ -15,7 +15,6 @@ from advsber.utils.metrics import word_error_rate_on_sequences
 
 @Attacker.register("concat_fgsm")
 class ConcatFGSM(Attacker):
-
     def __init__(
         self,
         classifier: Model,  # TransactionsClassifier

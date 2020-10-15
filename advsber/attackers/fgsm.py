@@ -14,7 +14,6 @@ from advsber.utils.metrics import word_error_rate_on_sequences
 
 @Attacker.register("fgsm")
 class FGSM(Attacker):
-
     def __init__(
         self,
         classifier: Model,  # TransactionsClassifier
