@@ -5,9 +5,7 @@
 # architectures?
 
 DATA_DIR=${1:-"/notebook/fursov/adversarial_sber/datasets"}
-CONFIG_DIR="configs/classifiers"
 DISCRETIZER_NAME="100_quantile"
-
 LM_CONFIG="bert_with_amounts"
 
 
