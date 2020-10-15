@@ -20,6 +20,7 @@ class TransactionsClassifier(Model):
         seq2vec_encoder: Seq2VecEncoder,
         seq2seq_encoder: Optional[Seq2SeqEncoder] = None,
         num_labels: Optional[int] = None,
+        amounts_field_embedder: Optional[TextFieldEmbedder] = None,
     ) -> None:
 
         super().__init__(vocab)
@@ -47,7 +48,7 @@ class TransactionsClassifier(Model):
     ) -> Dict[str, torch.Tensor]:
 
         if amounts is not None:
-            transaction_embeddings = torch.cat((transaction_embeddings, amounts.as_tensor()), dim=-1)
+            transaction_embeddings = torch.cat((transaction_embeddings, amount_embeddings), dim=-1)
 
         if self._seq2seq_encoder is not None:
             transaction_embeddings = self._seq2seq_encoder(transaction_embeddings, mask=mask)
