@@ -27,6 +27,9 @@ for dataset_name in "age" "gender"; do
                     MASKED_LM_PATH=${PRESETS_DIR}/${dataset_name}/models/lm/bert_with_amounts.tar.gz \
                     CLF_PATH=${PRESETS_DIR}/${dataset_name}/models/${clf_type}_clf/${clf_config_name}.tar.gz \
                     PYTHONPATH=. python advsber/commands/attack.py ${config_path} --samples ${NUM_SAMPLES}
+
+                PYTHONPATH=. python advsber/commands/evaluate.py ${RESULTS_PATH}/output.json \
+                    --save-to=${RESULTS_PATH}/metrics.json
             done
         done
     done
