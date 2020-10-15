@@ -41,8 +41,7 @@ class ConcatFGSM(Attacker):
         # get inputs to the model
         inputs = data_to_tensors(data_to_attack, reader=self.reader, vocab=self.vocab, device=self.device)
 
-        # get original indexes of a sequence
-        orig_indexes = inputs["transactions"]["tokens"]["tokens"]
+        adversarial_idexes = inputs["transactions"]["tokens"]["tokens"][0]
 
         # original probability of the true label
         orig_prob = self.get_clf_probs(inputs)[self.label_to_index(data_to_attack.label)].item()
@@ -69,7 +68,7 @@ class ConcatFGSM(Attacker):
             # choose random index of embeddings (except for start/end tokens)
             if self.position == Position.END:
                 random_idx = random.randint(
-                    len(data_to_attack.transactions) - 2, max(1, len(adv_data.transactions) - 2)
+                    len(data_to_attack.transactions) + 1, max(1, len(adv_data.transactions) - 2)
                 )
             else:
                 raise NotImplementedError
@@ -103,12 +102,9 @@ class ConcatFGSM(Attacker):
             embeddings_splitted = [e.detach() for e in embeddings_splitted]
 
             # get adversarial indexes
-            adversarial_idexes = orig_indexes.clone()
-            adversarial_idexes[0, random_idx] = closest_idx
+            adversarial_idexes[random_idx] = closest_idx
 
-            adv_data = deepcopy(data_to_attack)
-            adv_data.transactions = decode_indexes(adversarial_idexes[0], vocab=self.vocab)
-
+            adv_data.transactions = decode_indexes(adversarial_idexes, vocab=self.vocab)
             adversarial_inputs = data_to_tensors(adv_data, self.reader, self.vocab, self.device)
 
             # get adversarial probability and adversarial label
