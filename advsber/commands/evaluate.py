@@ -3,6 +3,8 @@ import json
 import typer
 import pandas as pd
 import numpy as np
+from allennlp.predictors import Predictor
+from allennlp.models.archival import load_archive
 
 from advsber.utils.data import load_jsonlines
 from advsber.utils.metrics import (
@@ -13,9 +15,29 @@ from advsber.utils.metrics import (
 )
 
 
-def main(output_path: str, save_to: str = typer.Option(None), visualize: bool = typer.Option(False)):
+def get_predictor(archive_path: str) -> Predictor:
+    archive = load_archive(archive_path, cuda_device=-1)
+    predictor = Predictor.from_archive(archive=archive, predictor_name="transactions")
+    return predictor
+
+
+def main(output_path: str, save_to: str = typer.Option(None), target_clf_path: str = typer.Option(None)):
     output = load_jsonlines(output_path)
     output = pd.DataFrame(output).drop(columns="history")
+
+    if target_clf_path is not None:
+        predictor = get_predictor(target_clf_path)
+        data = [
+            {"transactions": adv_example["transactions"], "amounts": adv_example["amounts"]}
+            for adv_example in output["adversarial_data"]
+        ]
+        preds = predictor.predict_batch_json(data)
+
+        for i, pred in enumerate(preds):
+            label = pred["label"]
+            prob = pred["probs"][predictor._model.vocab.get_token_index(str(label), namespace="labels")]
+            output["adversarial_data"][i]["label"] = label
+            output["adversarial_data"][i]["adversarial_probability"] = prob
 
     y_true = [output["data"][i]["label"] for i in range(len(output))]
     y_adv = [output["adversarial_data"][i]["label"] for i in range(len(output))]
@@ -37,9 +59,6 @@ def main(output_path: str, save_to: str = typer.Option(None), visualize: bool = 
 
     anad = amount_normalized_accuracy_drop(added_amounts, y_true=y_true, y_adv=y_adv)
     typer.echo(f"aNAD-1000 = {anad:.2f}")
-
-    if visualize:
-        assert save_to is not None
 
     if save_to is not None:
         metrics = {"NAD": nad, "ME": misclf_error, "PD": prob_drop, "Mean_WER": mean_wer, "aNAD-1000": anad}
