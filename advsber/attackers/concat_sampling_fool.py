@@ -75,7 +75,11 @@ class ConcatSamplingFool(SamplingFool):
         else:
             raise NotImplementedError
 
-        indexes = Categorical(logits=logits_to_sample / self.temperature).sample((self.num_samples,))
+        logits_to_sample = logits_to_sample / self.temperature
+        probs = torch.softmax(logits_to_sample, dim=-1)
+        probs[:, self.special_indexes] = 0.0
+
+        indexes = Categorical(probs=probs).sample((self.num_samples,))
 
         if self.position == Position.END:
             adversarial_sequences = [

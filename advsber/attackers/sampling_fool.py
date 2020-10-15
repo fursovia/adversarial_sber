@@ -49,7 +49,10 @@ class SamplingFool(Attacker):
         orig_prob = self.get_clf_probs(inputs_to_attack)[self.label_to_index(data_to_attack.label)].item()
 
         logits = self.get_lm_logits(inputs_to_attack)
-        indexes = Categorical(logits=logits[0] / self.temperature).sample((self.num_samples,))
+        logits = logits / self.temperature
+        probs = torch.softmax(logits, dim=-1)
+        probs[:, :, self.special_indexes] = 0.0
+        indexes = Categorical(probs=probs[0]).sample((self.num_samples,))
         adversarial_sequences = [decode_indexes(idx, self.lm_model.vocab) for idx in indexes]
 
         outputs = []
