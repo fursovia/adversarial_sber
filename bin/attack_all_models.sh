@@ -32,4 +32,9 @@ for dataset_name in "age" "gender"; do
             --save-to=${RESULTS_PATH}/metrics.json \
             --target-clf-path=${PRESETS_DIR}/${dataset_name}/models/target_clf/${TARGET_CONFIG_NAME}.tar.gz
     done
+
+    python advsber/commands/aggregate.py ${RESULTS_DIR}/${DATE}/${dataset_name}
+
 done
+
+python advsber/commands/aggregate.py ${RESULTS_DIR}/${DATE}
