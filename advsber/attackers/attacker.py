@@ -37,9 +37,7 @@ class Attacker(ABC, Registrable):
         if self.device >= 0 and torch.cuda.is_available():
             self.classifier.cuda(self.device)
 
-        self.special_indexes = [
-            self.vocab.get_token_index(token, "transactions") for token in self.SPECIAL_TOKENS
-        ]
+        self.special_indexes = [self.vocab.get_token_index(token, "transactions") for token in self.SPECIAL_TOKENS]
 
     @abstractmethod
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
