@@ -12,6 +12,7 @@ from advsber.utils.metrics import (
     amount_normalized_accuracy_drop,
     misclassification_error,
     probability_drop,
+    diversity_rate,
 )
 
 
@@ -61,10 +62,10 @@ def main(output_path: str, save_to: str = typer.Option(None), target_clf_path: s
 
     anad = amount_normalized_accuracy_drop(added_amounts, y_true=y_true, y_adv=y_adv)
     typer.echo(f"aNAD-1000 = {anad:.2f}")
-
+    diversity = diversity_rate(output)
+    typer.echo(f"Diversity_rate = {diversity:.2f}")
     if save_to is not None:
-        metrics = {"NAD": nad, "ME": misclf_error, "PD": prob_drop, "Mean_WER": mean_wer, "aNAD-1000": anad}
-
+        metrics = {"NAD": nad, "ME": misclf_error, "PD": prob_drop, "Mean_WER": mean_wer, "aNAD-1000": anad, "diversity_rate": diversity}
         with open(save_to, "w") as f:
             json.dump(metrics, f, indent=4)
 

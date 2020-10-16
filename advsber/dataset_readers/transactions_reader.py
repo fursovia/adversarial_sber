@@ -2,9 +2,7 @@ from typing import List, Optional
 import jsonlines
 import math
 import logging
-import numpy as np
-from allennlp.data import TextFieldTensors, Vocabulary, fields
-from allennlp.data.fields import ArrayField
+
 from allennlp.common.file_utils import cached_path
 from allennlp.data.dataset_readers.dataset_reader import DatasetReader
 from allennlp.data.fields import TextField, LabelField
@@ -21,12 +19,7 @@ logger = logging.getLogger(__name__)
 
 @DatasetReader.register("transactions_reader")
 class TransactionsDatasetReader(DatasetReader):
-    def __init__(
-        self,
-        discretizer_path: str,
-        max_sequence_length: int = None,
-        lazy: bool = False,
-    ) -> None:
+    def __init__(self, discretizer_path: str, max_sequence_length: int = None, lazy: bool = False,) -> None:
         super().__init__(lazy=lazy)
 
         self.discretizer = load_discretizer(discretizer_path)
@@ -58,7 +51,7 @@ class TransactionsDatasetReader(DatasetReader):
 
         fields = {
             "transactions": TextField(transactions, {"tokens": SingleIdTokenIndexer("transactions")}),
-            "amounts": ArrayField(amounts, {"tokens": SingleIdTokenIndexer("transactions")}),
+            "amounts": TextField(amounts, {"tokens": SingleIdTokenIndexer("amounts")}),
         }
 
         if label is not None:
