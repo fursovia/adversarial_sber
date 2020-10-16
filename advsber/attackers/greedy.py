@@ -1,4 +1,5 @@
 from copy import deepcopy
+from typing import Optional
 
 import torch
 import numpy as np
@@ -14,7 +15,7 @@ from advsber.settings import TransactionsData
 @Attacker.register("greedy")
 class GreedyAttacker(Attacker):
     def __init__(
-        self, classifier: Model, reader: TransactionsDatasetReader, num_steps: int, device: int = -1,
+        self, classifier: Model, reader: TransactionsDatasetReader, num_steps: Optional[int] = None, device: int = -1,
     ) -> None:
         super().__init__(classifier=classifier, reader=reader, device=device)
         self._num_steps = num_steps
@@ -29,10 +30,10 @@ class GreedyAttacker(Attacker):
         orig_prob = self.get_probability_of_data(data_to_attack)
         adv_data = deepcopy(data_to_attack)
 
-        indexes_to_flip = np.random.randint(0, len(data_to_attack), size=self._num_steps)
+        num_steps = self._num_steps or len(data_to_attack)
 
         outputs = []
-        for index_to_flip in indexes_to_flip:
+        for index_to_flip in range(num_steps):
             probabilities = {}
 
             for idx, token in self.vocab.get_index_to_token_vocabulary(namespace="transactions").items():
