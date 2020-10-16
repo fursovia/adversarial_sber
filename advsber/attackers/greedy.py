@@ -31,9 +31,10 @@ class GreedyAttacker(Attacker):
         adv_data = deepcopy(data_to_attack)
 
         num_steps = self._num_steps or len(data_to_attack)
+        indexes_to_flip = np.random.randint(0, len(data_to_attack), size=num_steps)
 
         outputs = []
-        for index_to_flip in range(num_steps):
+        for index_to_flip in indexes_to_flip:
             probabilities = {}
 
             for idx, token in self.vocab.get_index_to_token_vocabulary(namespace="transactions").items():
