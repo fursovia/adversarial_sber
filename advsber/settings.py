@@ -20,5 +20,11 @@ class TransactionsData:
     label: int
     client_id: Optional[int] = None
 
+    def __post_init__(self) -> None:
+        assert len(self.transactions) == len(self.amounts)
+
+    def __len__(self) -> int:
+        return len(self.transactions)
+
 
 ModelsInput = Dict[str, Union[TextFieldTensors, torch.Tensor]]
