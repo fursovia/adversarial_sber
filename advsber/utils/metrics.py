@@ -78,6 +78,8 @@ def amount_normalized_accuracy_drop(
             nads.append(0.0)
 
     return sum(nads) / len(nads)
+
+
 def diversity_rate(output: List[Dict[str, Any]]) -> float:
     y_true = [output["data"][i]["transactions"] for i in range(len(output))]
     y_adv = [output["adversarial_data_target"][i]["transactions"] for i in range(len(output))]
@@ -96,4 +98,3 @@ def diversity_rate(output: List[Dict[str, Any]]) -> float:
                 if int(y_adv[i][t]) != int(y_true[i][t]):
                     y_ins.append(int(y_adv[i][t]))
     return len(list(dict.fromkeys(y_ins))) / len(y_ins)
-

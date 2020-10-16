@@ -65,7 +65,14 @@ def main(output_path: str, save_to: str = typer.Option(None), target_clf_path: s
     diversity = diversity_rate(output)
     typer.echo(f"Diversity_rate = {diversity:.2f}")
     if save_to is not None:
-        metrics = {"NAD": nad, "ME": misclf_error, "PD": prob_drop, "Mean_WER": mean_wer, "aNAD-1000": anad, "diversity_rate": diversity}
+        metrics = {
+            "NAD": nad,
+            "ME": misclf_error,
+            "PD": prob_drop,
+            "Mean_WER": mean_wer,
+            "aNAD-1000": anad,
+            "diversity_rate": diversity,
+        }
         with open(save_to, "w") as f:
             json.dump(metrics, f, indent=4)
 
