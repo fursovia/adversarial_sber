@@ -2,10 +2,11 @@ from typing import List, Optional
 import jsonlines
 import math
 import logging
-
+import typer
+import numpy as np
 from allennlp.common.file_utils import cached_path
 from allennlp.data.dataset_readers.dataset_reader import DatasetReader
-from allennlp.data.fields import TextField, LabelField
+from allennlp.data.fields import TextField, LabelField, ArrayField
 from allennlp.data.instance import Instance
 from allennlp.data.token_indexers import SingleIdTokenIndexer
 from allennlp.data.tokenizers import WhitespaceTokenizer, Token
@@ -19,44 +20,40 @@ logger = logging.getLogger(__name__)
 
 @DatasetReader.register("transactions_reader")
 class TransactionsDatasetReader(DatasetReader):
-    def __init__(
-        self,
-        discretizer_path: str,
-        max_sequence_length: int = None,
-        lazy: bool = False,
-    ) -> None:
+    def __init__(self, discretizer_path: str, max_sequence_length: int = None, lazy: bool = False, ) -> None:
         super().__init__(lazy=lazy)
-
+        # typer.secho(f"Discritizer path{discretizer_path}", fg="red")
         self.discretizer = load_discretizer(discretizer_path)
         self._max_sequence_length = max_sequence_length or math.inf
         self._tokenizer = WhitespaceTokenizer()
         self._start_token = Token(START_TOKEN)
+        typer.secho(f"Start_token {self._start_token}", fg="blue")
         self._end_token = Token(END_TOKEN)
 
     def _add_start_end_tokens(self, tokens: List[Token]) -> List[Token]:
         return [self._start_token] + tokens + [self._end_token]
 
     def text_to_instance(
-        self,
-        transactions: List[int],
-        amounts: List[float],
-        label: Optional[int] = None,
-        client_id: Optional[int] = None,
+            self,
+            transactions: List[int],
+            amounts: List[float],
+            label: Optional[int] = None,
+            client_id: Optional[int] = None,
     ) -> Instance:
 
         transactions = " ".join(map(str, transactions))
-        amounts = transform_amounts(amounts, self.discretizer)
-        amounts = " ".join(amounts)
+        # amounts = transform_amounts(amounts, self.discretizer)
+        # amounts = " ".join(str(amounts))
 
         transactions = self._tokenizer.tokenize(transactions)
-        amounts = self._tokenizer.tokenize(amounts)
+        # amounts = self._tokenizer.tokenize(amounts)
 
         transactions = self._add_start_end_tokens(transactions)
-        amounts = self._add_start_end_tokens(amounts)
-
+        amounts = [0] + amounts + [-1]
+        # typer.secho(f"Saving results to {amounts}", fg="green")
         fields = {
             "transactions": TextField(transactions, {"tokens": SingleIdTokenIndexer("transactions")}),
-            "amounts": TextField(amounts, {"tokens": SingleIdTokenIndexer("amounts")}),
+            "amounts": ArrayField(np.array(amounts)),
         }
 
         if label is not None:
