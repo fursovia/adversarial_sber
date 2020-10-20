@@ -6,6 +6,7 @@ from allennlp.data.dataloader import TensorDict
 from advsber.attackers.attacker import Attacker
 
 
+@BatchCallback.register("adversarial_training")
 class AdversarialTrainingCallback(BatchCallback):
     def __init__(self, attacker_params: str):
         super().__init__()
