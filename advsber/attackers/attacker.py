@@ -43,6 +43,11 @@ class Attacker(ABC, Registrable):
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
         pass
 
+    def attack_from_tensors(self, tensor_data_to_attack: ModelsInput) -> AttackerOutput:
+        # ModelsInput -> TransactionsData
+        # and then self.attack(data)
+        pass
+
     def get_clf_probs(self, inputs: ModelsInput) -> torch.Tensor:
         probs = self.classifier(**inputs)["probs"][0]
         return probs
