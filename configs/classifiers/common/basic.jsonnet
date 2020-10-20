@@ -20,5 +20,20 @@
     "num_epochs": 50,
     "patience": 3,
     "cuda_device": 0
-  }
+  },
+  "adv_trainer": {
+    "num_epochs": 50,
+    "patience": 3,
+    "cuda_device": 0,
+    "batch_callbacks": [
+      {
+        "type": "adversarial_training",
+        "attacker_params": {
+          "type": "fgsm",
+          "classifier": "",
+          "reader": ""
+        }
+      }
+    ]
+  },
 }
