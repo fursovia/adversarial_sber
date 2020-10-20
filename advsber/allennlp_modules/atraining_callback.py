@@ -29,3 +29,5 @@ class AdversarialTrainingCallback(BatchCallback):
             loss = batch_outputs.get("loss")
             _ = batch_outputs.get("reg_loss")
             loss.backward()
+            trainer.optimizer.step()
+            trainer.optimizer.zero_grad()
