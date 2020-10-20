@@ -162,12 +162,8 @@ class TransactionsClassifier(Model):
 
     ) -> Dict[str, torch.Tensor]:
 
-        if amounts is not None:  # and self._amounts_field_embedder is not None:
-            # 7amount_embeddings = self._amounts_field_embedder(amounts)
-            typer.secho(f"Amounts {amounts.size()}", fg="green")
-            typer.secho(f"tr_emb {transaction_embeddings.size()}", fg="green")
+        if amounts is not None:
             transaction_embeddings = torch.cat((transaction_embeddings, amounts.unsqueeze(-1)), dim=-1)
-            typer.secho(f"\n All {transaction_embeddings.size()}", fg="red")
 
         if self._seq2seq_encoder is not None:
             transaction_embeddings = self._seq2seq_encoder(transaction_embeddings, mask=mask)

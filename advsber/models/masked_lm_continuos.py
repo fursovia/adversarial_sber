@@ -25,7 +25,6 @@ class MaskedLanguageModel(Model):
     ) -> None:
         super().__init__(vocab)
         self._transactions_field_embedder = transactions_field_embedder
-        #self._amounts_field_embedder = amounts_field_embedder
         self._seq2seq_encoder = seq2seq_encoder
         self._head = LinearLanguageModelHead(
             vocab=vocab, input_dim=self._seq2seq_encoder.get_output_dim(), vocab_namespace="transactions"
@@ -47,13 +46,11 @@ class MaskedLanguageModel(Model):
             targets = transactions
 
         transaction_embeddings = self._transactions_field_embedder(transactions)
-        if amounts is not None: #and self._amounts_field_embedder is not None:
-            #amount_embeddings = self._amounts_field_embedder(amounts)
+        if amounts is not None:
             transaction_embeddings = torch.cat((transaction_embeddings, amounts.unsqueeze(-1)), dim=-1)
 
         contextual_embeddings = self._seq2seq_encoder(transaction_embeddings, mask)
 
-        # take PAD tokens into account when decoding
         logits = self._head(contextual_embeddings)
 
         output_dict = dict(contextual_embeddings=contextual_embeddings, logits=logits, mask = mask)
