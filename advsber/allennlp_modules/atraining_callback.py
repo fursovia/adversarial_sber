@@ -3,6 +3,7 @@ from typing import List, Dict, Any
 from allennlp.training.trainer import BatchCallback, GradientDescentTrainer
 from allennlp.data.dataloader import TensorDict
 from allennlp.data import Batch, DatasetReader
+from allennlp.common import Params
 
 from advsber.attackers.attacker import Attacker
 from advsber.settings import TransactionsData
@@ -10,9 +11,10 @@ from advsber.settings import TransactionsData
 
 @BatchCallback.register("adversarial_training")
 class AdversarialTrainingCallback(BatchCallback):
-    def __init__(self, attacker_params: str, reader: DatasetReader):
+    def __init__(self, attacker_params: Dict[str, Any], reader: DatasetReader):
         super().__init__()
-        self.attacker_params = attacker_params
+        self.attacker_params = Params(attacker_params)
+        self.reader = DatasetReader.from_params(self.attacker_params["reader"])
         self.reader = reader
 
     def __call__(
@@ -27,7 +29,8 @@ class AdversarialTrainingCallback(BatchCallback):
     ) -> None:
 
         if is_training:
-            attacker = Attacker.from_params(self.attacker_params)
+
+            attacker = Attacker(classifier=trainer.model, reader=self.reader, device=-1)
             for batch in batch_inputs:
 
                 instances = []
