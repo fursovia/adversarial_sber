@@ -37,7 +37,9 @@ def main(results_path: Path, out_data_dir: Path, filename: str = "output.json", 
         dataset_name = path.parent.parent.parent.name
 
         base_dir = out_data_dir / dataset_name / "adv_training" / attack_name / target_name_viasubst_name
+        base_dir.mkdir(parents=True, exist_ok=True)
 
+        typer.echo(f"Saving data to {base_dir}")
         write_jsonlines(train, base_dir / "train.jsonl")
 
         write_jsonlines(valid, base_dir / "valid.jsonl")
