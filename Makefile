@@ -2,6 +2,7 @@
 .PHONY: check-codestyle codestyle tests
 
 codestyle:
+	black -v .
 	pre-commit run --all-files
 
 check-codestyle:
