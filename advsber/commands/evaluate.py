@@ -22,7 +22,9 @@ def get_predictor(archive_path: str) -> Predictor:
     return predictor
 
 
-def main(output_path: str, save_to: str = typer.Option(None), target_clf_path: str = typer.Option(None)):
+def main(
+    output_path: str, save_to: str = typer.Option(None), target_clf_path: str = typer.Option(None),
+):
     output = load_jsonlines(output_path)
     output = pd.DataFrame(output).drop(columns="history")
 

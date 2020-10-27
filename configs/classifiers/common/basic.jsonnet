@@ -1,10 +1,12 @@
-{
-  "dataset_reader": {
+local dataset_reader = {
     "type": "transactions_reader",
     "discretizer_path": std.extVar("DISCRETIZER_PATH"),
     "max_sequence_length": 150,
     "lazy": false
-  },
+};
+
+{
+  "dataset_reader": dataset_reader,
   "vocabulary": {
     "type": "from_files",
     "directory": std.extVar("VOCAB_PATH")
@@ -20,5 +22,21 @@
     "num_epochs": 50,
     "patience": 3,
     "cuda_device": 0
-  }
+  },
+  "adv_trainer": {
+    "num_epochs": 50,
+    "patience": 3,
+    "cuda_device": 0,
+    "batch_callbacks": [
+      {
+        "type": "adversarial_training",
+        "attacker_params": {
+          "type": "fgsm",
+          "classifier": "",
+          "reader": ""
+        },
+        "reader": dataset_reader
+      }
+    ]
+  },
 }

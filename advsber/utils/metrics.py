@@ -65,7 +65,7 @@ def probability_drop(
 
 
 def amount_normalized_accuracy_drop(
-    added_amounts: List[float], y_true: List[int], y_adv: List[int], target_amount: float = 1000.0
+    added_amounts: List[float], y_true: List[int], y_adv: List[int], target_amount: float = 1000.0,
 ) -> float:
     assert len(y_true) == len(y_adv)
     nads = []

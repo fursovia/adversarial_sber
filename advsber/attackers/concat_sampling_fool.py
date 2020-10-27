@@ -6,7 +6,11 @@ from torch.distributions import Categorical
 from allennlp.models import Model
 
 from advsber.attackers.sampling_fool import SamplingFool
-from advsber.utils.data import decode_indexes, data_to_tensors, generate_transaction_amounts
+from advsber.utils.data import (
+    decode_indexes,
+    data_to_tensors,
+    generate_transaction_amounts,
+)
 from advsber.settings import MASK_TOKEN
 from advsber.utils.metrics import word_error_rate_on_sequences
 from advsber.dataset_readers.transactions_reader import TransactionsDatasetReader

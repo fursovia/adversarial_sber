@@ -15,7 +15,7 @@ from advsber.settings import TransactionsData, ModelsInput
 
 
 def data_to_tensors(
-    data: TransactionsData, reader: DatasetReader, vocab: Vocabulary, device: Union[torch.device, int] = -1
+    data: TransactionsData, reader: DatasetReader, vocab: Vocabulary, device: Union[torch.device, int] = -1,
 ) -> ModelsInput:
 
     instances = Batch([reader.text_to_instance(**data.to_dict())])

@@ -28,7 +28,7 @@ class MaskedLanguageModel(Model):
         self._amounts_field_embedder = amounts_field_embedder
         self._seq2seq_encoder = seq2seq_encoder
         self._head = LinearLanguageModelHead(
-            vocab=vocab, input_dim=self._seq2seq_encoder.get_output_dim(), vocab_namespace="transactions"
+            vocab=vocab, input_dim=self._seq2seq_encoder.get_output_dim(), vocab_namespace="transactions",
         )
         self._tokens_masker = tokens_masker
 
