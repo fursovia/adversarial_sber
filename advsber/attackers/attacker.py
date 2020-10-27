@@ -7,7 +7,13 @@ from allennlp.common.registrable import Registrable
 from allennlp.models import Model
 import torch
 
-from advsber.settings import TransactionsData, ModelsInput, START_TOKEN, END_TOKEN, MASK_TOKEN
+from advsber.settings import (
+    TransactionsData,
+    ModelsInput,
+    START_TOKEN,
+    END_TOKEN,
+    MASK_TOKEN,
+)
 from advsber.dataset_readers.transactions_reader import TransactionsDatasetReader
 
 

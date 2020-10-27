@@ -47,7 +47,7 @@ class TokensMasker(Registrable):
                     & ~indices_masked
                 )
                 random_tokens = torch.randint(
-                    low=1, high=self.vocab_size, size=labels.shape, dtype=torch.long, device=tokens.device
+                    low=1, high=self.vocab_size, size=labels.shape, dtype=torch.long, device=tokens.device,
                 )
                 tokens[indices_random] = random_tokens[indices_random]
 

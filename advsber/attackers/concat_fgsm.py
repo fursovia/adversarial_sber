@@ -9,7 +9,11 @@ from advsber.attackers.attacker import Attacker, AttackerOutput
 from advsber.attackers.concat_sampling_fool import Position
 from advsber.settings import TransactionsData, MASK_TOKEN
 from advsber.dataset_readers.transactions_reader import TransactionsDatasetReader
-from advsber.utils.data import data_to_tensors, decode_indexes, generate_transaction_amounts
+from advsber.utils.data import (
+    data_to_tensors,
+    decode_indexes,
+    generate_transaction_amounts,
+)
 from advsber.utils.metrics import word_error_rate_on_sequences
 
 
@@ -66,7 +70,7 @@ class ConcatFGSM(Attacker):
         for step in range(self.num_steps):
             # choose random index of embeddings (except for start/end tokens)
             if self.position == Position.END:
-                random_idx = random.randint(len(data_to_attack.transactions) + 1, max(1, len(adv_data.transactions)))
+                random_idx = random.randint(len(data_to_attack.transactions) + 1, max(1, len(adv_data.transactions)),)
             else:
                 raise NotImplementedError
 

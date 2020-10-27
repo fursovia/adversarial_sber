@@ -1,15 +1,20 @@
 from typing import List, Optional, Dict, Union
 
 import torch
-from allennlp.data import TextFieldTensors
+from allennlp.data import TextFieldTensors, Vocabulary
 
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json
+
+from advsber.utils.data import decode_indexes
+from allennlp.nn.util import get_token_ids_from_text_field_tensors
 
 
 START_TOKEN = "<START>"
 END_TOKEN = "<END>"
 MASK_TOKEN = "@@MASK@@"
+
+ModelsInput = Dict[str, Union[TextFieldTensors, torch.Tensor]]
 
 
 @dataclass_json
@@ -26,5 +31,21 @@ class TransactionsData:
     def __len__(self) -> int:
         return len(self.transactions)
 
+    @classmethod
+    def from_tensors(cls, inputs: ModelsInput, vocab: Vocabulary) -> "TransactionsData":
 
-ModelsInput = Dict[str, Union[TextFieldTensors, torch.Tensor]]
+        transaction_ids = get_token_ids_from_text_field_tensors(inputs["transactions"])[0]
+
+        amount_ids = get_token_ids_from_text_field_tensors(inputs["amounts"])[0]
+
+        label = inputs["label"][0].item()
+
+        # TODO: also drop paddings
+        transactions = decode_indexes(indexes=transaction_ids, vocab=vocab, namespace="transactions",)
+        transactions = list(map(int, transactions))
+
+        amounts = decode_indexes(indexes=amount_ids, vocab=vocab, namespace="amounts",)
+        # TODO: convert to floats? transform_amounts
+        amounts = list(map(int, amounts))
+
+        return cls(transactions=transactions, amounts=amounts, label=label)

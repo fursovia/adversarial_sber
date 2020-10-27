@@ -21,7 +21,9 @@ def get_predictor(archive_path: str) -> Predictor:
     return predictor
 
 
-def main(output_path: str, save_to: str = typer.Option(None), target_clf_path: str = typer.Option(None)):
+def main(
+    output_path: str, save_to: str = typer.Option(None), target_clf_path: str = typer.Option(None),
+):
     output = load_jsonlines(output_path)
     output = pd.DataFrame(output).drop(columns="history")
 
@@ -63,7 +65,13 @@ def main(output_path: str, save_to: str = typer.Option(None), target_clf_path: s
     typer.echo(f"aNAD-1000 = {anad:.2f}")
 
     if save_to is not None:
-        metrics = {"NAD": nad, "ME": misclf_error, "PD": prob_drop, "Mean_WER": mean_wer, "aNAD-1000": anad}
+        metrics = {
+            "NAD": nad,
+            "ME": misclf_error,
+            "PD": prob_drop,
+            "Mean_WER": mean_wer,
+            "aNAD-1000": anad,
+        }
 
         with open(save_to, "w") as f:
             json.dump(metrics, f, indent=4)

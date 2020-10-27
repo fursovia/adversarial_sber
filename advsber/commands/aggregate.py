@@ -14,7 +14,7 @@ def main(results_path: Path, filename: str = "metrics.json"):
             curr_metrics = json.load(f)
 
             curr_metrics["attack_name"] = path.parent.name
-            curr_metrics["target_name"], curr_metrics["subst_name"] = path.parent.parent.name.split("_via_")
+            (curr_metrics["target_name"], curr_metrics["subst_name"],) = path.parent.parent.name.split("_via_")
             curr_metrics["dataset_name"] = path.parent.parent.parent.name
             metrics.append(curr_metrics)
 
