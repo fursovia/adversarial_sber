@@ -71,7 +71,7 @@ def amount_normalized_accuracy_drop(
 
 def diversity_rate(output: List[Dict[str, Any]]) -> float:
     y_true = [output["data"][i]["transactions"] for i in range(len(output))]
-    y_adv = [output["adversarial_data_target"][i]["transactions"] for i in range(len(output))]
+    y_adv = [output["adversarial_data"][i]["transactions"] for i in range(len(output))]
     y_ins = []
     for i in range(len(y_adv)):
         for t in range(len(y_adv[i])):
