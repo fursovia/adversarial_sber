@@ -1,14 +1,10 @@
 #!/usr/bin/env bash
-#!/usr/bin/env bash
-
-#!/usr/bin/env bash
-
-
 
 
 DATA_DIR=${1:-"/notebook/fursov/adversarial_sber/datasets"}
 RESULTS_DIR="./results_models"
 suffix=".tar.gz"
+
 for dataset_name in "age" "gender"; do
     for clf_type in "substitute_clf" "target_clf"; do
         for model_name in ${DATA_DIR}/${dataset_name}/models/${clf_type}/*; do
@@ -22,4 +18,5 @@ for dataset_name in "age" "gender"; do
     done
     python advsber/commands/aggregate_results_models.py ${RESULTS_DIR}/${dataset_name}
 done
+
 python advsber/commands/aggregate_results_models.py ${RESULTS_DIR}
