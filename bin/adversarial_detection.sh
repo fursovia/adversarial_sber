@@ -13,7 +13,7 @@ DATE=$(date +%H%M%S-%d%m)
 
 for dataset_name in "age" "gender"; do
 
-    for dir in ${DATA_DIR}/${dataset_name}/"adv_training"/*/${CLF_TYPE}; do
+    for dir in ${DATA_DIR}/${dataset_name}/"adv_detection"/*/${CLF_TYPE}; do
         attack_type=$(dirname ${dir})
         attack_type=$(basename ${attack_type})
 
