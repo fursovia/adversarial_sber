@@ -41,6 +41,6 @@
   "trainer": {
     "num_epochs": 500,
     "patience": 2,
-    "cuda_device": -1
+    "cuda_device": 0
   }
 }
