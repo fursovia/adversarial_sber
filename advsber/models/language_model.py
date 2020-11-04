@@ -51,13 +51,13 @@ class AutoregressiveLanguageModel(Model):
 
         if num_samples is not None:
             self._softmax_loss = SampledSoftmaxLoss(
-                num_words=vocab.get_vocab_size(),
+                num_words=vocab.get_vocab_size("transactions"),
                 embedding_dim=self._forward_dim,
                 num_samples=num_samples,
                 sparse=sparse_embeddings,
             )
         else:
-            self._softmax_loss = SoftmaxLoss(num_words=vocab.get_vocab_size(), embedding_dim=self._forward_dim)
+            self._softmax_loss = SoftmaxLoss(num_words=vocab.get_vocab_size("transactions"), embedding_dim=self._forward_dim)
 
         # This buffer is now unused and exists only for backwards compatibility reasons.
         self.register_buffer("_last_average_loss", torch.zeros(1))
