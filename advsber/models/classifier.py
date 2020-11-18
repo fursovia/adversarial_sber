@@ -1,14 +1,14 @@
 from typing import Dict, Optional
 
 import torch
-
+import typer
 from allennlp.data import TextFieldTensors, Vocabulary
 from allennlp.models.model import Model
 from allennlp.modules import Seq2VecEncoder, Seq2SeqEncoder, TextFieldEmbedder
 from allennlp.training.metrics import CategoricalAccuracy
 from allennlp.nn.util import get_text_field_mask
 from allennlp.nn import util
-
+from allennlp.data.fields import TextField, LabelField,ArrayField
 
 @Model.register("transactions_classifier")
 class TransactionsClassifier(Model):
@@ -20,7 +20,6 @@ class TransactionsClassifier(Model):
         transactions_field_embedder: TextFieldEmbedder,
         seq2vec_encoder: Seq2VecEncoder,
         seq2seq_encoder: Optional[Seq2SeqEncoder] = None,
-        amounts_field_embedder: Optional[TextFieldEmbedder] = None,
         num_labels: Optional[int] = None,
     ) -> None:
 
@@ -28,8 +27,6 @@ class TransactionsClassifier(Model):
         self._transactions_field_embedder = transactions_field_embedder
         self._seq2vec_encoder = seq2vec_encoder
         self._seq2seq_encoder = seq2seq_encoder
-        self._amounts_field_embedder = amounts_field_embedder
-
         num_labels = num_labels or vocab.get_vocab_size("labels")
         self._classification_layer = torch.nn.Linear(self._seq2vec_encoder.get_output_dim(), num_labels)
 
@@ -46,13 +43,11 @@ class TransactionsClassifier(Model):
         transaction_embeddings: torch.Tensor,
         mask: torch.Tensor,
         label: Optional[torch.Tensor] = None,
-        amounts: Optional[TextFieldTensors] = None,
+        amounts: Optional[ArrayField] = None,
+
     ) -> Dict[str, torch.Tensor]:
 
-        if amounts is not None and self._amounts_field_embedder is not None:
-            amount_embeddings = self._amounts_field_embedder(amounts)
-            transaction_embeddings = torch.cat((transaction_embeddings, amount_embeddings), dim=-1)
-
+        transaction_embeddings = torch.cat((transaction_embeddings, amounts.unsqueeze(-1)), dim=-1)
         if self._seq2seq_encoder is not None:
             transaction_embeddings = self._seq2seq_encoder(transaction_embeddings, mask=mask)
 
@@ -73,7 +68,7 @@ class TransactionsClassifier(Model):
         self,
         transactions: TextFieldTensors,
         label: Optional[torch.Tensor] = None,
-        amounts: Optional[TextFieldTensors] = None,
+        amounts: Optional[ArrayField] = None,
         **kwargs,
     ) -> Dict[str, torch.Tensor]:
         emb_out = self.get_transaction_embeddings(transactions)
