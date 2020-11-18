@@ -15,7 +15,8 @@ local clf_path = std.extVar("CLF_PATH");
       "archive_file": clf_path
     },
     "num_steps": 30,
-    "epsilon": 1.0,
+    "epsilon": '1',
+    "total_amount": std.extVar("total_amount"),
     "device": 0
   }
 }

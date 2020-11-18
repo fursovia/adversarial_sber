@@ -1,7 +1,8 @@
 import functools
 from typing import List, Any, Dict
-
+import typer
 from Levenshtein import distance as lvs_distance
+import numpy as np
 
 
 @functools.lru_cache(maxsize=5000)
@@ -25,7 +26,7 @@ def word_error_rate_on_sequences(sequence_a: List[int], sequence_b: List[int]) -
     return word_error_rate(sequence_a, sequence_b)
 
 
-def normalized_accuracy_drop(wers: List[int], y_true: List[int], y_adv: List[int], gamma: float = 1.0,) -> float:
+def normalized_accuracy_drop(wers: List[int], y_true: List[int], y_adv: List[int], gamma: float = 1.0, ) -> float:
     assert len(y_true) == len(y_adv)
     nads = []
     for wer, lab, alab in zip(wers, y_true, y_adv):
@@ -37,7 +38,7 @@ def normalized_accuracy_drop(wers: List[int], y_true: List[int], y_adv: List[int
     return sum(nads) / len(nads)
 
 
-def misclassification_error(y_true: List[int], y_adv: List[int],) -> float:
+def misclassification_error(y_true: List[int], y_adv: List[int], ) -> float:
     misses = []
     for lab, alab in zip(y_true, y_adv):
         misses.append(float(lab != alab))
@@ -45,16 +46,16 @@ def misclassification_error(y_true: List[int], y_adv: List[int],) -> float:
     return sum(misses) / len(misses)
 
 
-def probability_drop(true_prob: List[float], adv_prob: List[float],) -> float:
+def probability_drop(true_prob: List[float], adv_prob: List[float], ) -> float:
     prob_diffs = []
     for tp, ap in zip(true_prob, adv_prob):
         prob_diffs.append(tp - ap)
-
+    typer.secho(f"prob {prob_diffs}", fg="red")
     return sum(prob_diffs) / len(prob_diffs)
 
 
 def amount_normalized_accuracy_drop(
-    added_amounts: List[float], y_true: List[int], y_adv: List[int], target_amount: float = 1000.0,
+        added_amounts: List[float], y_true: List[int], y_adv: List[int], target_amount: float = 1000.0,
 ) -> float:
     assert len(y_true) == len(y_adv)
     nads = []
@@ -65,18 +66,20 @@ def amount_normalized_accuracy_drop(
             nads.append(1 / penalty)
         else:
             nads.append(0.0)
-
+    typer.secho(f"added_amounts{added_amounts} nads{nads}", fg="green")
     return sum(nads) / len(nads)
 
 
 def diversity_rate(output: List[Dict[str, Any]]) -> float:
     y_true = [output["data"][i]["transactions"] for i in range(len(output))]
-    y_adv = [output["adversarial_data_target"][i]["transactions"] for i in range(len(output))]
+    y_adv = [output["adversarial_data"][i]["transactions"] for i in range(len(output))]
     y_ins = []
     for i in range(len(y_adv)):
         for t in range(len(y_adv[i])):
             # if addition
             if t > len(y_true[i]) - 1:
+                if y_adv[i][t] == "@@MASK@@":
+                    y_adv[i][t] = 0
                 if y_adv[i][t] == "<START>":
                     y_adv[i][t] = 0
                 if y_adv[i][t] == "<END>":
@@ -86,4 +89,51 @@ def diversity_rate(output: List[Dict[str, Any]]) -> float:
             else:
                 if int(y_adv[i][t]) != int(y_true[i][t]):
                     y_ins.append(int(y_adv[i][t]))
-    return len(list(dict.fromkeys(y_ins))) / len(y_ins)
+        if len(y_ins):
+            diversity = len(list(dict.fromkeys(y_ins))) / len(y_ins)
+        else:
+            diversity = 1
+
+    return diversity
+
+
+def amount_error_rate(output: List[Dict[str, Any]]) -> float:
+    y_true = [output["data"][i]["amounts"] for i in range(len(output))]
+    y_adv = [output["adversarial_data"][i]["amounts"] for i in range(len(output))]
+    y_ins = []
+    for i in range(len(y_adv)):
+        for t in range(len(y_adv[i])):
+            # if addition
+            if t > len(y_true[i]) - 1:
+                if y_adv[i][t] == "<START>":
+                    y_adv[i][t] = 0
+                if y_adv[i][t] == "<END>":
+                    y_adv[i][t] = -1
+                y_ins.append(abs(int(y_adv[i][t])))
+            # if insertion
+            else:
+                if int(y_adv[i][t]) != int(y_true[i][t]):
+                    y_ins.append(abs(int(y_adv[i][t]) - int(y_true[i][t])))
+    return np.mean(y_ins)
+
+
+def amount_add_rate(output: List[Dict[str, Any]]) -> float:
+    y_true = [output["data"][i]["amounts"] for i in range(len(output))]
+    y_adv = [output["adversarial_data"][i]["amounts"] for i in range(len(output))]
+    add = 0
+    for i in range(len(y_adv)):
+        for t in range(len(y_adv[i])):
+            # if addition
+            if t > len(y_true[i]) - 1:
+                if y_adv[i][t] == "<START>":
+                    y_adv[i][t] = 0
+                if y_adv[i][t] == "<END>":
+                    y_adv[i][t] = -1
+                if (int(y_adv[i][t]) > 0):
+                    add = add + abs(int(y_adv[i][t]))
+            # if insertion
+            else:
+                add = add + abs(int(y_adv[i][t]) - int(y_true[i][t]))
+    return add
+
+

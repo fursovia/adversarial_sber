@@ -13,6 +13,8 @@ from advsber.utils.metrics import (
     misclassification_error,
     probability_drop,
     diversity_rate,
+    amount_error_rate,
+    amount_add_rate,
 )
 
 
@@ -58,10 +60,13 @@ def main(
     mean_wer = float(np.mean(output["wer"]))
     typer.echo(f"Mean WER = {mean_wer:.2f}")
 
-    added_amounts = []
-    for _, row in output.iterrows():
-        added_amounts.append(sum(row["adversarial_data"]["amounts"]) - sum(row["data"]["amounts"]))
-
+    added_amounts = [1]
+    #for _, row in output.iterrows():
+        #added_amounts.append(sum(int(row["adversarial_data"]["amounts"])) - sum(int(row["data"]["amounts"])))
+    aar = amount_add_rate(output)
+    aer = amount_error_rate(output)
+    typer.echo(f"am add error = {aar:.2f}")
+    typer.echo(f"am error error = {aer:.2f}")
     anad = amount_normalized_accuracy_drop(added_amounts, y_true=y_true, y_adv=y_adv)
     typer.echo(f"aNAD-1000 = {anad:.2f}")
     diversity = diversity_rate(output)
@@ -74,6 +79,8 @@ def main(
             "Mean_WER": mean_wer,
             "aNAD-1000": anad,
             "diversity_rate": diversity,
+            "aar": aar,
+            "aer": aer,
         }
         with open(save_to, "w") as f:
             json.dump(metrics, f, indent=4)
