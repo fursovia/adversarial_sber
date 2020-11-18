@@ -1,14 +1,13 @@
 from typing import Dict, Optional
-
 import torch
-import typer
 from allennlp.data import TextFieldTensors, Vocabulary
 from allennlp.models.model import Model
 from allennlp.modules import Seq2VecEncoder, Seq2SeqEncoder, TextFieldEmbedder
 from allennlp.training.metrics import CategoricalAccuracy
 from allennlp.nn.util import get_text_field_mask
 from allennlp.nn import util
-from allennlp.data.fields import TextField, LabelField,ArrayField
+from allennlp.data.fields import  ArrayField
+
 
 @Model.register("transactions_classifier")
 class TransactionsClassifier(Model):
@@ -44,7 +43,6 @@ class TransactionsClassifier(Model):
         mask: torch.Tensor,
         label: Optional[torch.Tensor] = None,
         amounts: Optional[ArrayField] = None,
-
     ) -> Dict[str, torch.Tensor]:
 
         transaction_embeddings = torch.cat((transaction_embeddings, amounts.unsqueeze(-1)), dim=-1)

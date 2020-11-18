@@ -6,13 +6,11 @@ import typer
 import numpy as np
 from allennlp.common.file_utils import cached_path
 from allennlp.data.dataset_readers.dataset_reader import DatasetReader
-from allennlp.data.fields import TextField, LabelField, ArrayField, MetadataField
+from allennlp.data.fields import TextField, LabelField, ArrayField
 from allennlp.data.instance import Instance
 from allennlp.data.token_indexers import SingleIdTokenIndexer
 from allennlp.data.tokenizers import WhitespaceTokenizer, Token
 from allennlp.models.archival import load_archive
-
-from advsber.utils.data import load_discretizer, transform_amounts
 from advsber.settings import START_TOKEN, END_TOKEN
 
 logger = logging.getLogger(__name__)
@@ -20,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 @DatasetReader.register("transactions_reader")
 class TransactionsDatasetReader(DatasetReader):
-    def __init__(self, discretizer_path: str = None, max_sequence_length: int = None, lazy: bool = False, ) -> None:
+    def __init__(self, discretizer_path: str = None, max_sequence_length: int = None, lazy: bool = False,) -> None:
         super().__init__(lazy=lazy)
         self._max_sequence_length = max_sequence_length or math.inf
         self._tokenizer = WhitespaceTokenizer()
@@ -31,11 +29,11 @@ class TransactionsDatasetReader(DatasetReader):
         return [self._start_token] + tokens + [self._end_token]
 
     def text_to_instance(
-            self,
-            transactions: List[int],
-            amounts: List[float],
-            label: Optional[int] = None,
-            client_id: Optional[int] = None,
+        self,
+        transactions: List[int],
+        amounts: List[float],
+        label: Optional[int] = None,
+        client_id: Optional[int] = None,
     ) -> Instance:
 
         transactions = " ".join(map(str, transactions))
@@ -91,5 +89,3 @@ class TransactionsDatasetReader(DatasetReader):
 
 
 TransactionsDatasetReader.register("from_archive", constructor="from_archive")(TransactionsDatasetReader)
-
-
