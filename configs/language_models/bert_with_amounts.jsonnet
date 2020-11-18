@@ -1,7 +1,6 @@
 {
   "dataset_reader": {
     "type": "transactions_reader",
-    "discretizer_path": std.extVar("DISCRETIZER_PATH"),
     "max_sequence_length": 150,
     "lazy": false
   },
@@ -39,21 +38,11 @@
         }
       }
     },
-    "amounts_field_embedder": {
-      "token_embedders": {
-        "tokens": {
-          "type": "embedding",
-          "embedding_dim": 64,
-          "trainable": true,
-          "vocab_namespace": "amounts"
-        }
-      }
-    },
     "seq2seq_encoder": {
       "type": "pytorch_transformer",
-      "input_dim": 128,
+      "input_dim": 65,
       "num_layers": 3,
-      "num_attention_heads": 4,
+      "num_attention_heads": 5,
       "positional_encoding": "embedding"
     },
     "tokens_masker": {
@@ -72,7 +61,7 @@
 //    ]
 //  },
   "data_loader": {
-    "batch_size": 1024,
+    "batch_size": 256,
     "shuffle": true,
     "num_workers": 0,
     // https://discuss.pytorch.org/t/when-to-set-pin-memory-to-true/19723
