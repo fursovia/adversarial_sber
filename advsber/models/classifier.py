@@ -1,5 +1,5 @@
 from typing import Dict, Optional
-
+import typer
 import torch
 
 from allennlp.data import TextFieldTensors, Vocabulary
@@ -41,17 +41,19 @@ class TransactionsClassifier(Model):
         transaction_embeddings = self._transactions_field_embedder(transactions)
         return {"mask": mask, "transaction_embeddings": transaction_embeddings}
 
+    def get_amounts_embeddings(self, amounts: TextFieldTensors) -> Dict[str, torch.Tensor]:
+        mask = get_text_field_mask(amounts)
+        amounts_embeddings = self._amounts_field_embedder(amounts)
+        return {"mask": mask, "amounts_embeddings": amounts_embeddings}
     def forward_on_transaction_embeddings(
         self,
         transaction_embeddings: torch.Tensor,
         mask: torch.Tensor,
         label: Optional[torch.Tensor] = None,
-        amounts: Optional[TextFieldTensors] = None,
+        amount_embeddings: Optional[torch.Tensor] = None,
     ) -> Dict[str, torch.Tensor]:
 
-        if amounts is not None and self._amounts_field_embedder is not None:
-            amount_embeddings = self._amounts_field_embedder(amounts)
-            transaction_embeddings = torch.cat((transaction_embeddings, amount_embeddings), dim=-1)
+        transaction_embeddings = torch.cat((transaction_embeddings, amount_embeddings), dim=-1)
 
         if self._seq2seq_encoder is not None:
             transaction_embeddings = self._seq2seq_encoder(transaction_embeddings, mask=mask)
@@ -77,12 +79,12 @@ class TransactionsClassifier(Model):
         **kwargs,
     ) -> Dict[str, torch.Tensor]:
         emb_out = self.get_transaction_embeddings(transactions)
-
+        emb_amounts_out = self.get_amounts_embeddings(amounts)
         output_dict = self.forward_on_transaction_embeddings(
             transaction_embeddings=emb_out["transaction_embeddings"],
             mask=emb_out["mask"],
             label=label,
-            amounts=amounts,
+            amount_embeddings=emb_amounts_out["amounts_embeddings"],
         )
 
         output_dict["token_ids"] = util.get_token_ids_from_text_field_tensors(transactions)
