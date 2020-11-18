@@ -6,7 +6,7 @@ from allennlp.modules import Seq2VecEncoder, Seq2SeqEncoder, TextFieldEmbedder
 from allennlp.training.metrics import CategoricalAccuracy
 from allennlp.nn.util import get_text_field_mask
 from allennlp.nn import util
-from allennlp.data.fields import  ArrayField
+from allennlp.data.fields import ArrayField
 
 
 @Model.register("transactions_classifier")
