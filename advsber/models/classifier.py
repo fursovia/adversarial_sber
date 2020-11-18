@@ -45,6 +45,7 @@ class TransactionsClassifier(Model):
         mask = get_text_field_mask(amounts)
         amounts_embeddings = self._amounts_field_embedder(amounts)
         return {"mask": mask, "amounts_embeddings": amounts_embeddings}
+
     def forward_on_transaction_embeddings(
         self,
         transaction_embeddings: torch.Tensor,

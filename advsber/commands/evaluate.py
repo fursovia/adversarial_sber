@@ -25,7 +25,9 @@ def get_predictor(archive_path: str) -> Predictor:
 
 
 def main(
-    output_path: str, save_to: str = typer.Option(None), target_clf_path: str = typer.Option(None),
+    output_path: str,
+    save_to: str = typer.Option(None),
+    target_clf_path: str = typer.Option(None),
 ):
     output = load_jsonlines(output_path)
     output = pd.DataFrame(output).drop(columns="history")
@@ -61,8 +63,8 @@ def main(
     typer.echo(f"Mean WER = {mean_wer:.2f}")
 
     added_amounts = [1]
-    #for _, row in output.iterrows():
-        #added_amounts.append(sum(int(row["adversarial_data"]["amounts"])) - sum(int(row["data"]["amounts"])))
+    # for _, row in output.iterrows():
+    # added_amounts.append(sum(int(row["adversarial_data"]["amounts"])) - sum(int(row["data"]["amounts"])))
     aar = amount_add_rate(output)
     aer = amount_error_rate(output)
     typer.echo(f"am add error = {aar:.2f}")

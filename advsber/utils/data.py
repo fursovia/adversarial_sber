@@ -13,19 +13,26 @@ from sklearn.preprocessing import KBinsDiscretizer
 
 from advsber.settings import TransactionsData, ModelsInput
 
+
 def decode_indexes_amounts(
-    indexes: torch.Tensor, vocab: Vocabulary, namespace="amounts", drop_start_end: bool = True,
+    indexes: torch.Tensor,
+    vocab: Vocabulary,
+    namespace="amounts",
+    drop_start_end: bool = True,
 ) -> List[str]:
     out = [vocab.get_token_from_index(idx.item(), namespace=namespace) for idx in indexes]
-    #if drop_start_end:
-        #return out[1:-1]
+    # if drop_start_end:
+    # return out[1:-1]
 
     return out
 
 
-
 def data_to_tensors(
-    data: TransactionsData, reader: DatasetReader, vocab: Vocabulary, device: Union[torch.device, int] = -1, transform = True
+    data: TransactionsData,
+    reader: DatasetReader,
+    vocab: Vocabulary,
+    device: Union[torch.device, int] = -1,
+    transform=True,
 ) -> ModelsInput:
     if transform:
         instances = Batch([reader.text_to_instance(**data.to_dict())])
@@ -38,7 +45,10 @@ def data_to_tensors(
 
 
 def decode_indexes(
-    indexes: torch.Tensor, vocab: Vocabulary, namespace="transactions", drop_start_end: bool = True,
+    indexes: torch.Tensor,
+    vocab: Vocabulary,
+    namespace="transactions",
+    drop_start_end: bool = True,
 ) -> List[str]:
     out = [vocab.get_token_from_index(idx.item(), namespace=namespace) for idx in indexes]
 
@@ -62,9 +72,11 @@ def write_jsonlines(data: Sequence[Dict[str, Any]], path: str) -> None:
             writer.write(ex)
 
 
-def generate_transaction_amounts(total_amount: float, num_transactions: int, rate: float =0, alpha: float = 1.0) -> List[float]:
+def generate_transaction_amounts(
+    total_amount: float, num_transactions: int, rate: float = 0, alpha: float = 1.0
+) -> List[float]:
     assert total_amount > 0
-    sign = np.random.choice([1, -1], p = [1 - rate, rate])
+    sign = np.random.choice([1, -1], p=[1 - rate, rate])
     values = sign * np.random.dirichlet(np.ones(num_transactions) * alpha, size=1) * total_amount
     values = values.tolist()[0]
     return values
@@ -80,19 +92,19 @@ def load_discretizer(discretizer_path: str) -> KBinsDiscretizer:
 
 def transform_amounts(amounts: List[float], discretizer: KBinsDiscretizer) -> List[str]:
     if len(amounts):
-        if '@@PADDING@@' in amounts:
-            st = amounts.index('@@PADDING@@')
+        if "@@PADDING@@" in amounts:
+            st = amounts.index("@@PADDING@@")
             amounts[st] = 0
-        if '@@UNKNOWN@@' in amounts:
-            st = amounts.index('@@UNKNOWN@@')
+        if "@@UNKNOWN@@" in amounts:
+            st = amounts.index("@@UNKNOWN@@")
             amounts[st] = 0
-        if '<START>' in amounts:
-            st = amounts.index('<START>')
+        if "<START>" in amounts:
+            st = amounts.index("<START>")
             amounts[st] = 1
-        if '<END>' in amounts:
-            st = amounts.index('<END>')
+        if "<END>" in amounts:
+            st = amounts.index("<END>")
             amounts[st] = -1
         amounts = discretizer.transform([[x] for x in amounts])
-    # unpack and covert float -> int -> str
+        # unpack and covert float -> int -> str
         amounts = list(map(str, (map(int, chain(*amounts)))))
     return amounts

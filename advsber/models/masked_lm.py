@@ -28,7 +28,9 @@ class MaskedLanguageModel(Model):
         self._amounts_field_embedder = amounts_field_embedder
         self._seq2seq_encoder = seq2seq_encoder
         self._head = LinearLanguageModelHead(
-            vocab=vocab, input_dim=self._seq2seq_encoder.get_output_dim(), vocab_namespace="transactions",
+            vocab=vocab,
+            input_dim=self._seq2seq_encoder.get_output_dim(),
+            vocab_namespace="transactions",
         )
         self._tokens_masker = tokens_masker
 
@@ -37,7 +39,10 @@ class MaskedLanguageModel(Model):
         self._perplexity = FixedPerplexity()
 
     def forward(
-        self, transactions: TextFieldTensors, amounts: Optional[TextFieldTensors] = None, **kwargs,
+        self,
+        transactions: TextFieldTensors,
+        amounts: Optional[TextFieldTensors] = None,
+        **kwargs,
     ) -> Dict[str, torch.Tensor]:
         mask = get_text_field_mask(transactions)
 

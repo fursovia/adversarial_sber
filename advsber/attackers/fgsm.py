@@ -22,13 +22,13 @@ from operator import itemgetter
 @Attacker.register("fgsm")
 class FGSM(Attacker):
     def __init__(
-            self,
-            classifier: Model,  # TransactionsClassifier
-            reader: TransactionsDatasetReader,
-            num_steps: int = 10,
-            epsilon: str = '1000',
-            total_amount: str = '5',
-            device: int = -1,
+        self,
+        classifier: Model,  # TransactionsClassifier
+        reader: TransactionsDatasetReader,
+        num_steps: int = 10,
+        epsilon: str = "1000",
+        total_amount: str = "5",
+        device: int = -1,
     ) -> None:
         super().__init__(classifier=classifier, reader=reader, device=device)
         self.classifier = self.classifier.train()
@@ -47,25 +47,26 @@ class FGSM(Attacker):
         # get mask and transaction embeddings
         emb_out = self.classifier.get_transaction_embeddings(transactions=inputs["transactions"])
         emb_amounts_out = self.classifier.get_amounts_embeddings(amounts=inputs["amounts"])
-        cuda0 = torch.device('cuda:0')
+        cuda0 = torch.device("cuda:0")
         size = self.vocab.get_vocab_size(namespace="amounts")
         indexes = [i for i in range(0, size - 1)]
         voc = [self.vocab.get_token_from_index(idx, namespace="amounts") for idx in indexes]
-        if '@@PADDING@@' in voc:
-            st = voc.index('@@PADDING@@')
-            voc[st] = '0'
-        if '@@UNKNOWN@@' in voc:
-            st = voc.index('@@UNKNOWN@@')
-            voc[st] = '0'
-        if '<START>' in voc:
-            st = voc.index('<START>')
-            voc[st] = '1'
-        if '<END>' in voc:
-            st = voc.index('<END>')
-            voc[st] = '-1'
+        if "@@PADDING@@" in voc:
+            st = voc.index("@@PADDING@@")
+            voc[st] = "0"
+        if "@@UNKNOWN@@" in voc:
+            st = voc.index("@@UNKNOWN@@")
+            voc[st] = "0"
+        if "<START>" in voc:
+            st = voc.index("<START>")
+            voc[st] = "1"
+        if "<END>" in voc:
+            st = voc.index("<END>")
+            voc[st] = "-1"
         voc_data.amounts = voc
-        voc_inputs = data_to_tensors(voc_data, reader=self.reader, vocab=self.vocab, device=self.device,
-                                     transform=False)
+        voc_inputs = data_to_tensors(
+            voc_data, reader=self.reader, vocab=self.vocab, device=self.device, transform=False
+        )
         emb_vocab_amounts = self.classifier.get_amounts_embeddings(amounts=voc_inputs["amounts"])
         # disable gradients using a trick
         embeddings_vocab_amounts = emb_vocab_amounts["amounts_embeddings"].detach()
@@ -91,28 +92,31 @@ class FGSM(Attacker):
             loss.backward()
             # update the chosen embedding
             embeddings_amounts_splitted[random_idx] = (
-                    embeddings_amounts_splitted[random_idx] + self.epsilon * embeddings_amounts_splitted[
-                random_idx].grad.data.sign()
+                embeddings_amounts_splitted[random_idx]
+                + self.epsilon * embeddings_amounts_splitted[random_idx].grad.data.sign()
             )
             self.classifier.zero_grad()
             # find the closest embedding for the modified one
 
             embeddings_vocab_amounts = embeddings_vocab_amounts.squeeze(0)
             if data_to_attack.amounts[random_idx] >= 0:
-                max_amount = \
-                self.reader.discretizer.transform([[data_to_attack.amounts[random_idx] + self.total_amount]])[0][0]
+                max_amount = self.reader.discretizer.transform(
+                    [[data_to_attack.amounts[random_idx] + self.total_amount]]
+                )[0][0]
                 min_amount = self.reader.discretizer.transform([[data_to_attack.amounts[random_idx]]])[0][0]
                 sign = 1
             else:
                 max_amount = self.reader.discretizer.transform([[data_to_attack.amounts[random_idx]]])[0][0]
-                min_amount = \
-                self.reader.discretizer.transform([[data_to_attack.amounts[random_idx] - self.total_amount]])[0][0]
+                min_amount = self.reader.discretizer.transform(
+                    [[data_to_attack.amounts[random_idx] - self.total_amount]]
+                )[0][0]
                 sign = -1
             # for negative amounts in gender
             res_idx = [idx for idx, val in enumerate(voc) if int(val) <= max_amount and int(val) >= min_amount]
             res_voc = list(itemgetter(*res_idx)(voc))
-            distances = torch.nn.functional.pairwise_distance(embeddings_amounts_splitted[random_idx],
-                                                              embeddings_vocab_amounts)
+            distances = torch.nn.functional.pairwise_distance(
+                embeddings_amounts_splitted[random_idx], embeddings_vocab_amounts
+            )
             # we dont choose special tokens
             # swap embeddings
             if min_amount == max_amount:
@@ -125,22 +129,30 @@ class FGSM(Attacker):
             embeddings_amounts_splitted = [e.detach() for e in embeddings_amounts_splitted]
             # get adversarial indexes
             adv_data = deepcopy(data_to_attack)
-            if voc[closest_idx] == '@@PADDING@@':
+            if voc[closest_idx] == "@@PADDING@@":
                 voc[closest_idx] = 0
-            if voc[closest_idx] == '@@UNKNOWN@@':
+            if voc[closest_idx] == "@@UNKNOWN@@":
                 voc[closest_idx] = 0
-            if voc[closest_idx] == '<START>':
+            if voc[closest_idx] == "<START>":
                 voc[closest_idx] = 1
-            if voc[closest_idx] == '<END>':
+            if voc[closest_idx] == "<END>":
                 voc[closest_idx] = -1
             if sign == 1:
                 adv_data.amounts[random_idx] = max(
-                    min(self.reader.discretizer.inverse_transform([[res_voc[closest_idx]]])[0][0],
-                        self.total_amount + data_to_attack.amounts[random_idx]), data_to_attack.amounts[random_idx])
+                    min(
+                        self.reader.discretizer.inverse_transform([[res_voc[closest_idx]]])[0][0],
+                        self.total_amount + data_to_attack.amounts[random_idx],
+                    ),
+                    data_to_attack.amounts[random_idx],
+                )
             else:
                 adv_data.amounts[random_idx] = min(
-                    max(self.reader.discretizer.inverse_transform([[res_voc[closest_idx]]])[0][0],
-                        data_to_attack.amounts[random_idx] - self.total_amount), data_to_attack.amounts[random_idx])
+                    max(
+                        self.reader.discretizer.inverse_transform([[res_voc[closest_idx]]])[0][0],
+                        data_to_attack.amounts[random_idx] - self.total_amount,
+                    ),
+                    data_to_attack.amounts[random_idx],
+                )
 
             adv_inputs = data_to_tensors(adv_data, self.reader, self.vocab, self.device)
             # get adversarial probability and adversarial label
