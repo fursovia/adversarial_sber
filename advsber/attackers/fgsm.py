@@ -4,18 +4,11 @@ import typer
 import torch
 from allennlp.models import Model
 from allennlp.nn import util
-import tokenize
-from allennlp.data.dataset_readers.dataset_reader import DatasetReader
-from allennlp.data.tokenizers import WhitespaceTokenizer, Token
 from advsber.attackers.attacker import Attacker, AttackerOutput
 from advsber.settings import TransactionsData
 from advsber.dataset_readers.transactions_reader import TransactionsDatasetReader
 from advsber.utils.data import data_to_tensors, decode_indexes, decode_indexes_amounts
 from advsber.utils.metrics import word_error_rate_on_sequences
-from allennlp.data.fields import TextField, LabelField
-from allennlp.data.instance import Instance
-from allennlp.data.token_indexers import SingleIdTokenIndexer
-import numpy as np
 from operator import itemgetter
 
 
@@ -73,9 +66,7 @@ class FGSM(Attacker):
         embeddings = emb_out["transaction_embeddings"].detach()
         embeddings_amounts = emb_amounts_out["amounts_embeddings"].detach()
         embeddings_splitted = [e for e in embeddings[0]]
-        amounts_splitted = [torch.tensor(e, device=cuda0) for e in data_to_attack.amounts]
         embeddings_amounts_splitted = [e for e in embeddings_amounts[0]]
-        embeddings_vocab_amounts_splitted = [e for e in embeddings_vocab_amounts[0]]
         outputs = []
         for step in range(self.num_steps):
             # choose random index of embeddings (except for start/end tokens)

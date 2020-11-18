@@ -1,6 +1,5 @@
 from typing import Union, List, Dict, Any, Sequence
 from itertools import chain
-import typer
 import torch
 import pickle
 import jsonlines
@@ -15,10 +14,7 @@ from advsber.settings import TransactionsData, ModelsInput
 
 
 def decode_indexes_amounts(
-    indexes: torch.Tensor,
-    vocab: Vocabulary,
-    namespace="amounts",
-    drop_start_end: bool = True,
+    indexes: torch.Tensor, vocab: Vocabulary, namespace="amounts", drop_start_end: bool = True,
 ) -> List[str]:
     out = [vocab.get_token_from_index(idx.item(), namespace=namespace) for idx in indexes]
     # if drop_start_end:
@@ -45,10 +41,7 @@ def data_to_tensors(
 
 
 def decode_indexes(
-    indexes: torch.Tensor,
-    vocab: Vocabulary,
-    namespace="transactions",
-    drop_start_end: bool = True,
+    indexes: torch.Tensor, vocab: Vocabulary, namespace="transactions", drop_start_end: bool = True,
 ) -> List[str]:
     out = [vocab.get_token_from_index(idx.item(), namespace=namespace) for idx in indexes]
 

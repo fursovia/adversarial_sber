@@ -15,11 +15,7 @@ from advsber.settings import TransactionsData
 @Attacker.register("greedy")
 class GreedyAttacker(Attacker):
     def __init__(
-        self,
-        classifier: Model,
-        reader: TransactionsDatasetReader,
-        num_steps: Optional[int] = None,
-        device: int = -1,
+        self, classifier: Model, reader: TransactionsDatasetReader, num_steps: Optional[int] = None, device: int = -1,
     ) -> None:
         super().__init__(classifier=classifier, reader=reader, device=device)
         self._num_steps = num_steps

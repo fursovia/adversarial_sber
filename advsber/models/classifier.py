@@ -1,5 +1,4 @@
 from typing import Dict, Optional
-import typer
 import torch
 
 from allennlp.data import TextFieldTensors, Vocabulary
