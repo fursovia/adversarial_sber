@@ -44,9 +44,13 @@ class SamplingFool(Attacker):
 
     @torch.no_grad()
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
-        inputs_to_attack = data_to_tensors(data_to_attack, self.reader, self.vocab, self.device)
+        inputs_to_attack = data_to_tensors(
+            data_to_attack, self.reader, self.vocab, self.device
+        )
 
-        orig_prob = self.get_clf_probs(inputs_to_attack)[self.label_to_index(data_to_attack.label)].item()
+        orig_prob = self.get_clf_probs(inputs_to_attack)[
+            self.label_to_index(data_to_attack.label)
+        ].item()
 
         logits = self.get_lm_logits(inputs_to_attack)
         logits = logits / self.temperature
@@ -71,7 +75,9 @@ class SamplingFool(Attacker):
                 probability=orig_prob,
                 adversarial_probability=adv_prob,
                 prob_diff=(orig_prob - adv_prob),
-                wer=word_error_rate_on_sequences(data_to_attack.transactions, adv_data.transactions),
+                wer=word_error_rate_on_sequences(
+                    data_to_attack.transactions, adv_data.transactions
+                ),
             )
             outputs.append(output)
 

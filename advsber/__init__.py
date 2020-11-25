@@ -1,4 +1,8 @@
-from .models import MaskedLanguageModel, TransactionsClassifier, AutoregressiveLanguageModel
+from .models import (
+    MaskedLanguageModel,
+    TransactionsClassifier,
+    AutoregressiveLanguageModel,
+)
 from .attackers import (
     AttackerOutput,
     Attacker,

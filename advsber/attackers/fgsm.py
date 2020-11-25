@@ -31,15 +31,21 @@ class FGSM(Attacker):
 
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
         # get inputs to the model
-        inputs = data_to_tensors(data_to_attack, reader=self.reader, vocab=self.vocab, device=self.device)
+        inputs = data_to_tensors(
+            data_to_attack, reader=self.reader, vocab=self.vocab, device=self.device
+        )
 
         adversarial_idexes = inputs["transactions"]["tokens"]["tokens"][0]
 
         # original probability of the true label
-        orig_prob = self.get_clf_probs(inputs)[self.label_to_index(data_to_attack.label)].item()
+        orig_prob = self.get_clf_probs(inputs)[
+            self.label_to_index(data_to_attack.label)
+        ].item()
 
         # get mask and transaction embeddings
-        emb_out = self.classifier.get_transaction_embeddings(transactions=inputs["transactions"])
+        emb_out = self.classifier.get_transaction_embeddings(
+            transactions=inputs["transactions"]
+        )
 
         # disable gradients using a trick
         embeddings = emb_out["transaction_embeddings"].detach()
@@ -54,7 +60,9 @@ class FGSM(Attacker):
 
             # calculate the loss for current embeddings
             loss = self.classifier.forward_on_transaction_embeddings(
-                transaction_embeddings=torch.stack(embeddings_splitted, dim=0).unsqueeze(0),
+                transaction_embeddings=torch.stack(
+                    embeddings_splitted, dim=0
+                ).unsqueeze(0),
                 mask=emb_out["mask"],
                 amounts=inputs["amounts"],
                 label=inputs["label"],
@@ -63,12 +71,15 @@ class FGSM(Attacker):
 
             # update the chosen embedding
             embeddings_splitted[random_idx] = (
-                embeddings_splitted[random_idx] + self.epsilon * embeddings_splitted[random_idx].grad.data.sign()
+                embeddings_splitted[random_idx]
+                + self.epsilon * embeddings_splitted[random_idx].grad.data.sign()
             )
             self.classifier.zero_grad()
 
             # find the closest embedding for the modified one
-            distances = torch.nn.functional.pairwise_distance(embeddings_splitted[random_idx], self.emb_layer)
+            distances = torch.nn.functional.pairwise_distance(
+                embeddings_splitted[random_idx], self.emb_layer
+            )
             # we dont choose special tokens
             distances[self.special_indexes] = 10 ** 16
 
@@ -96,7 +107,9 @@ class FGSM(Attacker):
                 probability=orig_prob,
                 adversarial_probability=adv_prob,
                 prob_diff=(orig_prob - adv_prob),
-                wer=word_error_rate_on_sequences(data_to_attack.transactions, adv_data.transactions),
+                wer=word_error_rate_on_sequences(
+                    data_to_attack.transactions, adv_data.transactions
+                ),
             )
             outputs.append(output)
 

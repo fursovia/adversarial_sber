@@ -33,7 +33,9 @@ class Attacker(ABC, Registrable):
 
     SPECIAL_TOKENS = ("@@UNKNOWN@@", "@@PADDING@@", START_TOKEN, END_TOKEN, MASK_TOKEN)
 
-    def __init__(self, classifier: Model, reader: TransactionsDatasetReader, device: int = -1,) -> None:
+    def __init__(
+        self, classifier: Model, reader: TransactionsDatasetReader, device: int = -1,
+    ) -> None:
         self.classifier = classifier
         self.classifier.eval()
         self.reader = reader
@@ -43,7 +45,17 @@ class Attacker(ABC, Registrable):
         if self.device >= 0 and torch.cuda.is_available():
             self.classifier.cuda(self.device)
 
-        self.special_indexes = [self.vocab.get_token_index(token, "transactions") for token in self.SPECIAL_TOKENS]
+        self.special_indexes = [
+            self.vocab.get_token_index(token, "transactions")
+            for token in self.SPECIAL_TOKENS
+        ]
+        self.all_tokens = [
+            token
+            for token, _ in self.vocab.get_token_to_index_vocabulary(
+                "transactions"
+            ).items()
+            if token not in self.SPECIAL_TOKENS
+        ]
 
     @abstractmethod
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
@@ -64,11 +76,15 @@ class Attacker(ABC, Registrable):
         return label
 
     def index_to_label(self, label_idx: int) -> int:
-        label = self.vocab.get_index_to_token_vocabulary("labels").get(label_idx, str(label_idx))
+        label = self.vocab.get_index_to_token_vocabulary("labels").get(
+            label_idx, str(label_idx)
+        )
         return int(label)
 
     def label_to_index(self, label: int) -> int:
-        label_idx = self.vocab.get_token_to_index_vocabulary("labels").get(str(label), label)
+        label_idx = self.vocab.get_token_to_index_vocabulary("labels").get(
+            str(label), label
+        )
         return label_idx
 
     @staticmethod
@@ -78,11 +94,16 @@ class Attacker(ABC, Registrable):
 
         changed_label_outputs = []
         for output in outputs:
-            if output.data["label"] != output.adversarial_data["label"] and output.wer > 0:
+            if (
+                output.data["label"] != output.adversarial_data["label"]
+                and output.wer > 0
+            ):
                 changed_label_outputs.append(output)
 
         if changed_label_outputs:
-            sorted_outputs = sorted(changed_label_outputs, key=lambda x: x.prob_diff, reverse=True)
+            sorted_outputs = sorted(
+                changed_label_outputs, key=lambda x: x.prob_diff, reverse=True
+            )
             best_output = min(sorted_outputs, key=lambda x: x.wer)
         else:
             best_output = max(outputs, key=lambda x: x.prob_diff)

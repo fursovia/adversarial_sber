@@ -28,7 +28,9 @@ class MaskedLanguageModel(Model):
         self._amounts_field_embedder = amounts_field_embedder
         self._seq2seq_encoder = seq2seq_encoder
         self._head = LinearLanguageModelHead(
-            vocab=vocab, input_dim=self._seq2seq_encoder.get_output_dim(), vocab_namespace="transactions",
+            vocab=vocab,
+            input_dim=self._seq2seq_encoder.get_output_dim(),
+            vocab_namespace="transactions",
         )
         self._tokens_masker = tokens_masker
 
@@ -37,7 +39,10 @@ class MaskedLanguageModel(Model):
         self._perplexity = FixedPerplexity()
 
     def forward(
-        self, transactions: TextFieldTensors, amounts: Optional[TextFieldTensors] = None, **kwargs,
+        self,
+        transactions: TextFieldTensors,
+        amounts: Optional[TextFieldTensors] = None,
+        **kwargs,
     ) -> Dict[str, torch.Tensor]:
         mask = get_text_field_mask(transactions)
 
@@ -49,14 +54,18 @@ class MaskedLanguageModel(Model):
         transaction_embeddings = self._transactions_field_embedder(transactions)
         if amounts is not None and self._amounts_field_embedder is not None:
             amount_embeddings = self._amounts_field_embedder(amounts)
-            transaction_embeddings = torch.cat((transaction_embeddings, amount_embeddings), dim=-1)
+            transaction_embeddings = torch.cat(
+                (transaction_embeddings, amount_embeddings), dim=-1
+            )
 
         contextual_embeddings = self._seq2seq_encoder(transaction_embeddings, mask)
 
         # take PAD tokens into account when decoding
         logits = self._head(contextual_embeddings)
 
-        output_dict = dict(contextual_embeddings=contextual_embeddings, logits=logits, mask=mask)
+        output_dict = dict(
+            contextual_embeddings=contextual_embeddings, logits=logits, mask=mask
+        )
 
         output_dict["loss"] = self._loss(
             logits.transpose(1, 2),

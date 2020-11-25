@@ -37,13 +37,17 @@ class TestTransactionAttackers:
                     "DATA_PATH": "",
                     "OUTPUT_PATH": "",
                     "CLF_PATH": str(clf_path),
-                    "MASKED_LM_PATH": str(clf_path.parent.parent / "lm/bert_with_amounts.tar.gz"),
+                    "MASKED_LM_PATH": str(
+                        clf_path.parent.parent / "lm/bert_with_amounts.tar.gz"
+                    ),
                 },
             )
             params["attacker"]["device"] = -1
             attacker = advsber.Attacker.from_params(params["attacker"])
         except Exception as e:
-            raise AssertionError(f"unable to load params from {config_path}, because {e}")
+            raise AssertionError(
+                f"unable to load params from {config_path}, because {e}"
+            )
 
         output = attacker.attack(TransactionsData(**data[0]))
         assert isinstance(output, advsber.AttackerOutput)

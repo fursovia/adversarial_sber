@@ -57,7 +57,10 @@ class AutoregressiveLanguageModel(Model):
                 sparse=sparse_embeddings,
             )
         else:
-            self._softmax_loss = SoftmaxLoss(num_words=vocab.get_vocab_size("transactions"), embedding_dim=self._forward_dim)
+            self._softmax_loss = SoftmaxLoss(
+                num_words=vocab.get_vocab_size("transactions"),
+                embedding_dim=self._forward_dim,
+            )
 
         # This buffer is now unused and exists only for backwards compatibility reasons.
         self.register_buffer("_last_average_loss", torch.zeros(1))
@@ -82,7 +85,9 @@ class AutoregressiveLanguageModel(Model):
             shifted_mask = torch.cat([zero_col, mask[:, 0:-1]], dim=1)
         else:
             shifted_mask = torch.cat([mask[:, 1:], zero_col], dim=1)
-        return token_embeddings.masked_select(shifted_mask.unsqueeze(-1)).view(-1, self._forward_dim)
+        return token_embeddings.masked_select(shifted_mask.unsqueeze(-1)).view(
+            -1, self._forward_dim
+        )
 
     def _compute_loss(
         self,
@@ -97,12 +102,16 @@ class AutoregressiveLanguageModel(Model):
         # shape (batch_size, timesteps) masked with 0
         if self._bidirectional:
             forward_embeddings, backward_embeddings = lm_embeddings.chunk(2, -1)
-            backward_loss = self._loss_helper(1, backward_embeddings, backward_targets, token_embeddings)
+            backward_loss = self._loss_helper(
+                1, backward_embeddings, backward_targets, token_embeddings
+            )
         else:
             forward_embeddings = lm_embeddings
             backward_loss = None
 
-        forward_loss = self._loss_helper(0, forward_embeddings, forward_targets, token_embeddings)
+        forward_loss = self._loss_helper(
+            0, forward_embeddings, forward_targets, token_embeddings
+        )
         return forward_loss, backward_loss
 
     def _loss_helper(
@@ -120,7 +129,9 @@ class AutoregressiveLanguageModel(Model):
         non_masked_targets = direction_targets.masked_select(mask) - 1
 
         # shape (batch_size * timesteps, embedding_dim)
-        non_masked_embeddings = direction_embeddings.masked_select(mask.unsqueeze(-1)).view(-1, self._forward_dim)
+        non_masked_embeddings = direction_embeddings.masked_select(
+            mask.unsqueeze(-1)
+        ).view(-1, self._forward_dim)
         # note: need to return average loss across forward and backward
         # directions, but total sum loss across all batches.
         # Assuming batches include full sentences, forward and backward
@@ -131,10 +142,16 @@ class AutoregressiveLanguageModel(Model):
         else:
             # we also need the token embeddings corresponding to the
             # the targets
-            raise NotImplementedError("This requires SampledSoftmaxLoss, which isn't implemented yet.")
+            raise NotImplementedError(
+                "This requires SampledSoftmaxLoss, which isn't implemented yet."
+            )
 
-            non_masked_token_embeddings = self._get_target_token_embeddings(token_embeddings, mask, direction)
-            return self._softmax(non_masked_embeddings, non_masked_targets, non_masked_token_embeddings)
+            non_masked_token_embeddings = self._get_target_token_embeddings(
+                token_embeddings, mask, direction
+            )
+            return self._softmax(
+                non_masked_embeddings, non_masked_targets, non_masked_token_embeddings
+            )
 
     def delete_softmax(self) -> None:
         """
@@ -152,10 +169,13 @@ class AutoregressiveLanguageModel(Model):
             return self._contextualizer.num_layers + 1
         else:
             raise NotImplementedError(
-                f"Contextualizer of type {type(self._contextualizer)} " + "does not report how many layers it has."
+                f"Contextualizer of type {type(self._contextualizer)} "
+                + "does not report how many layers it has."
             )
 
-    def forward(self, transactions: TextFieldTensors, **kwargs) -> Dict[str, torch.Tensor]:
+    def forward(
+        self, transactions: TextFieldTensors, **kwargs
+    ) -> Dict[str, torch.Tensor]:
 
         mask = get_text_field_mask(transactions)
 
@@ -163,7 +183,9 @@ class AutoregressiveLanguageModel(Model):
         embeddings = self._text_field_embedder(transactions)
 
         # Either the top layer or all layers.
-        contextual_embeddings: Union[torch.Tensor, List[torch.Tensor]] = self._contextualizer(embeddings, mask)
+        contextual_embeddings: Union[
+            torch.Tensor, List[torch.Tensor]
+        ] = self._contextualizer(embeddings, mask)
 
         return_dict = {}
 
@@ -188,13 +210,18 @@ class AutoregressiveLanguageModel(Model):
 
             # compute softmax loss
             forward_loss, backward_loss = self._compute_loss(
-                contextual_embeddings_with_dropout, embeddings, forward_targets, backward_targets
+                contextual_embeddings_with_dropout,
+                embeddings,
+                forward_targets,
+                backward_targets,
             )
 
             num_targets = torch.sum((forward_targets > 0).long())
             if num_targets > 0:
                 if self._bidirectional:
-                    average_loss = 0.5 * (forward_loss + backward_loss) / num_targets.float()
+                    average_loss = (
+                        0.5 * (forward_loss + backward_loss) / num_targets.float()
+                    )
                 else:
                     average_loss = forward_loss / num_targets.float()
             else:

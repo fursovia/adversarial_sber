@@ -23,7 +23,9 @@ def get_predictor(archive_path: str) -> Predictor:
 
 
 def main(
-    output_path: str, save_to: str = typer.Option(None), target_clf_path: str = typer.Option(None),
+    output_path: str,
+    save_to: str = typer.Option(None),
+    target_clf_path: str = typer.Option(None),
 ):
     output = load_jsonlines(output_path)
     output = pd.DataFrame(output).drop(columns="history")
@@ -31,7 +33,10 @@ def main(
     if target_clf_path is not None:
         predictor = get_predictor(target_clf_path)
         data = [
-            {"transactions": adv_example["transactions"], "amounts": adv_example["amounts"]}
+            {
+                "transactions": adv_example["transactions"],
+                "amounts": adv_example["amounts"],
+            }
             for adv_example in output["adversarial_data"]
         ]
         preds = predictor.predict_batch_json(data)
@@ -39,7 +44,9 @@ def main(
         for i, pred in enumerate(preds):
             label = pred["label"]
             prob = pred["probs"][
-                predictor._model.vocab.get_token_index(str(output["data"][i]["label"]), namespace="labels")
+                predictor._model.vocab.get_token_index(
+                    str(output["data"][i]["label"]), namespace="labels"
+                )
             ]
             output["adversarial_data"][i]["label"] = int(label)
             output["adversarial_probability"][i] = prob
@@ -52,7 +59,9 @@ def main(
     misclf_error = misclassification_error(y_true=y_true, y_adv=y_adv)
     typer.echo(f"Misclassification Error = {misclf_error:.2f}")
 
-    prob_drop = probability_drop(true_prob=output["probability"], adv_prob=output["adversarial_probability"])
+    prob_drop = probability_drop(
+        true_prob=output["probability"], adv_prob=output["adversarial_probability"]
+    )
     typer.echo(f"Probability drop = {prob_drop:.2f}")
 
     mean_wer = float(np.mean(output["wer"]))
@@ -60,7 +69,9 @@ def main(
 
     added_amounts = []
     for _, row in output.iterrows():
-        added_amounts.append(sum(row["adversarial_data"]["amounts"]) - sum(row["data"]["amounts"]))
+        added_amounts.append(
+            sum(row["adversarial_data"]["amounts"]) - sum(row["data"]["amounts"])
+        )
 
     anad = amount_normalized_accuracy_drop(added_amounts, y_true=y_true, y_adv=y_adv)
     typer.echo(f"aNAD-1000 = {anad:.2f}")
