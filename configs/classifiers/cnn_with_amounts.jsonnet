@@ -2,10 +2,8 @@ local COMMON = import 'common/basic.jsonnet';
 
 local transactions_emb_dim = 64;
 local amounts_emb_dim = 32;
-local gru_hidden_size = 256;
-local gru_num_layers = 1;
-local gru_dropout = 0.1;
-local bidirectional = true;
+local num_filters = 64;
+local conv_layer_activation = "relu";
 
 {
   "dataset_reader": COMMON["dataset_reader"],
@@ -35,12 +33,10 @@ local bidirectional = true;
       }
     },
     "seq2vec_encoder": {
-      "type": "gru",
-      "input_size": transactions_emb_dim + amounts_emb_dim,
-      "hidden_size": gru_hidden_size,
-      "num_layers": gru_num_layers,
-      "dropout": gru_dropout,
-      "bidirectional": bidirectional
+      "type": "cnn",
+      "embedding_dim": transactions_emb_dim + amounts_emb_dim,
+      "num_filters": num_filters,
+      "conv_layer_activation": conv_layer_activation,
     },
   },
   "distributed": {

@@ -43,6 +43,13 @@ local bidirectional = true;
       "bidirectional": bidirectional
     },
   },
+  "distributed": {
+    "cuda_devices": [
+      0,
+      1,
+      2,
+    ]
+  },
   "data_loader": COMMON["data_loader"],
   "trainer": COMMON["trainer"]
 }
