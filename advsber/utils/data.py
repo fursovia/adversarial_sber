@@ -15,10 +15,7 @@ from advsber.settings import TransactionsData, ModelsInput
 
 
 def data_to_tensors(
-    data: TransactionsData,
-    reader: DatasetReader,
-    vocab: Vocabulary,
-    device: Union[torch.device, int] = -1,
+    data: TransactionsData, reader: DatasetReader, vocab: Vocabulary, device: Union[torch.device, int] = -1,
 ) -> ModelsInput:
 
     instances = Batch([reader.text_to_instance(**data.to_dict())])
@@ -29,14 +26,9 @@ def data_to_tensors(
 
 
 def decode_indexes(
-    indexes: torch.Tensor,
-    vocab: Vocabulary,
-    namespace="transactions",
-    drop_start_end: bool = True,
+    indexes: torch.Tensor, vocab: Vocabulary, namespace="transactions", drop_start_end: bool = True,
 ) -> List[str]:
-    out = [
-        vocab.get_token_from_index(idx.item(), namespace=namespace) for idx in indexes
-    ]
+    out = [vocab.get_token_from_index(idx.item(), namespace=namespace) for idx in indexes]
 
     if drop_start_end:
         return out[1:-1]
@@ -58,13 +50,9 @@ def write_jsonlines(data: Sequence[Dict[str, Any]], path: str) -> None:
             writer.write(ex)
 
 
-def generate_transaction_amounts(
-    total_amount: float, num_transactions: int, alpha: float = 1.0
-) -> List[float]:
+def generate_transaction_amounts(total_amount: float, num_transactions: int, alpha: float = 1.0) -> List[float]:
     assert total_amount > 0
-    values = (
-        np.random.dirichlet(np.ones(num_transactions) * alpha, size=1) * total_amount
-    )
+    values = np.random.dirichlet(np.ones(num_transactions) * alpha, size=1) * total_amount
     values = values.tolist()[0]
     return values
 

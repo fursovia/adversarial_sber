@@ -31,16 +31,12 @@ class TransactionsClassifier(Model):
         self._amounts_field_embedder = amounts_field_embedder
 
         num_labels = num_labels or vocab.get_vocab_size("labels")
-        self._classification_layer = torch.nn.Linear(
-            self._seq2vec_encoder.get_output_dim(), num_labels
-        )
+        self._classification_layer = torch.nn.Linear(self._seq2vec_encoder.get_output_dim(), num_labels)
 
         self._loss = torch.nn.CrossEntropyLoss()
         self._accuracy = CategoricalAccuracy()
 
-    def get_transaction_embeddings(
-        self, transactions: TextFieldTensors
-    ) -> Dict[str, torch.Tensor]:
+    def get_transaction_embeddings(self, transactions: TextFieldTensors) -> Dict[str, torch.Tensor]:
         mask = get_text_field_mask(transactions)
         transaction_embeddings = self._transactions_field_embedder(transactions)
         return {"mask": mask, "transaction_embeddings": transaction_embeddings}
@@ -55,14 +51,10 @@ class TransactionsClassifier(Model):
 
         if amounts is not None and self._amounts_field_embedder is not None:
             amount_embeddings = self._amounts_field_embedder(amounts)
-            transaction_embeddings = torch.cat(
-                (transaction_embeddings, amount_embeddings), dim=-1
-            )
+            transaction_embeddings = torch.cat((transaction_embeddings, amount_embeddings), dim=-1)
 
         if self._seq2seq_encoder is not None:
-            transaction_embeddings = self._seq2seq_encoder(
-                transaction_embeddings, mask=mask
-            )
+            transaction_embeddings = self._seq2seq_encoder(transaction_embeddings, mask=mask)
 
         embedded_transactions = self._seq2vec_encoder(transaction_embeddings, mask=mask)
 
@@ -93,9 +85,7 @@ class TransactionsClassifier(Model):
             amounts=amounts,
         )
 
-        output_dict["token_ids"] = util.get_token_ids_from_text_field_tensors(
-            transactions
-        )
+        output_dict["token_ids"] = util.get_token_ids_from_text_field_tensors(transactions)
 
         return output_dict
 
@@ -103,9 +93,7 @@ class TransactionsClassifier(Model):
         metrics = {"accuracy": self._accuracy.get_metric(reset)}
         return metrics
 
-    def make_output_human_readable(
-        self, output_dict: Dict[str, torch.Tensor]
-    ) -> Dict[str, torch.Tensor]:
+    def make_output_human_readable(self, output_dict: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
         predictions = output_dict["probs"]
         if predictions.dim() == 2:
             predictions_list = [predictions[i] for i in range(predictions.shape[0])]
@@ -114,9 +102,7 @@ class TransactionsClassifier(Model):
         classes = []
         for prediction in predictions_list:
             label_idx = prediction.argmax(dim=-1).item()
-            label_str = self.vocab.get_index_to_token_vocabulary("labels").get(
-                label_idx, str(label_idx)
-            )
+            label_str = self.vocab.get_index_to_token_vocabulary("labels").get(label_idx, str(label_idx))
             classes.append(label_str)
         output_dict["label"] = classes
         return output_dict

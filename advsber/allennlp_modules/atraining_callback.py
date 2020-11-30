@@ -35,9 +35,7 @@ class AdversarialTrainingCallback(BatchCallback):
 
                 instances = []
                 for element in batch:
-                    data = TransactionsData.from_tensors(
-                        inputs=element, vocab=trainer.model.vocab
-                    )
+                    data = TransactionsData.from_tensors(inputs=element, vocab=trainer.model.vocab)
                     adv_data = attacker.attack(data)
 
                     instance = self.reader.text_to_instance(**adv_data)

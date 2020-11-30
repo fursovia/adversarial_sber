@@ -43,23 +43,15 @@ class ConcatFGSM(Attacker):
 
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
         # get inputs to the model
-        inputs = data_to_tensors(
-            data_to_attack, reader=self.reader, vocab=self.vocab, device=self.device
-        )
+        inputs = data_to_tensors(data_to_attack, reader=self.reader, vocab=self.vocab, device=self.device)
 
         # original probability of the true label
-        orig_prob = self.get_clf_probs(inputs)[
-            self.label_to_index(data_to_attack.label)
-        ].item()
+        orig_prob = self.get_clf_probs(inputs)[self.label_to_index(data_to_attack.label)].item()
 
         adv_data = deepcopy(data_to_attack)
-        amounts = generate_transaction_amounts(
-            self.total_amount, self.num_tokens_to_add
-        )
+        amounts = generate_transaction_amounts(self.total_amount, self.num_tokens_to_add)
         if self.position == Position.END:
-            adv_data.transactions = adv_data.transactions + random.sample(
-                self.all_tokens, self.num_tokens_to_add
-            )
+            adv_data.transactions = adv_data.transactions + random.sample(self.all_tokens, self.num_tokens_to_add)
             adv_data.amounts = adv_data.amounts + amounts
         else:
             raise NotImplementedError
@@ -68,9 +60,7 @@ class ConcatFGSM(Attacker):
         adversarial_indexes = adv_inputs["transactions"]["tokens"]["tokens"][0]
 
         # get mask and transaction embeddings
-        emb_out = self.classifier.get_transaction_embeddings(
-            transactions=adv_inputs["transactions"]
-        )
+        emb_out = self.classifier.get_transaction_embeddings(transactions=adv_inputs["transactions"])
 
         # disable gradients using a trick
         embeddings = emb_out["transaction_embeddings"].detach()
@@ -80,10 +70,7 @@ class ConcatFGSM(Attacker):
         for step in range(self.num_steps):
             # choose random index of embeddings (except for start/end tokens)
             if self.position == Position.END:
-                random_idx = random.randint(
-                    len(data_to_attack.transactions) + 1,
-                    max(1, len(adv_data.transactions)),
-                )
+                random_idx = random.randint(len(data_to_attack.transactions) + 1, max(1, len(adv_data.transactions)),)
             else:
                 raise NotImplementedError
 
@@ -92,9 +79,7 @@ class ConcatFGSM(Attacker):
 
             # calculate the loss for current embeddings
             loss = self.classifier.forward_on_transaction_embeddings(
-                transaction_embeddings=torch.stack(
-                    embeddings_splitted, dim=0
-                ).unsqueeze(0),
+                transaction_embeddings=torch.stack(embeddings_splitted, dim=0).unsqueeze(0),
                 mask=emb_out["mask"],
                 amounts=adv_inputs["amounts"],
                 label=adv_inputs["label"],
@@ -103,15 +88,12 @@ class ConcatFGSM(Attacker):
 
             # update the chosen embedding
             embeddings_splitted[random_idx] = (
-                embeddings_splitted[random_idx]
-                + self.epsilon * embeddings_splitted[random_idx].grad.data.sign()
+                embeddings_splitted[random_idx] + self.epsilon * embeddings_splitted[random_idx].grad.data.sign()
             )
             self.classifier.zero_grad()
 
             # find the closest embedding for the modified one
-            distances = torch.nn.functional.pairwise_distance(
-                embeddings_splitted[random_idx], self.emb_layer
-            )
+            distances = torch.nn.functional.pairwise_distance(embeddings_splitted[random_idx], self.emb_layer)
             # we dont choose special tokens
             distances[self.special_indexes] = 10 ** 16
 
@@ -123,12 +105,8 @@ class ConcatFGSM(Attacker):
             # get adversarial indexes
             adversarial_indexes[random_idx] = closest_idx
 
-            adv_data.transactions = decode_indexes(
-                adversarial_indexes, vocab=self.vocab
-            )
-            adversarial_inputs = data_to_tensors(
-                adv_data, self.reader, self.vocab, self.device
-            )
+            adv_data.transactions = decode_indexes(adversarial_indexes, vocab=self.vocab)
+            adversarial_inputs = data_to_tensors(adv_data, self.reader, self.vocab, self.device)
 
             # get adversarial probability and adversarial label
             adv_probs = self.get_clf_probs(adversarial_inputs)
@@ -141,9 +119,7 @@ class ConcatFGSM(Attacker):
                 probability=orig_prob,
                 adversarial_probability=adv_prob,
                 prob_diff=(orig_prob - adv_prob),
-                wer=word_error_rate_on_sequences(
-                    data_to_attack.transactions, adv_data.transactions
-                ),
+                wer=word_error_rate_on_sequences(data_to_attack.transactions, adv_data.transactions),
             )
             outputs.append(output)
 

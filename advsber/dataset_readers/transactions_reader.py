@@ -19,12 +19,7 @@ logger = logging.getLogger(__name__)
 
 @DatasetReader.register("transactions_reader")
 class TransactionsDatasetReader(DatasetReader):
-    def __init__(
-        self,
-        discretizer_path: str,
-        max_sequence_length: int = None,
-        lazy: bool = False,
-    ) -> None:
+    def __init__(self, discretizer_path: str, max_sequence_length: int = None, lazy: bool = False,) -> None:
         super().__init__(lazy=lazy)
 
         self.discretizer = load_discretizer(discretizer_path)
@@ -55,9 +50,7 @@ class TransactionsDatasetReader(DatasetReader):
         amounts = self._add_start_end_tokens(amounts)
 
         fields = {
-            "transactions": TextField(
-                transactions, {"tokens": SingleIdTokenIndexer("transactions")}
-            ),
+            "transactions": TextField(transactions, {"tokens": SingleIdTokenIndexer("transactions")}),
             "amounts": TextField(amounts, {"tokens": SingleIdTokenIndexer("amounts")}),
         }
 
@@ -65,9 +58,7 @@ class TransactionsDatasetReader(DatasetReader):
             fields["label"] = LabelField(label=str(label), skip_indexing=False)
 
         if client_id is not None:
-            fields["client_id"] = LabelField(
-                label=client_id, skip_indexing=True, label_namespace="client_id"
-            )
+            fields["client_id"] = LabelField(label=client_id, skip_indexing=True, label_namespace="client_id")
 
         return Instance(fields)
 
@@ -88,10 +79,7 @@ class TransactionsDatasetReader(DatasetReader):
                     label=items.get("label"),
                     client_id=items.get("client_id"),
                 )
-                if (
-                    instance.fields["transactions"].sequence_length()
-                    <= self._max_sequence_length
-                ):
+                if instance.fields["transactions"].sequence_length() <= self._max_sequence_length:
                     yield instance
                 else:
                     dropped_instances += 1
@@ -108,6 +96,4 @@ class TransactionsDatasetReader(DatasetReader):
         return cls(**config)
 
 
-TransactionsDatasetReader.register("from_archive", constructor="from_archive")(
-    TransactionsDatasetReader
-)
+TransactionsDatasetReader.register("from_archive", constructor="from_archive")(TransactionsDatasetReader)

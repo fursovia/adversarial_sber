@@ -27,9 +27,7 @@ class TokensMasker(Registrable):
         assert ovv_idx != self.mask_idx, f"Add `{MASK_TOKEN}` to your vocab"
         self.vocab_size = self.vocab.get_vocab_size(namespace)
 
-    def mask_tokens(
-        self, inputs: TextFieldTensors
-    ) -> Tuple[TextFieldTensors, TextFieldTensors]:
+    def mask_tokens(self, inputs: TextFieldTensors) -> Tuple[TextFieldTensors, TextFieldTensors]:
 
         masked_inputs = dict()
         masked_targets = dict()
@@ -40,26 +38,16 @@ class TokensMasker(Registrable):
                 labels = tokens.clone()
 
                 indices_masked = torch.bernoulli(
-                    torch.full(
-                        labels.shape, self.mask_probability, device=tokens.device
-                    )
+                    torch.full(labels.shape, self.mask_probability, device=tokens.device)
                 ).bool()
                 tokens[indices_masked] = self.mask_idx
 
                 indices_random = (
-                    torch.bernoulli(
-                        torch.full(
-                            labels.shape, self.replace_probability, device=tokens.device
-                        )
-                    ).bool()
+                    torch.bernoulli(torch.full(labels.shape, self.replace_probability, device=tokens.device)).bool()
                     & ~indices_masked
                 )
                 random_tokens = torch.randint(
-                    low=1,
-                    high=self.vocab_size,
-                    size=labels.shape,
-                    dtype=torch.long,
-                    device=tokens.device,
+                    low=1, high=self.vocab_size, size=labels.shape, dtype=torch.long, device=tokens.device,
                 )
                 tokens[indices_random] = random_tokens[indices_random]
 

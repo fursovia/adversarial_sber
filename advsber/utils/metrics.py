@@ -25,9 +25,7 @@ def word_error_rate_on_sequences(sequence_a: List[int], sequence_b: List[int]) -
     return word_error_rate(sequence_a, sequence_b)
 
 
-def normalized_accuracy_drop(
-    wers: List[int], y_true: List[int], y_adv: List[int], gamma: float = 1.0,
-) -> float:
+def normalized_accuracy_drop(wers: List[int], y_true: List[int], y_adv: List[int], gamma: float = 1.0,) -> float:
     assert len(y_true) == len(y_adv)
     nads = []
     for wer, lab, alab in zip(wers, y_true, y_adv):
@@ -56,10 +54,7 @@ def probability_drop(true_prob: List[float], adv_prob: List[float],) -> float:
 
 
 def amount_normalized_accuracy_drop(
-    added_amounts: List[float],
-    y_true: List[int],
-    y_adv: List[int],
-    target_amount: float = 1000.0,
+    added_amounts: List[float], y_true: List[int], y_adv: List[int], target_amount: float = 1000.0,
 ) -> float:
     assert len(y_true) == len(y_adv)
     nads = []

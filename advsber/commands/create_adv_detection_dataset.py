@@ -16,22 +16,15 @@ def create_dataset_from_output(output: List[Dict[str, Any]]) -> List[Dict[str, A
         adv_amounts = example["adversarial_data"]["amounts"]
 
         if example["data"]["label"] != example["adversarial_data"]["label"]:
-            dataset.append(
-                {"transactions": transactions, "amounts": amounts, "label": 0}
-            )
+            dataset.append({"transactions": transactions, "amounts": amounts, "label": 0})
 
-            dataset.append(
-                {"transactions": adv_transactions, "amounts": adv_amounts, "label": 1}
-            )
+            dataset.append({"transactions": adv_transactions, "amounts": adv_amounts, "label": 1})
 
     return dataset
 
 
 def main(
-    results_path: Path,
-    out_data_dir: Path,
-    filename: str = "output.json",
-    test_size: float = 0.3,
+    results_path: Path, out_data_dir: Path, filename: str = "output.json", test_size: float = 0.3,
 ):
     paths = results_path.rglob(filename)
 
@@ -45,13 +38,7 @@ def main(
         target_name_viasubst_name = path.parent.parent.name
         dataset_name = path.parent.parent.parent.name
 
-        base_dir = (
-            out_data_dir
-            / dataset_name
-            / "adv_detection"
-            / attack_name
-            / target_name_viasubst_name
-        )
+        base_dir = out_data_dir / dataset_name / "adv_detection" / attack_name / target_name_viasubst_name
         base_dir.mkdir(parents=True, exist_ok=True)
 
         typer.echo(f"Saving data to {base_dir}")
