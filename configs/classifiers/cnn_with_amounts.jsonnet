@@ -39,13 +39,13 @@ local conv_layer_activation = "relu";
       "conv_layer_activation": conv_layer_activation,
     },
   },
-  "distributed": {
-    "cuda_devices": [
-      0,
-      1,
-      2,
-    ]
-  },
+//  "distributed": {
+//    "cuda_devices": [
+//      0,
+//      1,
+//      2,
+//    ]
+//  },
   "data_loader": COMMON["data_loader"],
   "trainer": COMMON["trainer"]
 }
