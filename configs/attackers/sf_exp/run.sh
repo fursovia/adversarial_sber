@@ -4,7 +4,7 @@
 RESULTS_DIR=./results/sf_exp
 
 for i in $(seq 0 99); do
-    config_path=sampling_fool_${i}.jsonnet
+    config_path=sampling_fool_${i}.json
     mkdir -p ${RESULTS_DIR}/${i}
 
     CUDA_VISIBLE_DEVICES="1" \
