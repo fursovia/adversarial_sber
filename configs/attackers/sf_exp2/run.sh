@@ -3,7 +3,7 @@
 
 RESULTS_DIR=./results/sf_exp2
 
-for i in $(seq 0 99); do
+for i in $(seq 0 201); do
     config_path=sampling_fool_${i}.json
     mkdir -p ${RESULTS_DIR}/${i}
 

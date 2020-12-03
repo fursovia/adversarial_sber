@@ -1,1 +1,22 @@
-{"data_path": "old_datasets/age/test.jsonl", "output_path": "results/sf_exp/76/output.json", "attacker": {"type": "sampling_fool", "masked_lm": {"type": "from_archive", "archive_file": "presets/age/models/lm/bert_with_amounts.tar.gz"}, "classifier": {"type": "from_archive", "archive_file": "presets/age/models/substitute_clf/gru_with_amounts.tar.gz"}, "reader": {"type": "from_archive", "archive_file": "presets/age/models/substitute_clf/gru_with_amounts.tar.gz"}, "num_samples": 100, "temperature": 1.5004380305549554, "device": 0}}
+{
+    "data_path": "old_datasets/age/test.jsonl",
+    "output_path": "results/sf_exp2/76/output.json",
+    "attacker": {
+        "type": "sampling_fool",
+        "masked_lm": {
+            "type": "from_archive",
+            "archive_file": "presets/age/models/lm/bert_with_amounts.tar.gz"
+        },
+        "classifier": {
+            "type": "from_archive",
+            "archive_file": "presets/age/models/substitute_clf/gru_with_amounts.tar.gz"
+        },
+        "reader": {
+            "type": "from_archive",
+            "archive_file": "presets/age/models/substitute_clf/gru_with_amounts.tar.gz"
+        },
+        "num_samples": 100,
+        "temperature": 1.5004380305549554,
+        "device": 0
+    }
+}
