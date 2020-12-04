@@ -14,7 +14,7 @@ local clf_path = std.extVar("CLF_PATH");
       // we parse reader args from archive
       "archive_file": clf_path
     },
-    "num_steps": 5,
+    "num_steps": 10,
     "device": 0
   }
 }

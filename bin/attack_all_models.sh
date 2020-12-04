@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-SUBSTITUTE_CONFIG_NAME="gru_with_amounts"
+SUBSTITUTE_CONFIG_NAME="cnn_with_amounts"
 TARGET_CONFIG_NAME="lstm_with_amounts"
 
 NUM_SAMPLES=${1:-"500"}

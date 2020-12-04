@@ -21,7 +21,7 @@ local clf_path = std.extVar("CLF_PATH");
     "position": "end",
     "num_tokens_to_add": 2,
     "total_amount": 5000,
-    "num_samples": 100,
+    "num_samples": 200,
     "temperature": 2.0,
     "device": 0
   }
