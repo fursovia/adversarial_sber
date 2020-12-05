@@ -68,12 +68,12 @@ def main(
     typer.echo(f"Diversity_rate = {diversity:.2f}")
     if save_to is not None:
         metrics = {
-            "NAD": round(nad, 2),
-            "ME": round(misclf_error, 2),
-            "PD": round(prob_drop, 2),
-            "Mean_WER": round(mean_wer, 2),
-            "aNAD-1000": round(anad, 2),
-            "diversity_rate": round(diversity, 2),
+            "NAD": round(nad, 3),
+            "ME": round(misclf_error, 3),
+            "PD": round(prob_drop, 3),
+            "Mean_WER": round(mean_wer, 3),
+            "aNAD-1000": round(anad, 3),
+            "diversity_rate": round(diversity, 3),
         }
         with open(save_to, "w") as f:
             json.dump(metrics, f, indent=4)
