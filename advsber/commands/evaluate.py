@@ -66,6 +66,7 @@ def main(
     typer.echo(f"aNAD-1000 = {anad:.2f}")
     try:
         diversity = diversity_rate(output)
+        diversity = round(diversity, 3)
     except ValueError:
         diversity = None
     typer.echo(f"Diversity_rate = {diversity}")
@@ -76,7 +77,7 @@ def main(
             "PD": round(prob_drop, 3),
             "Mean_WER": round(mean_wer, 3),
             "aNAD-1000": round(anad, 3),
-            "diversity_rate": round(diversity, 3),
+            "diversity_rate": diversity,
         }
         with open(save_to, "w") as f:
             json.dump(metrics, f, indent=4)
