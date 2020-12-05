@@ -64,8 +64,11 @@ def main(
 
     anad = amount_normalized_accuracy_drop(added_amounts, y_true=y_true, y_adv=y_adv)
     typer.echo(f"aNAD-1000 = {anad:.2f}")
-    diversity = diversity_rate(output)
-    typer.echo(f"Diversity_rate = {diversity:.2f}")
+    try:
+        diversity = diversity_rate(output)
+    except ValueError:
+        diversity = None
+    typer.echo(f"Diversity_rate = {diversity}")
     if save_to is not None:
         metrics = {
             "NAD": round(nad, 3),
