@@ -74,3 +74,11 @@ CUDA_VISIBLE_DEVICES="1" \
 ```bash
 PYTHONPATH=. python advsber/commands/evaluate.py ./results/output.json
 ```
+
+## Adversarial detection
+
+Для запуска эксперимента по детектированию атак
+
+```bash
+CUDA_VISIBLE_DEVICES="0" bash bin/adversarial_detection.sh
+```
