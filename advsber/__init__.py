@@ -2,7 +2,10 @@ from .models import (
     MaskedLanguageModel,
     TransactionsClassifier,
     AutoregressiveLanguageModel,
+    metric_learning,
+    rtd_encoder
 )
+
 from .attackers import (
     AttackerOutput,
     Attacker,
@@ -12,6 +15,7 @@ from .attackers import (
     ConcatFGSM,
     GreedyAttacker,
 )
+
 from advsber.settings import TransactionsData
 from .dataset_readers import TransactionsDatasetReader
 from .predictors import TransactionsPredictor
