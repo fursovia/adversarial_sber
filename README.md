@@ -103,4 +103,4 @@ DATASET_TYPE TARGET_CONFIG_NAME
 6. `DATASET_TYPE` -- название датасета. Например, gender или age.
 7. `TARGET_CONFIG_NAME` -- название конфига целевого классификатора. Например, lstm_with_amounts.
 
-Примеры аргументов вы можете найти в самом bash скрипте: `bin/adversarial_train.sh`
+Примеры аргументов можно найти в самом bash скрипте: `bin/adversarial_train.sh`
