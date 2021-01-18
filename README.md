@@ -81,4 +81,25 @@ PYTHONPATH=. python advsber/commands/evaluate.py ./results/output.json
 
 ```bash
 CUDA_VISIBLE_DEVICES="0" bash bin/adversarial_detection.sh
+
+
 ```
+
+## Adversarial train
+Для запуска эксперимента по адверсальному обучению
+
+```bash
+CUDA_VISIBLE_DEVICES="0" bash bin/adversarial_train.sh \
+SUBSTITUTE_MODEL_DIR MASKED_LM_DIR DATA_DIR NUM_SAMPLES OUTPUT_DIR \
+DATASET_TYPE TARGET_CONFIG_NAME
+
+```
+где `SUBSTITUTE_MODEL_DIR` -- путь до суррогатного классификатора.
+`MASKED_LM_DIR` -- путь до лингвистической модели.
+`DATA_DIR` -- путь до папки с обучающими выборками `target_clf` и `substitute_clf`.
+`NUM_SAMPLES` -- число адверсальных примеров, которые будут добавлены в обучающую выборку после каждой из 4-х атак: sampling fool, concat sampling fool, fgsm, concat fgsm.
+`OUTPUT_DIR` -- путь до папки, куда будут сохранены новая обучающая выборка, результаты атак и обученная на новой выборке модель
+`DATASET_TYPE` -- название датасета. Например, gender или age.
+`TARGET_CONFIG_NAME` -- название конфига целевого классификатора. Например, lstm_with_amounts
+
+Примеры аргументов вы можете найти в самом bash скрипте: `bin/adversarial_train.sh`
