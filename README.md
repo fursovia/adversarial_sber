@@ -16,8 +16,8 @@ To reproduce all our experiments, please, run all bash scripts in numerical orde
 ### Step 1. Building datasets
 
 We are work with the following transactional datasets: `Age` and `Gender`. They are available on the following link: 
-`Age`: https://drive.google.com/drive/u/0/folders/1oTkPI5Z091JbXHmOR0N7D-KKpN_9Qiyp
-`Gender`: https://drive.google.com/drive/u/0/folders/1FJYWM5P9wUzieC8uPkSx7JKHhcZJboXg
+1. `Age`: https://drive.google.com/drive/u/0/folders/1oTkPI5Z091JbXHmOR0N7D-KKpN_9Qiyp
+2. `Gender`: https://drive.google.com/drive/u/0/folders/1FJYWM5P9wUzieC8uPkSx7JKHhcZJboXg
 
 ## Data
 
