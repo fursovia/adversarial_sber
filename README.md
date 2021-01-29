@@ -28,6 +28,11 @@ As a result, in the directory `../data` you will get data for the next experimen
 
 ### Step 2. Building vocabs and discretizers.
 
+`bash scripts/02_build_vocabs_discretizers.sh`
+
+## Experiments
+### Step 3. Training all classifiers.
+
 `bash scripts/02_build_vocabs_discretizers.sh'
 
 
