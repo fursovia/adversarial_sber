@@ -10,6 +10,7 @@ local bidirectional = true;
 {
   "dataset_reader": COMMON["dataset_reader"],
   "train_data_path": std.extVar("CLF_TRAIN_DATA_PATH"),
+  "test_data_path": std.extVar("CLF_TEST_DATA_PATH"),
   "validation_data_path": std.extVar("CLF_VALID_DATA_PATH"),
   "vocabulary": COMMON["vocabulary"],
   "model": {
@@ -51,5 +52,9 @@ local bidirectional = true;
 //    ]
 //  },
   "data_loader": COMMON["data_loader"],
-  "trainer": COMMON["trainer"]
+  "trainer": COMMON["trainer"],
+  "evaluate_on_test": true,
+  "random_seed": std.extVar("RANDOM_SEED"),
+  "numpy_seed": std.extVar("RANDOM_SEED"),
+  "pytorch_seed": std.extVar("RANDOM_SEED")
 }
