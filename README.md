@@ -31,6 +31,9 @@ As a result, in the directory `../data` you will get data for the next experimen
 `bash scripts/02_build_vocabs_discretizers.sh`
 
 ## Experiments
+
+All results will be at `../experiments`
+
 ### Step 3. Training all classifiers.
 
 `bash scripts/02_build_vocabs_discretizers.sh'
