@@ -2,13 +2,43 @@
 
 
 ## Usage
-
-Install dependencies
+### Step 0. Install dependencies
 
 ```bash
 poetry install
 poetry shell
 ```
+
+## Reproducibility
+
+To reproduce all our experiments, please, run all bash scripts from `./scripts` in numerical order.
+
+### Step 1. Building datasets
+
+We are working with following transactional datasets: `Age` and `Gender`. They are available on the following link: 
+1. `Age`: https://drive.google.com/drive/u/0/folders/1oTkPI5Z091JbXHmOR0N7D-KKpN_9Qiyp
+2. `Gender`: https://drive.google.com/drive/u/0/folders/1FJYWM5P9wUzieC8uPkSx7JKHhcZJboXg
+
+To get the processed datasets, you need to run
+
+`bash scripts/01_build_datasets.sh`
+
+As a result, in the directory `../data` you will get data for the next experiments.
+
+
+### Step 2. Building vocabs and discretizers.
+
+`bash scripts/02_build_vocabs_discretizers.sh`
+
+## Experiments
+
+All results will be at `../experiments`
+
+### Step 3. Training all classifiers.
+
+`bash scripts/03_train_all_classifiers.sh`
+
+
 
 ## Data
 
