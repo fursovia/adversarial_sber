@@ -11,7 +11,7 @@ poetry shell
 
 ## Reproducibility
 
-To reproduce all our experiments, please, run all bash scripts in numerical order.
+To reproduce all our experiments, please, run all bash scripts from `./scripts` in numerical order.
 
 ### Step 1. Building datasets
 
@@ -24,6 +24,13 @@ To get the processed datasets, you need to run
 `bash scripts/01_build_datasets.sh`
 
 As a result, in the directory `../data` you will get data for the next experiments.
+
+
+### Step 2. Building vocabs and discretizers.
+
+`bash scripts/02_build_vocabs_discretizers.sh'
+
+
 
 ## Data
 
