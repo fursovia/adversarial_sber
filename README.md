@@ -19,6 +19,12 @@ We are working with following transactional datasets: `Age` and `Gender`. They a
 1. `Age`: https://drive.google.com/drive/u/0/folders/1oTkPI5Z091JbXHmOR0N7D-KKpN_9Qiyp
 2. `Gender`: https://drive.google.com/drive/u/0/folders/1FJYWM5P9wUzieC8uPkSx7JKHhcZJboXg
 
+To get the processed datasets, you need to run
+
+`bash scripts/01_build_datasets.sh`
+
+As a result, in the directory `../data` you will get data for the next experiments.
+
 ## Data
 
 Данные должны лежать в таком формате. в папке `lm` -- данные для обучения лингвистической модели.
