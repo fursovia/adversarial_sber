@@ -36,7 +36,7 @@ All results will be at `../experiments`
 
 ### Step 3. Training all classifiers.
 
-`bash scripts/02_build_vocabs_discretizers.sh`
+`bash scripts/03_train_all_classifiers.sh`
 
 
 
