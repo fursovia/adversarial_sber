@@ -12,6 +12,7 @@ poetry shell
 ## Reproducibility
 
 To reproduce all our experiments, please, run all bash scripts from `./scripts` in numerical order:
+
 `01_build_datasets.sh
 
 02_build_vocabs_discretizers.sh
