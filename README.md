@@ -23,8 +23,22 @@ To get the processed datasets, you need to run
 
 `bash scripts/01_build_datasets.sh`
 
-As a result, in the directory `../data` you will get the data for the next experiments.
+As a result, in the directory `../data` you will get the data for the next experiments` in following directories:
 
+```text
+.
+├── lm
+│   ├── train.jsonl
+│   └── valid.jsonl
+├── substitute_clf
+│   ├── train.jsonl
+│   └── valid.jsonl
+├── target_clf
+│   ├── train.jsonl
+│   └── valid.jsonl
+└── test.jsonl
+```
+Each  row  in `.jsonl` -- is a dictionary with keys `transactions`, `amounts`, `label`, `client_id`. 
 
 ### Step 2. Building vocabs and discretizers.
 To build vocabulary and train discretizer run:
