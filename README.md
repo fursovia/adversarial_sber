@@ -67,7 +67,7 @@ If you want to train a certain model, use:
 
 `bash scripts/local/train_clf.sh ${config_name} ${clf_type} "100_quantile" ${dataset_name}`,
 
-where `clf_type` is "substitute" or "target" and `${config_name}` is "gru_with_amounts"/"lstm_with_amounts"/"cnn_with_amounts".
+where `clf_type` is "substitute" or "target" and `config_name` is "gru_with_amounts"/"lstm_with_amounts"/"cnn_with_amounts".
 
 ### Step 4. Training language models.
 
@@ -89,7 +89,7 @@ If you want to attack a certain model for fixed dataset, you can use:
 
 `bash scripts/local/attack.sh ${subst_clf} ${targ_clf} ${number of samples to attack} ${dataset_name}`,
 
-where subst_clf and targ_clf are "gru_with_amounts"/"lstm_with_amounts"/"cnn_with_amounts".
+where `subst_clf` and `targ_clf` are "gru_with_amounts"/"lstm_with_amounts"/"cnn_with_amounts".
 
 ## Data
 
