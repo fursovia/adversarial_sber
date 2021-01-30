@@ -14,8 +14,9 @@ def main(results_path: Path, filename: str = "metrics.json"):
             curr_metrics = json.load(f)
 
             curr_metrics["attack_name"] = path.parent.name
-            (curr_metrics["target_name"], curr_metrics["subst_name"],) = path.parent.parent.name.split("_via_")
-            curr_metrics["dataset_name"] = path.parent.parent.parent.name
+            curr_metrics["subst_name"] = path.parent.parent.name
+            curr_metrics["target_name"] = path.parent.parent.parent.name
+            curr_metrics["dataset_name"] = path.parent.parent.parent.parent.name
             metrics.append(curr_metrics)
 
     metrics = pd.DataFrame(metrics)
@@ -23,7 +24,3 @@ def main(results_path: Path, filename: str = "metrics.json"):
     output_path = str(results_path / "metrics.csv")
     typer.secho(f"Saving results to {output_path}", fg="green")
     metrics.to_csv(output_path, index=False)
-
-
-if __name__ == "__main__":
-    typer.run(main)
