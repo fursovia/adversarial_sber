@@ -23,7 +23,7 @@ To get the processed datasets, you need to run
 
 `bash scripts/01_build_datasets.sh`
 
-As a result, in the directory `../data` you will get the data for the next experiments` in following directories:
+As a result, in the directory `../data` you will get the data for the next experiments in following directories:
 
 ```text
 .
@@ -45,7 +45,7 @@ To build vocabulary and train discretizer run:
 
 `bash scripts/02_build_vocabs_discretizers.sh`
 
-Traind discretizers will be stored in `./presets/${DATASET_NAME}/discretizers/100_quantile, and vocabs in ./presets/${DATASET_NAME}/vocabs/100_quantile`.
+Traind discretizers will be stored in `./presets/${DATASET_NAME}/discretizers/100_quantile`, and vocabs in `./presets/${DATASET_NAME}/vocabs/100_quantile`.
 
 ## Experiments
 
@@ -67,7 +67,7 @@ If you want to train a certain model, use:
 
 `bash scripts/local/train_clf.sh ${config_name} ${clf_type} "100_quantile" ${dataset_name}`,
 
-where clf_type is "substitute" or "target" and ${config_name} is "gru_with_amounts"/"lstm_with_amounts"/"cnn_with_amounts".
+where `clf_type` is "substitute" or "target" and `${config_name}` is "gru_with_amounts"/"lstm_with_amounts"/"cnn_with_amounts".
 
 ### Step 4. Training language models.
 
