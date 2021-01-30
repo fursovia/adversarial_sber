@@ -24,4 +24,4 @@ for config_path in ${CONFIG_DIR}/*.jsonnet; do
             --target-clf-path=../experiments/trained_models/${DATASET_NAME}/target_clf/${TARG_CONFIG_NAME}/model.tar.gz
 done
 
-python advsber/commands/aggregate.py ../experiments/attacks/${dataset_name}
+python scripts/python_scripts/aggregate.py ../experiments/attacks/${dataset_name}
