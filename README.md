@@ -48,12 +48,32 @@ To train all classifiers (LSTM, CNN, GRU) run:
 
 As a result, all trained models will be stored in `../experiments/trained_models`.
 
+
 If you want to train a certain model, use:
 
 `bash scripts/local/train_clf.sh ${config_name} ${clf_type} "100_quantile" ${dataset_name}`,
-
 where clf_type is "substitute" or "target" and ${config_name} is "gru_with_amounts"/"lstm_with_amounts"/"cnn_with_amounts".
 
+### Step 4. Training language models.
+
+To train all lanuage models run:
+
+`bash scripts/03_train_all_lm.sh`
+
+As a result, all trained language models will be stored in `../experiments/trained_models`.
+
+### Step 5. Attacking all models
+
+To attack all models run:
+
+`bash scripts/05_attack_all_classifiers.sh`
+
+The results will be stored in `../experiments/trained_models/attacks`. There metrics of resulted attacks will be available at `.metrics.json` and adversarial data in `adversarial.json`.
+
+If you want to attack a certain model for fixed dataset, you can use:
+
+`bash scripts/local/attack.sh ${subst_clf} ${targ_clf} ${number of samples to attack} ${dataset_name}`,
+where subst_clf and targ_clf are "gru_with_amounts"/"lstm_with_amounts"/"cnn_with_amounts".
 
 ## Data
 
