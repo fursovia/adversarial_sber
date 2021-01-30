@@ -23,21 +23,36 @@ To get the processed datasets, you need to run
 
 `bash scripts/01_build_datasets.sh`
 
-As a result, in the directory `../data` you will get data for the next experiments.
+As a result, in the directory `../data` you will get the data for the next experiments.
 
 
 ### Step 2. Building vocabs and discretizers.
+To build vocabulary and train discretizer run:
 
 `bash scripts/02_build_vocabs_discretizers.sh`
 
+Traind discretizer will be stored in ./presets/${DATASET_NAME}/discretizers/100_quantile, and vocabulary in ./presets/${DATASET_NAME}/vocabs/100_quantile.
+
 ## Experiments
 
-All results will be at `../experiments`
+All results will be at `../experiments`:
+
+1. Trained models: ../experiments/trained_models
+2. Result of attacks: ../experiments/attacks
 
 ### Step 3. Training all classifiers.
 
-`bash scripts/03_train_all_classifiers.sh`
+`To train all classifiers (LSTM, CNN, GRU) run:
 
+bash scripts/03_train_all_classifiers.sh`
+
+As a result, all trained models will be stored in ../experiments/trained_models.
+
+If you want to train a certain model, use:
+
+bash scripts/local/train_clf.sh ${config_name} ${clf_type} "100_quantile" ${dataset_name},
+
+where clf_type is "substitute" or "target" and ${config_name} is "gru_with_amounts"/"lstm_with_amounts"/"cnn_with_amounts".
 
 
 ## Data
