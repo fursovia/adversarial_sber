@@ -31,26 +31,26 @@ To build vocabulary and train discretizer run:
 
 `bash scripts/02_build_vocabs_discretizers.sh`
 
-Traind discretizer will be stored in ./presets/${DATASET_NAME}/discretizers/100_quantile, and vocabulary in ./presets/${DATASET_NAME}/vocabs/100_quantile.
+Traind discretizer will be stored in `./presets/${DATASET_NAME}/discretizers/100_quantile, and vocabulary in ./presets/${DATASET_NAME}/vocabs/100_quantile`.
 
 ## Experiments
 
 All results will be at `../experiments`:
 
-1. Trained models: ../experiments/trained_models
-2. Result of attacks: ../experiments/attacks
+1. Trained models: `../experiments/trained_models`
+2. Result of attacks: `../experiments/attacks`
 
 ### Step 3. Training all classifiers.
 
-`To train all classifiers (LSTM, CNN, GRU) run:
+To train all classifiers (LSTM, CNN, GRU) run:
 
-bash scripts/03_train_all_classifiers.sh`
+`bash scripts/03_train_all_classifiers.sh`
 
-As a result, all trained models will be stored in ../experiments/trained_models.
+As a result, all trained models will be stored in `../experiments/trained_models`.
 
 If you want to train a certain model, use:
 
-bash scripts/local/train_clf.sh ${config_name} ${clf_type} "100_quantile" ${dataset_name},
+`bash scripts/local/train_clf.sh ${config_name} ${clf_type} "100_quantile" ${dataset_name}`,
 
 where clf_type is "substitute" or "target" and ${config_name} is "gru_with_amounts"/"lstm_with_amounts"/"cnn_with_amounts".
 
