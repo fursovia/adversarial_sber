@@ -5,4 +5,3 @@ for dataset_name in "age" "gender"; do
     rm -rf ./presets/${dataset_name}/models/lm/bert_with_amounts.tar.gz
     cp -r ../experiments/trained_models/${dataset_name}/lm/bert_with_amounts/model.tar.gz ./presets/${dataset_name}/models/lm/bert_with_amounts.tar.gz
 done
-
