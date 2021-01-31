@@ -72,10 +72,13 @@ def main():
     target_data_test_sub, target_data_targetclf = train_test_split(target_data, test_size=0.65, random_state=10, shuffle=True)
     target_data_subclf, target_data_test = train_test_split(target_data_test_sub, test_size=2./7, random_state=10, shuffle=True)
     
+    print('Create test set...')    
+    create_set('../data/gender/test.jsonl', data, target_data_test)
+    print('')
     split_data(data, target_data, '../data/gender/lm')
     split_data(data, target_data_subclf, '../data/gender/substitute_clf')
     split_data(data, target_data_targetclf, '../data/gender/target_clf')
-    create_set('../data/gender/test.jsonl', data, target_data_test)
+    
     
     return
 

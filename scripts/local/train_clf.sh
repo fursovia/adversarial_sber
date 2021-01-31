@@ -5,6 +5,8 @@ CLF_TYPE=${2:-"substitute"}
 DISCRETIZER_NAME=${3:-"100_quantile"}
 DATASET_NAME=${4:-"age"}
 
+rm -rf ../experiments/trained_models/${DATASET_NAME}/${CLF_TYPE}_clf/${CONFIG_NAME}
+
 CLF_TRAIN_DATA_PATH=../data/${DATASET_NAME}/${CLF_TYPE}_clf/train.jsonl \
 CLF_VALID_DATA_PATH=../data/${DATASET_NAME}/${CLF_TYPE}_clf/valid.jsonl \
 CLF_TEST_DATA_PATH=../data/${DATASET_NAME}/test.jsonl \
