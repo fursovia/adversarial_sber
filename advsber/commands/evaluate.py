@@ -13,6 +13,7 @@ from advsber.utils.metrics import (
     misclassification_error,
     probability_drop,
     diversity_rate,
+    repetition_rate,
 )
 
 
@@ -23,7 +24,7 @@ def get_predictor(archive_path: str) -> Predictor:
 
 
 def main(
-    output_path: str, save_to: str = typer.Option(None), target_clf_path: str = typer.Option(None),
+        output_path: str, save_to: str = typer.Option(None), target_clf_path: str = typer.Option(None), vocab_path: str = typer.Option(None),
 ):
     output = load_jsonlines(output_path)
     output = pd.DataFrame(output).drop(columns="history")
@@ -64,12 +65,25 @@ def main(
 
     anad = amount_normalized_accuracy_drop(added_amounts, y_true=y_true, y_adv=y_adv)
     typer.echo(f"aNAD-1000 = {anad:.2f}")
+
+    vocab_df = pd.read_csv(vocab_path, header=None)
+    special_tokens = ['@@MASK@@', '@@UNKNOWN@@', '@@PADDING@@', '<START>', '<END>']
+    vocab_size = len([int(i) for i in vocab_df.loc[:, 0].values if i not in special_tokens])
+
     try:
-        diversity = diversity_rate(output)
-        diversity = round(diversity, 3)
+        diversity = diversity_rate(output, vocab_size)
+        diversity = round(diversity, 2)
     except ValueError:
         diversity = None
     typer.echo(f"Diversity_rate = {diversity}")
+
+    try: 
+        repetition = repetition_rate(output)
+        repetition = round(repetition, 2)
+    except ValueError:
+        repetition = None
+    typer.echo(f"Repetition_rate = {repetition}")
+
     if save_to is not None:
         metrics = {
             "NAD": round(nad, 3),
@@ -78,6 +92,7 @@ def main(
             "Mean_WER": round(mean_wer, 3),
             "aNAD-1000": round(anad, 3),
             "diversity_rate": diversity,
+            "repetition_rate": repetition, 
         }
         with open(save_to, "w") as f:
             json.dump(metrics, f, indent=4)
