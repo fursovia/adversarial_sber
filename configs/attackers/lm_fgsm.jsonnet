@@ -19,7 +19,7 @@ local clf_path = std.extVar("CLF_PATH");
       "archive_file": clf_path
     },
     "lm_threshold": 3.0,
-    "num_steps": 40.0,
+    "num_steps": 20.0,
     "epsilon": 1.0,
     "device": 0
   }
