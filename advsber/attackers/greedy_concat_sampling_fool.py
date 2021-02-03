@@ -59,7 +59,7 @@ class GreedyConcatSamplingFool(Attacker):
             adv_data['label'] = data_to_attack.label
             adv_data = TransactionsData(**adv_data)
 
-        adv_data.label = output.adversarial_data.label
+        adv_data.label = output.adversarial_data['label']
         adv_inputs = data_to_tensors(adv_data, self.reader, self.vocab, self.device)
         adv_probs = self.get_clf_probs(adv_inputs)
         adv_prob = adv_probs[self.label_to_index(data_to_attack.label)].item()
