@@ -22,7 +22,8 @@ for config_path in ${CONFIG_DIR}/*.jsonnet; do
 
      PYTHONPATH=. python advsber/commands/evaluate.py ${RESULTS_PATH}/adversarial.json \
             --save-to=${RESULTS_PATH}/metrics.json \
-            --target-clf-path=./presets/${DATASET_NAME}/models/target_clf/${TARG_CONFIG_NAME}.tar.gz
+            --target-clf-path=./presets/${DATASET_NAME}/models/target_clf/${TARG_CONFIG_NAME}.tar.gz \
+     	    --vocab-path=./presets/${DATASET_NAME}/vocabs/100_quantile/transactions.txt
 done
 
 python scripts/python_scripts/aggregate.py ../experiments/attacks/${DATASET_NAME}
