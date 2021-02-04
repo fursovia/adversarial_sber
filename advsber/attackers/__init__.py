@@ -5,3 +5,4 @@ from .concat_sampling_fool import ConcatSamplingFool
 from .fgsm import FGSM
 from .concat_fgsm import ConcatFGSM
 from .greedy import GreedyAttacker
+from .lm_fgsm import LMFGSM
