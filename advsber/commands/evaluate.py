@@ -81,6 +81,8 @@ def main(
             get_predictor(lm_path)
         )
         typer.echo(f"perplexity = {perplexity}")
+    else:
+        perplexity = None
 
     if save_to is not None:
         metrics = {
