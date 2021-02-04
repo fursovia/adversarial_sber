@@ -27,6 +27,8 @@ class LMFGSM(Attacker):
         super().__init__(classifier=classifier, reader=reader, device=device)
         self.classifier = self.classifier.train()
         self.lm = lm
+        if self.device >= 0 and torch.cuda.is_available():
+            self.lm.cuda(self.device)
         self.lm_threshold = lm_threshold
         self.num_steps = num_steps
         self.epsilon = epsilon
