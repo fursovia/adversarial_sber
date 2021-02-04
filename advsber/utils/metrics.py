@@ -1,6 +1,8 @@
 import functools
 from typing import List, Any, Dict
+import math
 
+from allennlp.predictors import Predictor
 from Levenshtein import distance as lvs_distance
 
 
@@ -69,53 +71,37 @@ def amount_normalized_accuracy_drop(
     return sum(nads) / len(nads)
 
 
-def adversarial_tokens(t_true: List[int], t_adv: List[str]) -> List[int]:
-    t_ins = []
-    special_tokens = ['@@MASK@@', '@@UNKNOWN@@', '@@PADDING@@', '<START>', '<END>']
-    for i in range(len(t_adv)):
-        for t in range(len(t_adv[i])):
-            if t_adv[i][t] not in special_tokens:
-                if (t > len(t_true[i]) - 1):
-                    t_ins.append(int(t_adv[i][t]))
-                else:
-                    if (int(t_adv[i][t]) != int(t_true[i][t])):
-                        t_ins.append(int(t_adv[i][t]))
+def diversity_rate(output: List[Dict[str, Any]]) -> float:
+    y_true = [output["data"][i]["transactions"] for i in range(len(output))]
+    y_adv = [output["adversarial_data"][i]["transactions"] for i in range(len(output))]
+    y_ins = []
+    for i in range(len(y_adv)):
+        for t in range(len(y_adv[i])):
+            # if addition
+            if t > len(y_true[i]) - 1:
+                if y_adv[i][t] == "<START>":
+                    y_adv[i][t] = 0
+                if y_adv[i][t] == "<END>":
+                    y_adv[i][t] = -1
+                y_ins.append(int(y_adv[i][t]))
+            # if insertion
             else:
-                continue
-
-    return t_ins
-
-
-def diversity_rate(output: List[Dict[str, Any]], vocab_size: int) -> float:
-    t_true = [output["data"][i]["transactions"] for i in range(len(output))]
-    t_adv = [output["adversarial_data"][i]["transactions"] for i in range(len(output))]
-    t_ins = adversarial_tokens(t_true, t_adv)
-
-    return len(list(set(t_ins))) / vocab_size
+                if int(y_adv[i][t]) != int(y_true[i][t]):
+                    y_ins.append(int(y_adv[i][t]))
+    return len(list(dict.fromkeys(y_ins))) / len(y_ins)
 
 
-def repetition_rate(output: List[Dict[str, Any]]) -> float:
-    t_true = [output["data"][i]["transactions"] for i in range(len(output))]
-    t_adv = [output["adversarial_data"][i]["transactions"] for i in range(len(output))]
-    t_ins = adversarial_tokens(t_true, t_adv)
-    unique_true_tokens = set([t for sublist in t_true for t in sublist])
+def calculate_perplexity(transactions: List[List[int]], predictor: Predictor) -> float:
+    perplexities = []
+    for tr in transactions:
+        out = predictor.predict_json(
+            {
+                "transactions": tr,
+                "amounts": tr
+            }
+        )
 
-    num_repeated_tokens = 0
-    for t in t_ins:
-        if t in unique_true_tokens:
-            num_repeated_tokens += 1
+        perp = math.exp(out["loss"])
+        perplexities.append(perp)
 
-    return num_repeated_tokens / len(list(t_ins))
-
-
-
-
-
-
-
-
-
-
-
-
-
+    return sum(perplexities) / len(perplexities)
