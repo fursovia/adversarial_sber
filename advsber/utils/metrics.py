@@ -1,6 +1,8 @@
 import functools
 from typing import List, Any, Dict
+import math
 
+from allennlp.predictors import Predictor
 from Levenshtein import distance as lvs_distance
 
 
@@ -87,3 +89,19 @@ def diversity_rate(output: List[Dict[str, Any]]) -> float:
                 if int(y_adv[i][t]) != int(y_true[i][t]):
                     y_ins.append(int(y_adv[i][t]))
     return len(list(dict.fromkeys(y_ins))) / len(y_ins)
+
+
+def calculate_perplexity(transactions: List[List[int]], predictor: Predictor) -> float:
+    perplexities = []
+    for tr in transactions:
+        out = predictor.predict_json(
+            {
+                "transactions": tr,
+                "amounts": tr
+            }
+        )
+
+        perp = math.exp(out["loss"])
+        perplexities.append(perp)
+
+    return sum(perplexities) / len(perplexities)

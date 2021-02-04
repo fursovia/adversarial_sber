@@ -14,6 +14,7 @@ from .attackers import (
     FGSM,
     ConcatFGSM,
     GreedyAttacker,
+    LMFGSM,
 )
 
 from advsber.settings import TransactionsData
