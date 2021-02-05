@@ -83,7 +83,6 @@ def adversarial_tokens(t_true: List[int], t_adv: List[str]) -> List[int]:
                     if (int(t_adv[i][t]) != int(t_true[i][t])):
                         t_ins.append(int(t_adv[i][t]))
             else:
-<<<<<<< HEAD
                 continue
 
     return t_ins
@@ -111,23 +110,6 @@ def repetition_rate(output: List[Dict[str, Any]]) -> float:
     return num_repeated_tokens / len(list(t_ins))
 
 
-
-
-
-
-
-
-
-
-
-
-
-=======
-                if int(y_adv[i][t]) != int(y_true[i][t]):
-                    y_ins.append(int(y_adv[i][t]))
-    return len(list(dict.fromkeys(y_ins))) / len(y_ins)
-
-
 def calculate_perplexity(transactions: List[List[int]], predictor: Predictor) -> float:
     perplexities = []
     for tr in transactions:
@@ -142,4 +124,4 @@ def calculate_perplexity(transactions: List[List[int]], predictor: Predictor) ->
         perplexities.append(perp)
 
     return sum(perplexities) / len(perplexities)
->>>>>>> 01ce875e9c7fb5f190346b2ba61b29e348635816
+
