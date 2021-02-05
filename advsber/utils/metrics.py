@@ -1,6 +1,8 @@
 import functools
 from typing import List, Any, Dict
+import math
 
+from allennlp.predictors import Predictor
 from Levenshtein import distance as lvs_distance
 
 
@@ -81,6 +83,7 @@ def adversarial_tokens(t_true: List[int], t_adv: List[str]) -> List[int]:
                     if (int(t_adv[i][t]) != int(t_true[i][t])):
                         t_ins.append(int(t_adv[i][t]))
             else:
+<<<<<<< HEAD
                 continue
 
     return t_ins
@@ -119,3 +122,24 @@ def repetition_rate(output: List[Dict[str, Any]]) -> float:
 
 
 
+=======
+                if int(y_adv[i][t]) != int(y_true[i][t]):
+                    y_ins.append(int(y_adv[i][t]))
+    return len(list(dict.fromkeys(y_ins))) / len(y_ins)
+
+
+def calculate_perplexity(transactions: List[List[int]], predictor: Predictor) -> float:
+    perplexities = []
+    for tr in transactions:
+        out = predictor.predict_json(
+            {
+                "transactions": tr,
+                "amounts": tr
+            }
+        )
+
+        perp = math.exp(out["loss"])
+        perplexities.append(perp)
+
+    return sum(perplexities) / len(perplexities)
+>>>>>>> 01ce875e9c7fb5f190346b2ba61b29e348635816
