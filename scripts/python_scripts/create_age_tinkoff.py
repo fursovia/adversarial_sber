@@ -33,7 +33,7 @@ def create_set(name, data, target):
             sub_data_target = target[target['client_id']==client_id]
             sub_datas = split_slice_subsample(sub_data, 25, 150, 30)
             for loc_data in sub_datas:
-                if len(loc_data.small_group):
+                if len(loc_data.small_group) > 3:
                     loc_dict = {"transactions": list(loc_data.small_group),
                                 "amounts": list(loc_data.amount_rur),
                                 "label": int(sub_data_target.bins),
