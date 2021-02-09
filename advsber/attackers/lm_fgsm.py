@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[ ]:
+
+
 from copy import deepcopy
 import random
 
@@ -27,10 +33,15 @@ class LMFGSM(Attacker):
         super().__init__(classifier=classifier, reader=reader, device=device)
         self.classifier = self.classifier.train()
         self.lm = lm
+        if self.device >= 0 and torch.cuda.is_available():
+            self.lm.cuda(self.device)
         self.lm_threshold = lm_threshold
         self.num_steps = num_steps
         self.epsilon = epsilon
 
+        if self.device >= 0 and torch.cuda.is_available():
+            self.lm.cuda(self.device)
+            
         self.emb_layer = util.find_embedding_layer(self.classifier).weight
 
     def attack(self, data_to_attack: TransactionsData) -> AttackerOutput:
@@ -77,19 +88,23 @@ class LMFGSM(Attacker):
             distances[self.special_indexes] = 10 ** 16
 
             # swap embeddings
-            closest_idx = distances.argmin().item()
-            embeddings_splitted[random_idx] = self.emb_layer[closest_idx]
-            embeddings_splitted = [e.detach() for e in embeddings_splitted]
+            closest_idx = distances.argsort(descending=False).tolist()
+            for idx in closest_idx:
+                embeddings_splitted[random_idx] = self.emb_layer[idx]
+                embeddings_splitted = [e.detach() for e in embeddings_splitted]
 
-            adversarial_idexes_lm = deepcopy(adversarial_idexes)
-            adversarial_idexes_lm[random_idx] = closest_idx
-            adv_data_lm = deepcopy(data_to_attack)
-            adv_data_lm.transactions = decode_indexes(adversarial_idexes, vocab=self.vocab)
-            adv_inputs_lm = data_to_tensors(adv_data_lm, self.reader, self.vocab, self.device)
+                adversarial_idexes_lm = deepcopy(adversarial_idexes)
+                adversarial_idexes_lm[random_idx] = idx
+                adv_data_lm = deepcopy(data_to_attack)
+                adv_data_lm.transactions = decode_indexes(adversarial_idexes, vocab=self.vocab)
+                adv_inputs_lm = data_to_tensors(adv_data_lm, self.reader, self.vocab, self.device)
 
-            if self.lm(**adv_inputs_lm)["loss"] < self.lm_threshold:
-                # get adversarial indexes
-                adversarial_idexes[random_idx] = closest_idx
+                if self.lm(**adv_inputs_lm)["loss"] < self.lm_threshold:
+                    # get adversarial indexes
+                    adversarial_idexes[random_idx] = idx
+                    break
+                else:
+                    continue
 
             adv_data = deepcopy(data_to_attack)
             adv_data.transactions = decode_indexes(adversarial_idexes, vocab=self.vocab)
@@ -115,3 +130,4 @@ class LMFGSM(Attacker):
         best_output.history = [output.to_dict() for output in outputs]
 
         return best_output
+

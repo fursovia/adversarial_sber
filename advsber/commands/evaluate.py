@@ -13,6 +13,7 @@ from advsber.utils.metrics import (
     misclassification_error,
     probability_drop,
     diversity_rate,
+    calculate_perplexity,
 )
 
 
@@ -23,7 +24,10 @@ def get_predictor(archive_path: str) -> Predictor:
 
 
 def main(
-    output_path: str, save_to: str = typer.Option(None), target_clf_path: str = typer.Option(None),
+        output_path: str,
+        save_to: str = typer.Option(None),
+        target_clf_path: str = typer.Option(None),
+        lm_path: str = typer.Option(None)
 ):
     output = load_jsonlines(output_path)
     output = pd.DataFrame(output).drop(columns="history")
@@ -70,6 +74,16 @@ def main(
     except ValueError:
         diversity = None
     typer.echo(f"Diversity_rate = {diversity}")
+
+    if lm_path is not None:
+        perplexity = calculate_perplexity(
+            [adv_example["transactions"] for adv_example in output["adversarial_data"]],
+            get_predictor(lm_path)
+        )
+        typer.echo(f"perplexity = {perplexity}")
+    else:
+        perplexity = None
+
     if save_to is not None:
         metrics = {
             "NAD": round(nad, 3),
@@ -78,6 +92,7 @@ def main(
             "Mean_WER": round(mean_wer, 3),
             "aNAD-1000": round(anad, 3),
             "diversity_rate": diversity,
+            "perplexity": perplexity
         }
         with open(save_to, "w") as f:
             json.dump(metrics, f, indent=4)
