@@ -182,16 +182,6 @@ CUDA_VISIBLE_DEVICES="1" \
 PYTHONPATH=. python advsber/commands/evaluate.py ./results/output.json
 ```
 
-## Adversarial detection
-
-Для запуска эксперимента по детектированию атак
-
-```bash
-CUDA_VISIBLE_DEVICES="0" bash bin/adversarial_detection.sh
-
-
-```
-
 ## Adversarial train
 Для запуска эксперимента по адверсальному обучению
 
