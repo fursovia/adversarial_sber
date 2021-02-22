@@ -107,6 +107,16 @@ To get the tokens and amounts distribution after the attack, run:
 
 As a result, you will get two files: `tokens_distributions.pdf` and `amounts_distribution.pdf` which will be stored in `../experiments/attacks/${dataset_name}/targ_${targ_name}/subst_${subst_name}/${attack_name}`. The pictures will be plotted taking `adversarial.json` in the mentioned folder.
 
+### Adversarial detection
+
+Adversarial detection can be conducted using Neural Network algorithm or Random Forest. 
+Preparation of the datasets:
+1. You need to attack data that you want to explore (Step 5) and split it in the way to get two outputs with names: `train_adv_detection.json` and `valid_adv_detection.json` in the folder `../experiments/attacks/${dataset_name}/targ_${targ_name}/subst_${subst_name}/${attack_name}` (the names of output files could be changed in `scripts/local/attack.sh`)
+2. Run `bash scripts/local/datasets_adv_detect.sh ${subst_name} ${targ_name} ${dataset_name} ${attack_name}` and in the folder `../experiments/attacks/${dataset_name}/targ_${targ_name}/subst_${subst_name}/${attack_name}` you will get 3 files: `train_adv_detection_dataset.jsonl`, `valid_adv_detection_dataset.jsonl` and `test_adv_detection_dataset.jsonl`.
+
+* To use neural netwotk as classifier of adversarial examples, run: `bash scripts/local/adv_detect.sh ${config_name} "adv_detection" ${discretizer_name} ${dataset_name} ${attack_name}` where `${config_name}` can be `"gru_with_amounts"`.
+* To use Random Forest as classifier of adversarial examples, run: `bash scripts/local/advers_detection_rf.sh ${dataset_name} ${attack_name} ${subst_name} ${targ_name}`. As an output, you will see accuracy evaluated on the test set. 
+
 ## Data
 
 Данные должны лежать в таком формате. в папке `lm` -- данные для обучения лингвистической модели.
