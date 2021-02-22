@@ -24,27 +24,19 @@ def create_dataset_from_output(output: List[Dict[str, Any]]) -> List[Dict[str, A
 
 
 def main(
-    results_path: Path, out_data_dir: Path, filename: str = "output.json", test_size: float = 0.3,
+        results_path: str, test_size: float = 0.5,
 ):
-    paths = results_path.rglob(filename)
+    
+    train_output = load_jsonlines(results_path +'/train_adv_detection.json')
+    valid_output = load_jsonlines(results_path + '/valid_adv_detection.json')
+    
+    train_dataset = create_dataset_from_output(train_output)
+    valid_dataset = create_dataset_from_output(valid_output)
+    valid, test = train_test_split(valid_dataset, random_state=23, test_size=test_size)
 
-    for path in paths:
-        output = load_jsonlines(str(path))
-        dataset = create_dataset_from_output(output)
-
-        train, valid = train_test_split(dataset, random_state=23, test_size=test_size)
-
-        attack_name = path.parent.name
-        target_name_viasubst_name = path.parent.parent.name
-        dataset_name = path.parent.parent.parent.name
-
-        base_dir = out_data_dir / dataset_name / "adv_detection" / attack_name / target_name_viasubst_name
-        base_dir.mkdir(parents=True, exist_ok=True)
-
-        typer.echo(f"Saving data to {base_dir}")
-        write_jsonlines(train, base_dir / "train.jsonl")
-
-        write_jsonlines(valid, base_dir / "valid.jsonl")
+    write_jsonlines(train_dataset, results_path + "/train_adv_detection_dataset.jsonl")
+    write_jsonlines(valid, results_path + "/valid_adv_detection_dataset.jsonl")
+    write_jsonlines(test, results_path + "/test_adv_detection_dataset.jsonl")
 
 
 if __name__ == "__main__":
