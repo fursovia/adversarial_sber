@@ -105,7 +105,7 @@ To get the tokens and amounts distribution after the attack, run:
 
 `bash scripts/local/plot_pictures.sh ${dataset_name} ${attack_name} ${subst_name} ${targ_name}`
 
-As a result, you will get two files: `tokens_distributions.pdf` and `amounts_distribution.pdf` which will be stored in `../experiments/attacks/${dataset_name}/targ_${targ_name}/subst_${subst_name}/${attack_name}`. The pictures will be plotted taking `adversarial.json' in the mentioned folder.
+As a result, you will get two files: `tokens_distributions.pdf` and `amounts_distribution.pdf` which will be stored in `../experiments/attacks/${dataset_name}/targ_${targ_name}/subst_${subst_name}/${attack_name}`. The pictures will be plotted taking `adversarial.json` in the mentioned folder.
 
 ## Data
 
