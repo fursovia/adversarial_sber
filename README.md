@@ -23,7 +23,7 @@ To reproduce all our experiments, please, run all bash scripts from `./scripts` 
 
 ### Step 1. Building datasets
 
-We are working with following transactional datasets. They are available on the following link: 
+We are working with following transactional datasets: 
 1. `Age 1` and `Age 1 Short`: https://drive.google.com/drive/u/0/folders/1oTkPI5Z091JbXHmOR0N7D-KKpN_9Qiyp
 2. `Age 2 (Tinkoff)`: https://drive.google.com/drive/u/0/folders/1BES-FKzGuTvnmXKYeSKFyDVPIymLR8Fo
 3. `Client Leaving (Rosbank)`: https://drive.google.com/drive/u/0/folders/122DETMAOT_cVKiRnXsVLiJ8gBHyUOhfw
