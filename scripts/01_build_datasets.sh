@@ -28,6 +28,7 @@ wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download
 PYTHONPATH=. python scripts/python_scripts/create_gender.py
 
 mkdir ../data/gender_short
+mkdir ../data/gender_short/original
 mkdir ../data/gender_short/lm
 mkdir ../data/gender_short/target_clf
 mkdir ../data/gender_short/substitute_clf
@@ -35,6 +36,7 @@ mkdir ../data/gender_short/substitute_clf
 PYTHONPATH=. python scripts/python_scripts/create_gender_short.py
 
 mkdir ../data/age_short
+mkdir ../data/age_short/original
 mkdir ../data/age_short/lm
 mkdir ../data/age_short/target_clf
 mkdir ../data/age_short/substitute_clf
@@ -56,6 +58,7 @@ PYTHONPATH=. python scripts/python_scripts/create_age_tinkoff.py
 
 
 mkdir ../data/gender_tinkoff
+mkdir ../data/gender_tinkoff/original
 mkdir ../data/gender_tinkoff/lm
 mkdir ../data/gender_tinkoff/target_clf
 mkdir ../data/gender_tinkoff/substitute_clf
