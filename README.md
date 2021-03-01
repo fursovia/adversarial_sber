@@ -24,8 +24,11 @@ To reproduce all our experiments, please, run all bash scripts from `./scripts` 
 ### Step 1. Building datasets
 
 We are working with following transactional datasets: `Age` and `Gender`. They are available on the following link: 
-1. `Age`: https://drive.google.com/drive/u/0/folders/1oTkPI5Z091JbXHmOR0N7D-KKpN_9Qiyp
-2. `Gender`: https://drive.google.com/drive/u/0/folders/1FJYWM5P9wUzieC8uPkSx7JKHhcZJboXg
+1. `Age 1` and `Age 1 Short`: https://drive.google.com/drive/u/0/folders/1oTkPI5Z091JbXHmOR0N7D-KKpN_9Qiyp
+2. `Age 2`: https://drive.google.com/drive/u/0/folders/1BES-FKzGuTvnmXKYeSKFyDVPIymLR8Fo
+3. `Client Leaving`: https://drive.google.com/drive/u/0/folders/122DETMAOT_cVKiRnXsVLiJ8gBHyUOhfw
+
+`Scoring` dataset is not available for public use due to NDA.
 
 To get the processed datasets, you need to run
 
@@ -53,7 +56,7 @@ To build vocabulary and train discretizer run:
 
 `bash scripts/02_build_vocabs_discretizers.sh`
 
-Traind discretizers will be stored in `./presets/${DATASET_NAME}/discretizers/100_quantile`, and vocabs in `./presets/${DATASET_NAME}/vocabs/100_quantile`.
+Trained discretizers will be stored in `./presets/${DATASET_NAME}/discretizers/100_quantile`, and vocabs in `./presets/${DATASET_NAME}/vocabs/100_quantile`.
 
 ## Experiments
 
