@@ -25,10 +25,10 @@ To reproduce all our experiments, please, run all bash scripts from `./scripts` 
 
 We are working with following transactional datasets. They are available on the following link: 
 1. `Age 1` and `Age 1 Short`: https://drive.google.com/drive/u/0/folders/1oTkPI5Z091JbXHmOR0N7D-KKpN_9Qiyp
-2. `Age 2`: https://drive.google.com/drive/u/0/folders/1BES-FKzGuTvnmXKYeSKFyDVPIymLR8Fo
-3. `Client Leaving`: https://drive.google.com/drive/u/0/folders/122DETMAOT_cVKiRnXsVLiJ8gBHyUOhfw
+2. `Age 2 (Tinkoff)`: https://drive.google.com/drive/u/0/folders/1BES-FKzGuTvnmXKYeSKFyDVPIymLR8Fo
+3. `Client Leaving (Rosbank)`: https://drive.google.com/drive/u/0/folders/122DETMAOT_cVKiRnXsVLiJ8gBHyUOhfw
 
-`Scoring` dataset is not available for public use due to NDA.
+`Scoring (Sberbank)` dataset is not available for public use due to NDA.
 
 To get the processed datasets, you need to run
 
