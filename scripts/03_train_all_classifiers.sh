@@ -3,7 +3,7 @@
 mkdir ../experiments
 mkdir ../experiments/trained_models/
 
-for dataset_name in "age" "gender"; do
+for dataset_name in "age" "age_short" "age_tinkoff" "rosbank"; do
     mkdir ../experiments/trained_models/${dataset_name}/
     for clf_type in "target" "substitute"; do
         mkdir ../experiments/trained_models/${dataset_name}/${clf_type}_clf

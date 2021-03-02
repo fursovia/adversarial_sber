@@ -4,7 +4,7 @@ rm -rf ../experiments/attacks
 mkdir ../experiments/attacks/
 
 
-for dataset_name in "age" "gender"; do
+for dataset_name in "age" "age_short" "age_tinkoff" "rosbank"; do
     mkdir ../experiments/attacks/${dataset_name}/
     for targ_clf in "gru_with_amounts" "lstm_with_amounts" "cnn_with_amounts"; do
         mkdir ../experiments/attacks/${dataset_name}/targ_${targ_clf}
